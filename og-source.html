@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<title>mscth · og</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1200px;height:630px;overflow:hidden}
+  body{background:#fafaf7;color:#0a0a0a;font-family:'JetBrains Mono',monospace;display:flex;position:relative}
+  .left{flex:1.05;padding:54px 60px 32px;display:flex;flex-direction:column;border-right:2px solid #0a0a0a;position:relative}
+  .left .top{margin-bottom:24px}
+  .left .url-row{margin-top:auto}
+  .right{flex:1;background:#0a0a0a;color:#fafaf7;display:flex;align-items:center;justify-content:center;position:relative}
+  .meta{font-size:14px;letter-spacing:0.16em;text-transform:uppercase;color:#888;font-weight:500}
+  .meta b{color:#0a0a0a;font-weight:700}
+  h1{font-size:150px;font-weight:700;letter-spacing:-0.04em;line-height:0.94;margin:14px 0 16px}
+  .subtitle{font-size:22px;font-weight:600;letter-spacing:0.04em;color:#0a0a0a;margin-bottom:10px}
+  .subtitle .slash{color:#e8451e;margin:0 10px}
+  .lede{font-size:17px;line-height:1.45;color:#3a3a36;font-weight:500;letter-spacing:-0.005em;max-width:500px}
+  .lede b{color:#0a0a0a;font-weight:700}
+  .lede em{font-style:normal;color:#c93a16;font-weight:600}
+  .url-row{position:absolute;left:60px;right:60px;bottom:32px;display:flex;align-items:baseline;justify-content:space-between;font-size:14px;letter-spacing:0.1em;text-transform:uppercase;color:#3a3a36;font-weight:600;padding-top:14px;border-top:1px solid #d4d4d0}
+  .url{color:#e8451e;font-weight:700;letter-spacing:0.04em}
+  .right .corner{position:absolute;top:30px;right:34px;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:#888;font-weight:600}
+  .right .corner b{color:#fafaf7}
+  .right .footnote{position:absolute;bottom:30px;left:34px;right:34px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#aaa;font-weight:500;display:flex;justify-content:space-between}
+  .right .footnote b{color:#fafaf7;font-weight:700}
+  svg.tonnetz{width:520px;height:380px}
+  .t-tri-maj{fill:#e8451e;stroke:#fafaf7;stroke-width:1.5}
+  .t-tri-min{fill:#1a1a1a;stroke:#fafaf7;stroke-width:1.5}
+  .t-tri-tonic{fill:#fafaf7;stroke:#fafaf7;stroke-width:2}
+  .t-node{fill:#0a0a0a;stroke:#fafaf7;stroke-width:1.5}
+  .t-node-tonic{fill:#fafaf7;stroke:#e8451e;stroke-width:2.5}
+  .t-node text{fill:#fafaf7;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace}
+  .t-node-tonic text{fill:#0a0a0a}
+</style>
+</head><body>
+<div class="left">
+  <div class="top">
+    <div class="meta">adventure labs<span style="margin:0 10px;color:#888">·</span><b>music theory lab</b></div>
+    <h1>mscth</h1>
+    <div class="subtitle">modos<span class="slash">·</span>campos<span class="slash">·</span>cadências<span class="slash">·</span>timbre</div>
+  </div>
+  <p class="lede">laboratório audiovisual de teoria musical. <b>ouça, veja e toque</b> conceitos que normalmente só vivem em livros — modos, escalas, cadências, <em>tonnetz com transformações neo-Riemann</em>. single-file HTML, zero dependências.</p>
+</div>
+<div class="right">
+  <div class="corner">tonnetz · <b>P L R</b></div>
+  <svg class="tonnetz" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg">
+    <!-- mini tonnetz: 6 triangles around a tonic node -->
+    <!-- vertices: dx=80, dy=70 -->
+    <!-- center tonic at (260, 200), pattern radiating -->
+    <!-- triangle major (up): 3 majors and 3 minors form a hexagon around tonic -->
+    <g transform="translate(260,200)">
+      <!-- 6 triangles: alternating major/minor -->
+      <!-- major triangle 1: (0,0), (80, 0), (40, -69) -->
+      <polygon class="t-tri-maj" points="0,0 80,0 40,-69"/>
+      <!-- minor 1: (80,0), (120, -69), (40, -69) -->
+      <polygon class="t-tri-min" points="80,0 120,-69 40,-69"/>
+      <!-- major 2: (80,0), (120, 69), (40, 69)... wait let me think -->
+      <!-- regenerate: hex around tonic at center. dx=80, dy=70 -->
+      <!-- 6 outer points: (80,0), (40,-69), (-40,-69), (-80,0), (-40,69), (40,69) -->
+      <polygon class="t-tri-min" points="0,0 80,0 40,69"/>
+      <polygon class="t-tri-maj" points="0,0 40,69 -40,69"/>
+      <polygon class="t-tri-min" points="0,0 -40,69 -80,0"/>
+      <polygon class="t-tri-maj" points="0,0 -80,0 -40,-69"/>
+      <polygon class="t-tri-min" points="0,0 -40,-69 40,-69"/>
+      <!-- nodes (smaller circles with note labels) -->
+      <g><circle r="20" cx="0" cy="0" class="t-node-tonic"/><text x="0" y="4" text-anchor="middle">C</text></g>
+      <g><circle r="16" cx="80" cy="0" class="t-node"/><text x="80" y="4" text-anchor="middle" fill="#fafaf7">G</text></g>
+      <g><circle r="16" cx="40" cy="-69" class="t-node"/><text x="40" y="-65" text-anchor="middle" fill="#fafaf7">E</text></g>
+      <g><circle r="16" cx="-40" cy="-69" class="t-node"/><text x="-40" y="-65" text-anchor="middle" fill="#fafaf7">A</text></g>
+      <g><circle r="16" cx="-80" cy="0" class="t-node"/><text x="-80" y="4" text-anchor="middle" fill="#fafaf7">F</text></g>
+      <g><circle r="16" cx="-40" cy="69" class="t-node"/><text x="-40" y="73" text-anchor="middle" fill="#fafaf7">E♭</text></g>
+      <g><circle r="16" cx="40" cy="69" class="t-node"/><text x="40" y="73" text-anchor="middle" fill="#fafaf7">A♭</text></g>
+    </g>
+  </svg>
+</div>
+</body></html>

@@ -2,6 +2,21 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.21.0] — 2026-05-03
+
+### added
+- **Open Graph + Twitter meta tags** — quando o link do `mscth` for compartilhado em Twitter, WhatsApp, Discord, Slack, Telegram etc., o preview agora mostra título, descrição e imagem dedicada (`og.png` 1200×630). Antes não havia preview, e o link aparecia "vazio" nas redes.
+- **`og.png`** — capa de compartilhamento gerada via headless Chrome a partir de `og-source.html`. Identidade visual: preto + cream + accent laranja, com mini-Tonnetz hexagonal no lado direito como assinatura visual do projeto.
+- **`favicon.svg`** — ícone vetorial mostrando triângulo de Tonnetz preto-com-laranja sobre fundo escuro.
+- **`og-source.html`** — fonte HTML usada pra gerar a capa (versionada no repo pra reproduzibilidade).
+- Meta tags adicionais: `description`, `author`, `keywords`, `theme-color`, `canonical`, `og:locale=pt_BR`.
+
+### changed
+- Versão exibida no header: `v0.20` → `v0.21`.
+
+### rationale
+Com o app já público e tendo passado pelo onboarding modal e pelas transformações neo-Riemann, o gargalo virou distribuição: compartilhar o link em rede social ou messenger não mostrava nada. Open Graph + Twitter Cards é o investimento mais barato e mais alavancado pra resolver isso. A capa visualmente carrega o conceito (Tonnetz como geometria da harmonia) já no preview, antes de o usuário sequer abrir o link.
+
 ## [0.20.0] — 2026-05-03
 
 ### added
