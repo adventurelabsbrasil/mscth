@@ -2,6 +2,17 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.23.2] — 2026-05-03
+
+### added
+- **Animação do pentagrama durante o play** — quando o usuário clica `play scale ↑`, cada nota acende em laranja vivo com pulso de escala (1.18×) sincronizado com o áudio (320ms por nota). Inclui a oitava ao final.
+- **Animação ao clicar nota individual** — clicar uma célula da escala (ex: `D`) também faz a figura correspondente no pentagrama acender em laranja por 350ms.
+- Helper `flashNotationNote(idx, ms)` — captura cor original (fill/stroke) das figuras, sobrescreve com `#e8451e`, aplica `transform: scale(1.18)` por 90ms, e restaura tudo após o tempo dado.
+- `_scaleNoteEls` — cache global das referências `g.vf-stavenote` capturadas após cada `factory.draw()` no pentagrama, pra animar sem re-renderizar.
+
+### rationale
+Feedback do usuário foi cirúrgico: o pentagrama estático com tônica/característica em laranja já comunicava hierarquia, mas faltava o feedback dinâmico de "qual nota está soando agora". Sem isso, o pentagrama era um diagrama; com isso, vira instrumento — você lê e ouve sincronizados. É o mesmo efeito que a barra de tempo do Spotify mostrando posição da letra: o usuário não precisa pensar onde está, o sistema mostra.
+
 ## [0.23.1] — 2026-05-03
 
 ### added

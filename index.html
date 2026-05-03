@@ -590,7 +590,7 @@
 <header>
   <div class="meta-row">
     <span>doc · <b>index.html</b></span>
-    <span>v0.23.1<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
+    <span>v0.23.2<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
   </div>
   <h1>mscth</h1>
   <p class="subtitle">modos<span class="slash">·</span>campos<span class="slash">·</span>cadências<span class="slash">·</span>timbre</p>
@@ -1821,6 +1821,7 @@ function renderScale(){
       playPitch(n.interval, 0, 0.02, 0.6, 0.2);
       flashCell(c, 350);
       pianoEcho([n.chromatic], 600);
+      flashNotationNote(i, 350);
       logTonalNote(n.chromatic, n.name);
     };
     el.appendChild(c);
@@ -3924,8 +3925,13 @@ document.getElementById('play-scale').onclick = function(){
     setTimeout(function(){
       flashCell(cells[i], 300);
       pianoEcho([n.chromatic], 320);
+      flashNotationNote(i, 280);
     }, i*320);
   });
+  // oitava acima
+  setTimeout(function(){
+    flashNotationNote(scale.length, 280);
+  }, scale.length*320);
 };
 
 // tuning toggle inline
@@ -4100,7 +4106,35 @@ function maybeShowWelcome(){
 
 // ============ NOTAÇÃO MUSICAL · VEXFLOW ============
 let showNotation = false;
+let _scaleNoteEls = []; // referências aos <g.vf-stavenote> renderizados (em ordem da escala)
 try{ if(localStorage.getItem('mscth.notation') === '1') showNotation = true; }catch(e){}
+
+function flashNotationNote(idx, ms){
+  const el = _scaleNoteEls[idx];
+  if(!el) return;
+  // override fill/stroke pra accent laranja, restaura após `ms`
+  const targets = el.querySelectorAll('path, ellipse, circle, line, text');
+  const orig = [];
+  targets.forEach(function(t){
+    orig.push({ el: t, fill: t.getAttribute('fill'), stroke: t.getAttribute('stroke') });
+    t.setAttribute('fill', '#e8451e');
+    if(t.getAttribute('stroke')) t.setAttribute('stroke', '#e8451e');
+  });
+  // pulso visual
+  el.style.transformBox = 'fill-box';
+  el.style.transformOrigin = 'center';
+  el.style.transition = 'transform 0.08s ease-out';
+  el.style.transform = 'scale(1.18)';
+  setTimeout(function(){ el.style.transform = 'scale(1)'; }, 90);
+  setTimeout(function(){
+    orig.forEach(function(o){
+      if(o.fill !== null) o.el.setAttribute('fill', o.fill); else o.el.removeAttribute('fill');
+      if(o.stroke !== null) o.el.setAttribute('stroke', o.stroke); else o.el.removeAttribute('stroke');
+    });
+    el.style.transition = '';
+    el.style.transform = '';
+  }, ms);
+}
 
 function spellNoteForVF(chrom){
   const useFlats = [5,10,3,8,1].indexOf(tonic) >= 0;
@@ -4178,6 +4212,8 @@ function renderScaleNotation(){
     }).addClef('treble');
     // sem addTimeSignature visual — pedagogicamente irrelevante na escala didática
     factory.draw();
+    // capturar referências às notas renderizadas pra animação durante play
+    _scaleNoteEls = Array.from(div.querySelectorAll('g.vf-stavenote'));
   } catch(e){
     div.innerHTML = '<div class="notation-error">erro ao renderizar pentagrama: ' + (e.message || e) + '</div>';
   }
