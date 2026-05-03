@@ -2,6 +2,25 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.20.0] — 2026-05-03
+
+### added
+- **Transformações neo-Riemann (P, L, R) no Tonnetz** — três botões abaixo da rede tonal aplicam as operações canônicas de Riemann/Lewin/Cohn ao último acorde clicado. **P** (parallel) troca a 3ª, **L** (leading-tone) desliza fundamental ou 5ª por semitom, **R** (relative) faz maior↔menor relativo. Cada operação é uma reflexão geométrica através de uma aresta do triângulo no Tonnetz.
+- **Animação de seta na transformação** — ao aplicar P, L ou R, uma seta laranja com a letra da transformação anima do centróide do triângulo de origem ao de destino, com fade de ~1.1s.
+- **Estado `nrCurrent`** — captura o último triângulo clicado no Tonnetz (col, row, type, name) e habilita os botões P/L/R. Mostra o nome do acorde atual ao lado dos botões. Reset automático ao re-renderizar o Tonnetz (ex: troca de tônica).
+- **Modal `nr`** — explica P/L/R com ciclos hexatônico (P-L) e octatônico (L-R), princípio da parsimônia (voice leading suave), e referências (Riemann, Lewin, Cohn, Tymoczko, Collier, harmonia negativa).
+- Refatoração do click handler do Tonnetz: lógica de tocar acorde + label + log foi extraída pra `nrPlayTri(col, row, type)` — uma fonte de verdade consumida tanto pelo clique direto quanto pelas transformações P/L/R.
+- Helpers `tonRootChrom(col, row, type)` e `tonTriPts(col, row, type)` — abstraem a matemática de fundamental e vértices dos triângulos do Tonnetz.
+
+### changed
+- Polígonos do Tonnetz agora carregam `data-col` e `data-row` para localização programática durante transformações.
+- Versão exibida no header: `v0.19` → `v0.20`.
+
+### rationale
+O Tonnetz já estava no app como visualização passiva de relações harmônicas — mas a maior parte do interesse teórico em redes tonais é justamente como elas tornam transformações cromáticas <em>geometricamente intuitivas</em>. P, L e R são as três operações fundamentais da teoria neo-Riemann, e cada uma corresponde a uma reflexão através de uma das arestas do triângulo do acorde. Visualizar isso como movimento literal — clicar `C`, depois `L`, e ver a seta animar pra `Em` — transforma o Tonnetz de figura ilustrativa em ferramenta de exploração harmônica.
+
+A escolha de animar com seta + letra (em vez de só fazer o triângulo de destino piscar) torna o tipo de transformação aplicada visualmente legível mesmo pra quem não conhece a teoria — e abre porta pra futuros ciclos automatizados (P-L sequence pra hexatônico, L-R pra octatônico).
+
 ## [0.19.0] — 2026-05-02
 
 ### added

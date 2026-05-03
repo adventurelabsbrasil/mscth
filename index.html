@@ -175,6 +175,20 @@
   .tonnetz-axis > div:last-child{border-right:none}
   .tonnetz-axis .k{display:block;font-size:9px;letter-spacing:0.14em;margin-bottom:3px}
   .tonnetz-axis .v{font-weight:600;color:var(--ink);font-size:11px;letter-spacing:0.04em;text-transform:none}
+  .nr-controls{display:flex;align-items:center;gap:7px;padding:11px 14px;border-top:1px solid var(--soft);background:var(--bg);font-size:11px;letter-spacing:0.04em;flex-wrap:wrap}
+  .nr-controls .nr-label{color:var(--mute);text-transform:uppercase;font-weight:600;letter-spacing:0.14em;font-size:9px;margin-right:6px}
+  .nr-controls > button[data-nr]{font-family:inherit;font-size:12px;font-weight:700;letter-spacing:0.06em;background:var(--bg);color:var(--ink);border:1px solid var(--ink);padding:7px 13px;cursor:pointer;border-radius:0;min-width:36px}
+  .nr-controls > button[data-nr]:hover:not(:disabled){background:var(--ink);color:var(--bg)}
+  .nr-controls > button[data-nr]:disabled{color:var(--mute);border-color:var(--soft);cursor:not-allowed;background:transparent}
+  .nr-controls .nr-current{font-size:10.5px;color:var(--mute);letter-spacing:0.04em;font-weight:500;margin-left:6px}
+  .nr-controls .nr-current b{color:var(--ink);font-weight:700;letter-spacing:0.02em}
+  .nr-controls .nr-help{margin-left:auto;background:transparent;border:1px solid var(--soft);color:var(--mute);font-size:11px;padding:4px 8px;font-weight:600;cursor:pointer;font-family:inherit}
+  .nr-controls .nr-help:hover{background:var(--softer);color:var(--ink);border-color:var(--ink)}
+  .nr-arrow{stroke:#e8451e;stroke-width:1.8;fill:none;opacity:0;animation:nrArrowFade 1.1s ease-out forwards}
+  .nr-arrow-head{fill:#e8451e;stroke:none;opacity:0;animation:nrArrowFade 1.1s ease-out forwards}
+  .nr-arrow-label{fill:#e8451e;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;opacity:0;animation:nrArrowFade 1.1s ease-out forwards}
+  @keyframes nrArrowFade{0%{opacity:0}15%{opacity:1}70%{opacity:1}100%{opacity:0}}
+  @media(max-width:520px){.nr-controls .nr-help{margin-left:0}}
   .t-tri{cursor:pointer;transition:fill 0.1s}
   .t-tri.out{fill:transparent;stroke:var(--soft);stroke-width:0.5}
   .t-tri.in-mode{fill:var(--softer);stroke:var(--ink);stroke-width:0.8}
@@ -518,7 +532,7 @@
 <header>
   <div class="meta-row">
     <span>doc · <b>index.html</b></span>
-    <span>v0.19<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
+    <span>v0.20<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
   </div>
   <h1>mscth</h1>
   <p class="subtitle">modos<span class="slash">·</span>campos<span class="slash">·</span>cadências<span class="slash">·</span>timbre</p>
@@ -722,6 +736,14 @@
   </div>
   <div class="tonnetz-wrap">
     <svg class="tonnetz-svg" id="tonnetz" viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg" aria-label="Tonnetz"></svg>
+    <div class="nr-controls" id="nr-controls">
+      <span class="nr-label">neo-riemann</span>
+      <button data-nr="P" id="nr-P" disabled title="parallel — troca a 3ª (maior ↔ menor) na mesma fundamental">P</button>
+      <button data-nr="L" id="nr-L" disabled title="leading-tone — desliza a fundamental (ou 5ª) por semitom">L</button>
+      <button data-nr="R" id="nr-R" disabled title="relative — maior ↔ menor relativo">R</button>
+      <span class="nr-current" id="nr-current">clique um triângulo pra começar</span>
+      <button class="help-btn nr-help" data-help="nr" aria-label="ajuda neo-riemann">?</button>
+    </div>
     <div class="tonnetz-legend">
       <div><span class="glyph">▲</span>acorde maior</div>
       <div><span class="glyph">▽</span>acorde menor</div>
@@ -904,6 +926,25 @@ const CADENCES = [
 
 // MODAL CONTENT
 const MODAL_DOCS = {
+  'nr': { title:'transformações neo-riemann · P L R', body:`
+<p>as <b>transformações neo-riemann</b> (P, L, R) descrevem três operações que ligam acordes maiores e menores movendo apenas <em>uma nota</em>, por <em>um semitom</em> ou <em>um tom inteiro</em>. são <em>involutivas</em> — aplicar duas vezes volta ao começo.</p>
+
+<p><b>P · parallel</b> — troca a 3ª. <code>C → Cm</code>. mantém fundamental e 5ª; uma nota se move por semitom (E → E♭). é o que a teoria tradicional chama de "modo paralelo".</p>
+
+<p><b>L · leading-tone</b> — em acorde maior, desliza a fundamental um semitom abaixo virando a 7ª maior do novo acorde. <code>C (C-E-G) → Em (E-G-B)</code>: C vira B. em acorde menor, é a 5ª que sobe um semitom: <code>Cm (C-E♭-G) → A♭ (A♭-C-E♭)</code>.</p>
+
+<p><b>R · relative</b> — maior ↔ menor relativo. <code>C → Am</code>: a fundamental desce uma 3ª menor (uma nota se move por tom inteiro). mantém duas notas em comum.</p>
+
+<p><em>princípio da parsimônia</em> — cada transformação move o mínimo possível. esse "voice leading suave" é o que faz progressões neo-riemann soarem fluidas mesmo entre acordes distantes pelo círculo das quintas. <code>C → A♭</code> via dominantes seria estranho; via P-L-P chega lá em três passos quase imperceptíveis.</p>
+
+<p><em>história</em> — a ideia é de <b>hugo riemann</b> (1849-1919), formalizada por <b>david lewin</b> em <em>Generalized Musical Intervals and Transformations</em> (1987). <b>richard cohn</b> popularizou no séc. xxi com <em>Audacious Euphony</em> (Oxford, 2012), aplicando à harmonia cromática de wagner, schubert, brahms.</p>
+
+<p><em>ciclos</em> — alternar P-L gera o <b>hexatônico</b>: 6 acordes equidistantes (<code>C → Cm → A♭ → A♭m → E → Em → C</code>). alternar L-R gera o <b>octatônico</b>. esses ciclos são vocabulário de scriabin, debussy, bartók, e da abertura de <em>tristão e isolda</em>.</p>
+
+<p><em>cultura recente</em> — <b>jacob collier</b> trouxe essas ideias pro mainstream junto com o conceito de <em>harmonia negativa</em> (espelhar acordes pelo eixo entre 3M e 5J). os vídeos dele sobre L e R são gateway pra muita gente.</p>
+
+<p><em>geometria no tonnetz</em> — P, L e R são <b>reflexões através das três arestas</b> do triângulo do acorde atual. cada aresta liga duas notas comuns aos dois acordes; a transformação "espelha" a terceira nota pra outro lado. clique um triângulo, depois P, L ou R, e veja a animação.</p>
+` },
   'welcome': { title:'bem-vindo · começa por aqui', body:`
 <p class="welcome-intro"><b>mscth</b> é um laboratório audiovisual de teoria musical. você vai <em>ouvir, ver e tocar</em> os conceitos que normalmente só vivem em livros — modos, escalas, acordes, cadências, timbre. abre direto no navegador, sem instalar nada.</p>
 
@@ -2124,9 +2165,115 @@ function flashSvgNode(g, oldFill, oldStroke, oldText){
 // ============ TONNETZ ============
 const TON_DX = 56, TON_DY = TON_DX*0.866, TON_CX = 240, TON_CY = 180, TON_NODE_R = 14;
 let showSevenths = false; // toggle tríade ↔ tétrade no Tonnetz
+let nrCurrent = null; // último acorde clicado no Tonnetz: { col, row, type, name }
 function tonNote(col, row){ return ((tonic + 7*col + 4*row) % 12 + 12) % 12; }
 function tonPos(col, row){ return { x: TON_CX + col*TON_DX + row*TON_DX/2, y: TON_CY - row*TON_DY }; }
 function tonInBounds(x, y){ return x >= -10 && x <= 490 && y >= -10 && y <= 370; }
+function tonRootChrom(col, row, type){ return type === 'major' ? tonNote(col, row) : tonNote(col, row+1); }
+function tonTriPts(col, row, type){
+  if(type === 'major') return [tonPos(col, row), tonPos(col+1, row), tonPos(col, row+1)];
+  return [tonPos(col, row+1), tonPos(col+1, row+1), tonPos(col+1, row)];
+}
+
+// neo-Riemann transformations: P (parallel), L (leading-tone), R (relative)
+// retornam novo (col, row, type) — derivado geometricamente das arestas do triângulo
+const NR_TABLE = {
+  major: {
+    P: function(c,r){ return {col:c,   row:r-1, type:'minor'}; }, // root-fifth edge
+    L: function(c,r){ return {col:c,   row:r,   type:'minor'}; }, // third-fifth edge
+    R: function(c,r){ return {col:c-1, row:r,   type:'minor'}; }  // root-third edge
+  },
+  minor: {
+    P: function(c,r){ return {col:c,   row:r+1, type:'major'}; },
+    L: function(c,r){ return {col:c,   row:r,   type:'major'}; },
+    R: function(c,r){ return {col:c+1, row:r,   type:'major'}; }
+  }
+};
+
+function nrPlayTri(col, row, type){
+  const rootChrom = tonRootChrom(col, row, type);
+  const rootRel = ((rootChrom - tonic) % 12 + 12) % 12;
+  const third = (type === 'major') ? rootRel + 4 : rootRel + 3;
+  const fifth = rootRel + 7;
+  let chordIntervals = [rootRel, third, fifth];
+  let chordName = NOTES[rootChrom] + (type === 'minor' ? 'm' : '');
+  if(showSevenths){
+    const seventh = type === 'major' ? rootRel + 11 : rootRel + 10;
+    chordIntervals = [rootRel, third, fifth, seventh];
+    chordName = NOTES[rootChrom] + (type === 'minor' ? 'm7' : 'maj7');
+  }
+  playChord(chordIntervals, 0.02, 1.4, 0.13);
+  pianoEchoChord(chordIntervals, 1100);
+  const pts = tonTriPts(col, row, type);
+  const cx = pts.reduce(function(s,p){return s+p.x;}, 0)/3;
+  const cy = pts.reduce(function(s,p){return s+p.y;}, 0)/3;
+  const svg = document.getElementById('tonnetz');
+  const poly = svg && svg.querySelector('polygon[data-col="'+col+'"][data-row="'+row+'"][data-type="'+type+'"]');
+  if(poly){
+    poly.classList.add('playing');
+    setTimeout(function(){ poly.classList.remove('playing'); }, 700);
+  }
+  showTonnetzLabel(chordName, cx, cy);
+  logTonalNote(rootChrom, chordName);
+  nrCurrent = { col: col, row: row, type: type, name: chordName };
+  updateNRButtons();
+}
+
+function updateNRButtons(){
+  const enabled = nrCurrent !== null;
+  ['P','L','R'].forEach(function(t){
+    const b = document.getElementById('nr-'+t);
+    if(b) b.disabled = !enabled;
+  });
+  const cur = document.getElementById('nr-current');
+  if(cur){
+    cur.innerHTML = enabled ? 'atual: <b>'+nrCurrent.name+'</b>' : 'clique um triângulo pra começar';
+  }
+}
+
+function drawNRArrow(from, to, label){
+  const svg = document.getElementById('tonnetz');
+  if(!svg) return;
+  const ptsA = tonTriPts(from.col, from.row, from.type);
+  const ptsB = tonTriPts(to.col, to.row, to.type);
+  const a = { x: (ptsA[0].x+ptsA[1].x+ptsA[2].x)/3, y: (ptsA[0].y+ptsA[1].y+ptsA[2].y)/3 };
+  const b = { x: (ptsB[0].x+ptsB[1].x+ptsB[2].x)/3, y: (ptsB[0].y+ptsB[1].y+ptsB[2].y)/3 };
+  const dx = b.x - a.x, dy = b.y - a.y, len = Math.sqrt(dx*dx + dy*dy) || 1;
+  const ux = dx/len, uy = dy/len;
+  const trim = 8;
+  const x1 = a.x + ux*trim, y1 = a.y + uy*trim;
+  const x2 = b.x - ux*trim, y2 = b.y - uy*trim;
+  svg.querySelectorAll('.nr-arrow,.nr-arrow-head,.nr-arrow-label').forEach(function(el){ el.remove(); });
+  const line = svgEl('line', {
+    x1: x1.toFixed(1), y1: y1.toFixed(1), x2: x2.toFixed(1), y2: y2.toFixed(1),
+    'class': 'nr-arrow', 'stroke-linecap': 'round', 'pointer-events': 'none'
+  });
+  const ah = 7;
+  const px = -uy, py = ux;
+  const hx1 = x2 - ux*ah + px*ah*0.55, hy1 = y2 - uy*ah + py*ah*0.55;
+  const hx2 = x2 - ux*ah - px*ah*0.55, hy2 = y2 - uy*ah - py*ah*0.55;
+  const head = svgEl('polygon', {
+    points: x2.toFixed(1)+','+y2.toFixed(1)+' '+hx1.toFixed(1)+','+hy1.toFixed(1)+' '+hx2.toFixed(1)+','+hy2.toFixed(1),
+    'class': 'nr-arrow-head', 'pointer-events': 'none'
+  });
+  const mx = (x1+x2)/2 + px*10, my = (y1+y2)/2 + py*10;
+  const labelEl = svgEl('text', {
+    x: mx.toFixed(1), y: my.toFixed(1), 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+    'class': 'nr-arrow-label', 'pointer-events': 'none'
+  });
+  labelEl.textContent = label;
+  svg.appendChild(line);
+  svg.appendChild(head);
+  svg.appendChild(labelEl);
+  setTimeout(function(){ line.remove(); head.remove(); labelEl.remove(); }, 1200);
+}
+
+function applyNR(t){
+  if(!nrCurrent) return;
+  const next = NR_TABLE[nrCurrent.type][t](nrCurrent.col, nrCurrent.row);
+  drawNRArrow(nrCurrent, next, t);
+  nrPlayTri(next.col, next.row, next.type);
+}
 
 // label flutuante exibida ao tocar um triângulo
 function showTonnetzLabel(text, cx, cy){
@@ -2163,6 +2310,7 @@ function showTonnetzLabel(text, cx, cy){
 function renderTonnetz(){
   const svg = document.getElementById('tonnetz');
   svg.innerHTML = '';
+  if(typeof nrCurrent !== 'undefined'){ nrCurrent = null; if(typeof updateNRButtons === 'function') updateNRButtons(); }
   const mode = currentMode();
   const charChrom = mode.char !== null ? (tonic + mode.intervals[mode.char]) % 12 : null;
   const triLayer = svgEl('g', {});
@@ -2193,30 +2341,9 @@ function renderTonnetz(){
         poly.setAttribute('class', cls);
         poly.setAttribute('data-root', rootChrom);
         poly.setAttribute('data-type', type);
-        poly.addEventListener('click', function(){
-          const rootRel = ((rootChrom - tonic) % 12 + 12) % 12;
-          const third = (type === 'major') ? rootRel + 4 : rootRel + 3;
-          const fifth = rootRel + 7;
-          // Decidir intervalos baseado no toggle de tétrade
-          let chordIntervals = [rootRel, third, fifth];
-          let chordName = NOTES[rootChrom] + (type === 'minor' ? 'm' : '');
-          if(showSevenths){
-            // 7ª padrão por tipo: maior → 7M (maj7), menor → 7m (m7)
-            const seventh = type === 'major' ? rootRel + 11 : rootRel + 10;
-            chordIntervals = [rootRel, third, fifth, seventh];
-            chordName = NOTES[rootChrom] + (type === 'minor' ? 'm7' : 'maj7');
-          }
-          playChord(chordIntervals, 0.02, 1.4, 0.13);
-          poly.classList.add('playing');
-          setTimeout(function(){ poly.classList.remove('playing'); }, 700);
-          pianoEchoChord(chordIntervals, 1100);
-          // calcular centróide e exibir label
-          const cx = pts.reduce(function(s,p){return s+p.x;},0)/3;
-          const cy = pts.reduce(function(s,p){return s+p.y;},0)/3;
-          showTonnetzLabel(chordName, cx, cy);
-          // Atualizar log de intervalos cromáticos com a fundamental tocada
-          logTonalNote(rootChrom, chordName);
-        });
+        poly.setAttribute('data-col', col);
+        poly.setAttribute('data-row', row);
+        poly.addEventListener('click', function(){ nrPlayTri(col, row, type); });
         triLayer.appendChild(poly);
 
         // OVERLAY DA 7ª — desenhar quando showSevenths estiver ativo
@@ -3835,6 +3962,12 @@ function maybeShowWelcome(){
     markOnboarded();
   }
 }
+
+// neo-Riemann button listeners
+['P','L','R'].forEach(function(t){
+  const b = document.getElementById('nr-'+t);
+  if(b) b.addEventListener('click', function(){ applyNR(t); });
+});
 
 // ============ LEVEL BUTTONS ============
 document.querySelectorAll('.level-btn').forEach(function(btn){
