@@ -590,7 +590,7 @@
 <header>
   <div class="meta-row">
     <span>doc · <b>index.html</b></span>
-    <span>v0.23<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
+    <span>v0.23.1<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
   </div>
   <h1>mscth</h1>
   <p class="subtitle">modos<span class="slash">·</span>campos<span class="slash">·</span>cadências<span class="slash">·</span>timbre</p>
@@ -660,7 +660,7 @@
   </div>
   <div class="notation-wrap" id="notation-wrap" style="display:none">
     <div id="scale-notation"></div>
-    <div class="notation-hint">notação simplificada · ascendente · 1 oitava · clave de sol</div>
+    <div class="notation-hint">escala ascendente · 1 oitava · clave de sol · <span style="color:var(--accent-deep);font-weight:700">tônica</span> · <span style="color:var(--accent);font-weight:700">nota característica</span></div>
   </div>
 </section>
 
@@ -4123,29 +4123,60 @@ function renderScaleNotation(){
   }
   div.innerHTML = '';
   const VF = Vex.Flow;
-  const intervals = currentMode().intervals;
+  const mode = currentMode();
+  const intervals = mode.intervals;
+  const charChrom = mode.char !== null && mode.char !== undefined
+    ? (tonic + intervals[mode.char]) % 12 : null;
   const noteCount = intervals.length + 1;
-  const width = Math.max(360, 90 + noteCount * 42);
+  const width = Math.max(360, 90 + noteCount * 48);
   try {
-    const factory = new VF.Factory({ renderer: { elementId: 'scale-notation', width: width, height: 130 } });
+    const factory = new VF.Factory({ renderer: { elementId: 'scale-notation', width: width, height: 150 } });
     const score = factory.EasyScore();
     const system = factory.System({ width: width - 8 });
+    // gerar string EasyScore pras notas + lista de metadados pra colorir/anotar
     const noteStrs = [];
+    const meta = []; // {chrom, label, isTonic, isChar}
     intervals.forEach(function(iv){
       const abs = tonic + iv;
       const chrom = abs % 12;
       const oct = 4 + Math.floor(abs / 12);
-      noteStrs.push(spellNoteForVF(chrom) + oct + '/q');
+      const sp = spellNoteForVF(chrom);
+      noteStrs.push(sp + oct + '/q');
+      meta.push({ chrom: chrom, label: sp, isTonic: chrom === tonic, isChar: charChrom !== null && chrom === charChrom });
     });
     // oitava acima da tônica
     const octAbs = tonic + 12;
     const octOct = 4 + Math.floor(octAbs / 12);
-    noteStrs.push(spellNoteForVF(tonic) + octOct + '/q');
+    const octSp = spellNoteForVF(tonic);
+    noteStrs.push(octSp + octOct + '/q');
+    meta.push({ chrom: tonic, label: octSp, isTonic: true, isChar: false });
+
     const noteString = noteStrs.join(', ');
     const tsig = noteCount + '/4';
+    const notes = score.notes(noteString);
+
+    // aplicar cor + legenda em cada nota
+    const ACCENT_DEEP = '#c93a16';
+    const ACCENT = '#e8451e';
+    notes.forEach(function(note, i){
+      const m = meta[i];
+      if(m.isTonic){
+        note.setStyle({ fillStyle: ACCENT_DEEP, strokeStyle: ACCENT_DEEP });
+      } else if(m.isChar){
+        note.setStyle({ fillStyle: ACCENT, strokeStyle: ACCENT });
+      }
+      const ann = new VF.Annotation(m.label)
+        .setFont('JetBrains Mono', 11, m.isTonic || m.isChar ? 'bold' : 'normal')
+        .setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM);
+      if(m.isTonic) ann.setStyle({ fillStyle: ACCENT_DEEP, strokeStyle: ACCENT_DEEP });
+      else if(m.isChar) ann.setStyle({ fillStyle: ACCENT, strokeStyle: ACCENT });
+      note.addModifier(ann, 0);
+    });
+
     system.addStave({
-      voices: [score.voice(score.notes(noteString), { time: tsig })]
-    }).addClef('treble').addTimeSignature(tsig);
+      voices: [score.voice(notes, { time: tsig })]
+    }).addClef('treble');
+    // sem addTimeSignature visual — pedagogicamente irrelevante na escala didática
     factory.draw();
   } catch(e){
     div.innerHTML = '<div class="notation-error">erro ao renderizar pentagrama: ' + (e.message || e) + '</div>';

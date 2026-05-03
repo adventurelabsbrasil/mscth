@@ -2,6 +2,20 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.23.1] — 2026-05-03
+
+### added
+- **Tônica em laranja-escuro** (`#c93a16`) e **nota característica em laranja** (`#e8451e`) no pentagrama — coerência visual com o resto do app, onde a tônica recebe o accent-deep e a nota característica recebe o accent regular em todas as outras seções.
+- **Legenda do nome da nota** abaixo de cada figura no pentagrama (ex: D, E, F#, B♭) — permite que quem ainda não lê fluentemente notação consiga relacionar posição na pauta com nome da nota. Spelling segue a tonalidade (sharps default, flats em F/Bb/Eb/Ab/Db). Tônica e nota característica recebem label em **bold** + cor.
+
+### changed
+- Removida a *time signature* visual (`8/4`, `7/4` etc) do pentagrama — pedagogicamente irrelevante na escala didática e poluía visualmente. Voz interna ainda usa o time pra acomodar N notas.
+- Hint do pentagrama atualizado: `escala ascendente · 1 oitava · clave de sol · tônica · nota característica` com legendinha colorida embutida explicando o código de cores.
+- Versão exibida no header: `v0.23` → `v0.23.1`.
+
+### rationale
+Feedback do usuário foi certeiro em três pontos: (1) "notação simplificada" era redundante — pentagrama JÁ É a notação; (2) faltava o sistema de cores que o resto do app usa pra hierarquizar tônica vs característica vs demais; (3) sem nome da nota como legenda, o pentagrama virava decoração pra quem ainda não lê notação fluente. Os três ajustes transformam o pentagrama de "demonstração técnica" em ferramenta pedagógica integrada com o vocabulário visual do app.
+
 ## [0.23.0] — 2026-05-03
 
 ### added
