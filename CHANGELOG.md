@@ -2,6 +2,21 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.19.0] — 2026-05-02
+
+### added
+- **Modal de boas-vindas no primeiro acesso** — overlay automático na primeira visita explicando o que é o `mscth`, como ativar áudio, como interagir, como usar o `?` em cada seção, e como funciona o marcador de progresso. Usa `localStorage.mscth.onboarded.v1` pra mostrar uma única vez.
+- **Tour da jornada pedagógica** — bloco com as 10 seções em ordem (tônica → tonnetz) dentro do modal de boas-vindas, com sugestão de fluxo pra iniciantes vs quem já sabe teoria.
+- **Botão `?` no header** — ao lado da versão, reabre o modal de boas-vindas a qualquer momento (caso o usuário queira revisitar a introdução).
+- Estilos `.welcome-cards`, `.welcome-journey`, `.welcome-cta`, `.meta-intro-btn` — componentes específicos do onboarding, integrados ao sistema de modais existente.
+
+### changed
+- Versão exibida no header: `v0.18` → `v0.19`.
+- `MODAL_DOCS` ganha entrada `welcome` no topo do objeto, reutilizando o sistema de `openModal/closeModal` existente.
+
+### rationale
+A pergunta implícita era: "o que faz uma pessoa que abre o app pela primeira vez entender o que está vendo?" — sem onboarding, o usuário caía direto em 10 seções densas sem contexto. A solução escolhida (modal único de boas-vindas + flag em `localStorage`) preserva o espírito single-file do projeto sem fragmentar em landing page separada. O botão `?` no header garante reentrada quando o usuário quer revisitar a explicação.
+
 ## [0.18.0] — 2026-05-02
 
 ### added

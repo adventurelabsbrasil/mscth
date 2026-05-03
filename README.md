@@ -4,7 +4,7 @@
 
 `mscth` é um laboratório audiovisual de teoria musical. Single-file HTML com Web Audio API, sem build, sem dependências em runtime — abre no navegador e funciona. Pensado como ferramenta de exploração para músicos, estudantes e curiosos: ouvir, ver e manipular conceitos que normalmente só vivem em livros.
 
-**Live:** `[GitHub Pages URL após deploy]`
+**Live:** https://adventurelabsbrasil.github.io/mscth/
 
 ---
 
