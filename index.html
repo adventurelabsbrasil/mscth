@@ -251,6 +251,11 @@
   .drawer .tuning-row{margin-top:0}
   .drawer .tuning-row button{padding:9px 6px;font-size:10px}
   .drawer .tuning-row .tuning-label{display:none}
+  .share-block{margin-top:24px;padding-top:18px;border-top:1px solid var(--soft)}
+  .share-btn{font-family:inherit;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;background:var(--ink);color:var(--bg);border:1px solid var(--ink);padding:11px 14px;cursor:pointer;border-radius:0;width:100%;transition:background 0.18s}
+  .share-btn:hover{background:var(--accent-deep);border-color:var(--accent-deep)}
+  .share-btn.copied{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+  .share-hint{font-size:10px;color:var(--mute);line-height:1.5;margin-top:8px;letter-spacing:0.02em}
 
   /* MODAL */
   .modal-backdrop{position:fixed;inset:0;background:rgba(10,10,10,0.5);opacity:0;pointer-events:none;transition:opacity 0.18s;z-index:40}
@@ -557,7 +562,7 @@
 <header>
   <div class="meta-row">
     <span>doc · <b>index.html</b></span>
-    <span>v0.21<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
+    <span>v0.22<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
   </div>
   <h1>mscth</h1>
   <p class="subtitle">modos<span class="slash">·</span>campos<span class="slash">·</span>cadências<span class="slash">·</span>timbre</p>
@@ -879,6 +884,11 @@
         <button data-freq="off" class="active">off</button>
         <button data-freq="on">mostrar Hz</button>
       </div>
+    </div>
+    <div class="drawer-block share-block">
+      <div class="drawer-label">compartilhar configuração</div>
+      <button id="share-btn" class="share-btn">copiar link desta configuração</button>
+      <div class="share-hint">o link guarda tônica, modo, voicing, inversão e temperamento</div>
     </div>
   </div>
 </aside>
@@ -3786,6 +3796,65 @@ function pianoEchoChord(intervals, durationMs){
 }
 
 // ============ RENDER ALL ============
+// ============ URL HASH STATE (deep linking) ============
+// formato: #t=C&m=dorian&v=triad&i=2&u=just
+// permite compartilhar uma configuração específica via link
+function readHash(){
+  if(!window.location.hash || window.location.hash.length < 2) return null;
+  const params = {};
+  window.location.hash.slice(1).split('&').forEach(function(p){
+    const eq = p.indexOf('=');
+    if(eq < 0) return;
+    const k = p.slice(0, eq);
+    const v = decodeURIComponent(p.slice(eq+1));
+    if(k) params[k] = v;
+  });
+  return params;
+}
+function applyHashToState(){
+  const p = readHash();
+  if(!p) return false;
+  let touched = false;
+  if(p.t !== undefined && p.t !== ''){
+    let idx = -1;
+    if(/^\d+$/.test(p.t)) idx = parseInt(p.t,10) % 12;
+    else { const ni = NOTES.indexOf(p.t); if(ni >= 0) idx = ni; }
+    if(idx >= 0){ tonic = idx; touched = true; }
+  }
+  if(p.m){
+    const mi = MODES.findIndex(function(mm){ return mm.en === p.m; });
+    if(mi >= 0){ modeIdx = mi; categoryId = MODES[mi].cat; touched = true; }
+  }
+  if(p.v && ['triad','seventh','ninth'].indexOf(p.v) >= 0){ voicing = p.v; touched = true; }
+  if(p.i !== undefined){
+    const i = parseInt(p.i,10);
+    if(!isNaN(i) && i >= 0 && i <= 4){ inversion = i; touched = true; }
+  }
+  if(p.u === 'j' || p.u === 'just'){ tuningMode = 'just'; touched = true; }
+  else if(p.u === 'e' || p.u === 'equal'){ tuningMode = 'equal'; touched = true; }
+  return touched;
+}
+let _hashUpdateLock = false;
+function writeHashFromState(){
+  if(_hashUpdateLock) return;
+  const parts = [];
+  parts.push('t=' + NOTES[tonic]);
+  if(MODES[modeIdx] && MODES[modeIdx].en) parts.push('m=' + MODES[modeIdx].en);
+  if(voicing && voicing !== 'triad') parts.push('v=' + voicing);
+  if(inversion > 0) parts.push('i=' + inversion);
+  if(tuningMode === 'just') parts.push('u=j');
+  const newHash = '#' + parts.join('&');
+  if(window.location.hash !== newHash){
+    try{ history.replaceState(null, '', newHash); }catch(e){}
+  }
+}
+window.addEventListener('hashchange', function(){
+  // se o hash mudou (usuário colou link, voltou no histórico, etc), re-aplica
+  _hashUpdateLock = true;
+  if(applyHashToState()) renderAll();
+  _hashUpdateLock = false;
+});
+
 function renderAll(){
   renderTonics();
   renderCatTabs();
@@ -3806,6 +3875,7 @@ function renderAll(){
   buildKeyboard();
   applyColorTints();
   syncCrossSectionHighlights();
+  writeHashFromState();
 }
 
 // ============ ACTIONS — scale & cadence ============
@@ -3994,6 +4064,34 @@ function maybeShowWelcome(){
   if(b) b.addEventListener('click', function(){ applyNR(t); });
 });
 
+// share button — copy current URL (with hash) to clipboard
+(function(){
+  const btn = document.getElementById('share-btn');
+  if(!btn) return;
+  btn.addEventListener('click', function(){
+    writeHashFromState(); // garante que o hash está sincronizado
+    const url = window.location.href;
+    const fallback = function(){
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta);
+    };
+    const showCopied = function(){
+      const original = btn.textContent;
+      btn.textContent = 'copiado ✓';
+      btn.classList.add('copied');
+      setTimeout(function(){ btn.textContent = original; btn.classList.remove('copied'); }, 1600);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(showCopied).catch(function(){ fallback(); showCopied(); });
+    } else {
+      fallback(); showCopied();
+    }
+  });
+})();
+
 // ============ LEVEL BUTTONS ============
 document.querySelectorAll('.level-btn').forEach(function(btn){
   btn.addEventListener('click', function(e){
@@ -4012,6 +4110,7 @@ document.addEventListener('keydown', function(e){
 });
 
 loadLevels();
+applyHashToState();
 renderAll();
 applyLevels();
 maybeShowWelcome();

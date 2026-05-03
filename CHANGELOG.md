@@ -2,6 +2,24 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.22.0] — 2026-05-03
+
+### added
+- **URL hash state (deep linking)** — o estado essencial do app (tônica, modo, voicing, inversão, temperamento) agora vive na URL via fragment `#`. Compartilhar `https://adventurelabsbrasil.github.io/mscth/#t=D&m=dorian&v=ninth&i=2&u=just` abre direto em D dórico, voicing de 9ª, 2ª inversão, justa entonação. Antes, todo link abria sempre em C jônio padrão.
+- **Botão "copiar link desta configuração"** no rodapé do drawer (`≡ menu`) — copia a URL atual (com hash sincronizado) pro clipboard. Feedback visual `copiado ✓` por 1.6s. Funciona via `navigator.clipboard.writeText` com fallback `execCommand('copy')` pra navegadores antigos.
+- **Listener `hashchange`** — se o usuário colar uma nova URL com hash diferente (ou usar voltar/avançar do browser entre estados), o app re-aplica o estado e re-renderiza automaticamente.
+- Funções `readHash()`, `applyHashToState()`, `writeHashFromState()` — leem/aplicam/escrevem o estado em `window.location.hash` usando `history.replaceState` (não polui histórico do navegador).
+
+### changed
+- `renderAll()` agora chama `writeHashFromState()` no fim — todo update de estado mantém URL sincronizada automaticamente.
+- Init order: `applyHashToState()` roda **antes** do primeiro `renderAll()`, pra que o estado vindo da URL seja respeitado já no primeiro paint.
+- Versão exibida no header: `v0.21` → `v0.22`.
+
+### rationale
+Combina perfeitamente com a feature anterior (Open Graph): o link compartilhado em rede social agora pode abrir direto numa configuração específica + capa rica. "Ouve esse Cmaj9 em lídio: [link]" passa de utopia pra ação de um clique. Educacionalmente, professores e alunos podem trocar links como exemplos auto-suficientes. Pedagogicamente, é a diferença entre apontar pro app e apontar pro <em>conceito</em> dentro do app.
+
+A escolha de hash em vez de query string preserva a experiência de SPA estática (GitHub Pages) sem reload, e mantém compatibilidade total: URLs sem hash continuam funcionando exatamente como antes (C jônio padrão).
+
 ## [0.21.0] — 2026-05-03
 
 ### added
