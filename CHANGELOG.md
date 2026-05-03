@@ -2,6 +2,26 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.23.0] — 2026-05-03
+
+### added
+- **Notação musical (VexFlow)** — botão "ver pentagrama" na seção Escala renderiza a escala atual em clave de sol como notação tradicional, ascendente em uma oitava. Time signature dinâmica (`N/4` onde N = quantidade de notas, pra acomodar pentatônicas, hexafônicas e octatônicas). Spelling de acidentes via sharps por padrão e flats pra tonalidades F/Bb/Eb/Ab/Db. Estado persistido em `localStorage.mscth.notation` — se ligar uma vez, fica ligado em retornos.
+- **Desafio do dia (daily challenge)** — banner discreto abaixo da barra de progresso com uma combinação aleatória *determinística* de tônica + modo + cadência calculada a partir da data UTC do dia. Mesma data = mesmo desafio pra qualquer pessoa que abra o app. Botão "aplicar →" troca o estado pra a configuração sugerida e rola até a seção de cadências. Botão `×` dispensa pelo restante do dia (`localStorage.mscth.daily.dismissed.{seed}`).
+- VexFlow 4.2.5 carregado via CDN com `defer`, sem bloquear o paint inicial. Função `renderScaleNotation()` faz polling (250ms) caso o script ainda não tenha terminado de carregar.
+- Helper `spellNoteForVF(chrom)` — spelling enharmônico simplificado baseado no contexto da tônica.
+- Função `dailyChallenge()` — RNG determinístico (LCG simples) sobre seed = `floor(Date.now() / 86400000)`, gerando 3 índices independentes (tônica, modo, cadência).
+- CSS dedicado pra `.notation-toggle`, `.notation-wrap`, `.daily-banner` (com responsivo mobile).
+
+### changed
+- `renderAll()` agora chama `renderScaleNotation()` antes do `writeHashFromState()` — pentagrama fica em sync com qualquer mudança de estado.
+- Init order: `renderDailyBanner()` roda após o primeiro `renderAll()` e antes do welcome modal.
+- Versão exibida no header: `v0.22` → `v0.23`.
+
+### rationale
+Educadores e alunos de música têm a notação tradicional como vocabulário primário — sem pentagrama, o app fica útil mas com pegada "tech demo" em vez de "ferramenta pedagógica". A escolha de carregar VexFlow via CDN com `defer` quebra parcialmente o princípio "zero dependências em runtime", mas o trade-off é claro: ~250KB bem cacheados em troca de relevância pedagógica multiplicada pra o público-alvo. Se o usuário não abrir o pentagrama, o custo é praticamente zero (load assíncrono, não bloqueia).
+
+O desafio do dia resolve o problema de retenção: hoje, depois de explorar o app uma ou duas vezes, não há gancho pra voltar. Com um prompt diário determinístico, o usuário tem motivo pra abrir de novo amanhã ("o que vai cair hoje?"). Determinístico significa: um professor pode dizer "abra o `mscth` hoje e me mostre o desafio do dia" sabendo que o aluno verá o mesmo prompt — isso transforma o app em rotina compartilhada.
+
 ## [0.22.0] — 2026-05-03
 
 ### added

@@ -32,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
 <style>
   :root{
     --bg:#fafaf7;
@@ -256,6 +257,26 @@
   .share-btn:hover{background:var(--accent-deep);border-color:var(--accent-deep)}
   .share-btn.copied{background:var(--accent);border-color:var(--accent);color:var(--bg)}
   .share-hint{font-size:10px;color:var(--mute);line-height:1.5;margin-top:8px;letter-spacing:0.02em}
+  /* PENTAGRAMA · VEXFLOW */
+  .notation-toggle{font-family:inherit;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;background:transparent;color:var(--mute);border:1px solid var(--soft);padding:9px 14px;cursor:pointer;border-radius:0;margin-left:6px}
+  .notation-toggle:hover{color:var(--ink);border-color:var(--ink)}
+  .notation-toggle.active{color:var(--ink);border-color:var(--ink);background:var(--softer)}
+  .notation-wrap{margin-top:14px;padding:10px 8px 6px;border:1px solid var(--soft);background:#fff;overflow-x:auto}
+  .notation-wrap #scale-notation{display:flex;justify-content:center;min-height:120px;align-items:center}
+  .notation-wrap #scale-notation svg{display:block;max-width:100%;height:auto}
+  .notation-hint{font-size:10px;color:var(--mute);text-align:center;margin-top:6px;letter-spacing:0.04em}
+  .notation-loading,.notation-error{padding:24px;text-align:center;color:var(--mute);font-size:11px;letter-spacing:0.04em}
+  .notation-error{color:var(--accent-deep)}
+  /* DAILY CHALLENGE BANNER */
+  .daily-banner{display:flex;align-items:center;gap:10px;padding:9px 18px;border-bottom:1px solid var(--soft);background:var(--softer);font-size:11.5px;letter-spacing:-0.005em}
+  .daily-banner .daily-label{font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent-deep);flex-shrink:0}
+  .daily-banner .daily-prompt{flex:1;color:var(--ink);font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .daily-banner .daily-prompt b{font-weight:700}
+  .daily-banner .daily-apply{font-family:inherit;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;background:transparent;color:var(--accent-deep);border:1px solid var(--accent-deep);padding:6px 11px;cursor:pointer;border-radius:0;flex-shrink:0;transition:background 0.15s}
+  .daily-banner .daily-apply:hover{background:var(--accent-deep);color:var(--bg)}
+  .daily-banner .daily-dismiss{font-family:inherit;font-size:16px;background:transparent;border:none;color:var(--mute);cursor:pointer;padding:0 4px;line-height:1;font-weight:400;flex-shrink:0}
+  .daily-banner .daily-dismiss:hover{color:var(--ink)}
+  @media(max-width:520px){.daily-banner{flex-wrap:wrap;padding:8px 12px;gap:8px}.daily-banner .daily-prompt{flex-basis:100%;white-space:normal;order:3}.daily-banner .daily-apply{order:4}.daily-banner .daily-dismiss{margin-left:auto;order:2}}
 
   /* MODAL */
   .modal-backdrop{position:fixed;inset:0;background:rgba(10,10,10,0.5);opacity:0;pointer-events:none;transition:opacity 0.18s;z-index:40}
@@ -559,10 +580,17 @@
   <button class="pb-reset" id="pb-reset" title="zerar progresso">reset</button>
 </div>
 
+<div class="daily-banner" id="daily-banner" style="display:none">
+  <span class="daily-label">desafio do dia</span>
+  <span class="daily-prompt" id="daily-prompt"></span>
+  <button class="daily-apply" id="daily-apply">aplicar →</button>
+  <button class="daily-dismiss" id="daily-dismiss" aria-label="dispensar desafio do dia">×</button>
+</div>
+
 <header>
   <div class="meta-row">
     <span>doc · <b>index.html</b></span>
-    <span>v0.22<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
+    <span>v0.23<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
   </div>
   <h1>mscth</h1>
   <p class="subtitle">modos<span class="slash">·</span>campos<span class="slash">·</span>cadências<span class="slash">·</span>timbre</p>
@@ -628,6 +656,11 @@
   </div>
   <div class="actions">
     <button id="play-scale">play scale ↑</button>
+    <button id="notation-toggle" class="notation-toggle">ver pentagrama</button>
+  </div>
+  <div class="notation-wrap" id="notation-wrap" style="display:none">
+    <div id="scale-notation"></div>
+    <div class="notation-hint">notação simplificada · ascendente · 1 oitava · clave de sol</div>
   </div>
 </section>
 
@@ -3875,6 +3908,7 @@ function renderAll(){
   buildKeyboard();
   applyColorTints();
   syncCrossSectionHighlights();
+  renderScaleNotation();
   writeHashFromState();
 }
 
@@ -4064,6 +4098,127 @@ function maybeShowWelcome(){
   if(b) b.addEventListener('click', function(){ applyNR(t); });
 });
 
+// ============ NOTAÇÃO MUSICAL · VEXFLOW ============
+let showNotation = false;
+try{ if(localStorage.getItem('mscth.notation') === '1') showNotation = true; }catch(e){}
+
+function spellNoteForVF(chrom){
+  const useFlats = [5,10,3,8,1].indexOf(tonic) >= 0;
+  const SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+  return (useFlats ? FLAT : SHARP)[chrom];
+}
+
+function renderScaleNotation(){
+  const wrap = document.getElementById('notation-wrap');
+  const div = document.getElementById('scale-notation');
+  if(!wrap || !div) return;
+  if(!showNotation){ wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  // VexFlow ainda carregando? tenta de novo em breve
+  if(typeof Vex === 'undefined' || !Vex.Flow){
+    div.innerHTML = '<div class="notation-loading">carregando notação...</div>';
+    setTimeout(renderScaleNotation, 250);
+    return;
+  }
+  div.innerHTML = '';
+  const VF = Vex.Flow;
+  const intervals = currentMode().intervals;
+  const noteCount = intervals.length + 1;
+  const width = Math.max(360, 90 + noteCount * 42);
+  try {
+    const factory = new VF.Factory({ renderer: { elementId: 'scale-notation', width: width, height: 130 } });
+    const score = factory.EasyScore();
+    const system = factory.System({ width: width - 8 });
+    const noteStrs = [];
+    intervals.forEach(function(iv){
+      const abs = tonic + iv;
+      const chrom = abs % 12;
+      const oct = 4 + Math.floor(abs / 12);
+      noteStrs.push(spellNoteForVF(chrom) + oct + '/q');
+    });
+    // oitava acima da tônica
+    const octAbs = tonic + 12;
+    const octOct = 4 + Math.floor(octAbs / 12);
+    noteStrs.push(spellNoteForVF(tonic) + octOct + '/q');
+    const noteString = noteStrs.join(', ');
+    const tsig = noteCount + '/4';
+    system.addStave({
+      voices: [score.voice(score.notes(noteString), { time: tsig })]
+    }).addClef('treble').addTimeSignature(tsig);
+    factory.draw();
+  } catch(e){
+    div.innerHTML = '<div class="notation-error">erro ao renderizar pentagrama: ' + (e.message || e) + '</div>';
+  }
+}
+
+(function(){
+  const btn = document.getElementById('notation-toggle');
+  if(!btn) return;
+  if(showNotation){ btn.textContent = 'ocultar pentagrama'; btn.classList.add('active'); }
+  btn.addEventListener('click', function(){
+    showNotation = !showNotation;
+    btn.textContent = showNotation ? 'ocultar pentagrama' : 'ver pentagrama';
+    btn.classList.toggle('active', showNotation);
+    try{ localStorage.setItem('mscth.notation', showNotation ? '1' : '0'); }catch(e){}
+    renderScaleNotation();
+  });
+})();
+
+// ============ DAILY CHALLENGE ============
+function dailyChallenge(){
+  const today = new Date();
+  const seed = Math.floor(today.getTime() / 86400000); // dias desde epoch (UTC)
+  const rng = function(s){ return ((Math.abs(s) * 9301 + 49297) % 233280) / 233280; };
+  return {
+    seed: seed,
+    tonic: Math.floor(rng(seed * 31) * 12),
+    mode: Math.floor(rng(seed * 31 + 7) * MODES.length),
+    cadence: Math.floor(rng(seed * 31 + 13) * CADENCES.length)
+  };
+}
+
+function renderDailyBanner(){
+  const banner = document.getElementById('daily-banner');
+  if(!banner) return;
+  const c = dailyChallenge();
+  let dismissed = false;
+  try{ dismissed = localStorage.getItem('mscth.daily.dismissed.' + c.seed) === '1'; }catch(e){}
+  if(dismissed){ banner.style.display = 'none'; return; }
+  const m = MODES[c.mode];
+  const cad = CADENCES[c.cadence];
+  const promptEl = document.getElementById('daily-prompt');
+  if(promptEl){
+    promptEl.innerHTML = '<b>' + NOTES[c.tonic] + ' ' + m.pt + '</b> · cadência ' + cad.label + ' <b>' + cad.rom + '</b>';
+  }
+  banner.style.display = '';
+}
+
+(function(){
+  const apply = document.getElementById('daily-apply');
+  const dismiss = document.getElementById('daily-dismiss');
+  if(apply){
+    apply.addEventListener('click', function(){
+      const c = dailyChallenge();
+      tonic = c.tonic;
+      modeIdx = c.mode;
+      categoryId = MODES[c.mode].cat;
+      renderAll();
+      // scroll pra cadências (se a seção existir)
+      const sec = document.querySelector('section[data-section-id="cadence"], section[data-section-id="cadences"]');
+      if(sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+  if(dismiss){
+    dismiss.addEventListener('click', function(){
+      const c = dailyChallenge();
+      try{ localStorage.setItem('mscth.daily.dismissed.' + c.seed, '1'); }catch(e){}
+      const banner = document.getElementById('daily-banner');
+      if(banner) banner.style.display = 'none';
+    });
+  }
+})();
+
 // share button — copy current URL (with hash) to clipboard
 (function(){
   const btn = document.getElementById('share-btn');
@@ -4113,6 +4268,7 @@ loadLevels();
 applyHashToState();
 renderAll();
 applyLevels();
+renderDailyBanner();
 maybeShowWelcome();
 </script>
 </body>
