@@ -189,7 +189,7 @@
   .rp-now{margin-top:10px;width:100%;min-height:18px;text-align:center;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:0.02em}
   .rp-now .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
   /* lissajous */
-  #lj-tabs button{text-transform:none;letter-spacing:0.04em}
+  #lj-tabs button,#lj-tabs2 button{text-transform:none;letter-spacing:0.04em}
   .lj-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
   .lj-canvas{width:100%;max-width:360px;aspect-ratio:1;display:block}
   .lj-info{margin-top:10px;width:100%;text-align:center;font-size:12px;font-weight:600;color:var(--ink);line-height:1.5}
@@ -913,6 +913,7 @@
   </div>
   <p class="sec-desc">duas notas soando juntas, uma no eixo horizontal e outra no vertical: o ponto desenha a <em>forma do intervalo</em>. razões simples (oitava 2:1, quinta 3:2) fecham figuras limpas; dissonâncias viram novelos. no temperamento igual a quinta não é exatamente 3:2 — a figura <em>gira</em>, e a velocidade do giro é o batimento que você ouve. troque para afinação justa e ela para. segure 2 notas no piano de baixo pra ver o intervalo que você está tocando.</p>
   <div class="cat-tabs" id="lj-tabs"></div>
+  <div class="cat-tabs" id="lj-tabs2" title="intervalos compostos: simples + oitava"></div>
   <div class="lj-wrap">
     <canvas class="lj-canvas" id="lj-canvas" width="720" height="720" aria-label="Figura de Lissajous do intervalo"></canvas>
     <div class="lj-info" id="lj-info"></div>
@@ -1365,6 +1366,7 @@ const MODAL_DOCS = {
 <p><b>razão simples = figura fechada</b> — se as frequências estão numa razão de números pequenos, o desenho se fecha e se repete: uníssono 1:1 é uma linha/elipse, oitava 2:1 um oito, quinta 3:2 um laço de três lóbulos, quarta 4:3, terça maior 5:4… quanto maiores os números, mais complexa a figura — e mais "tensa" a consonância. é a mesma hierarquia da série harmônica (seção 10), agora vista.</p>
 <p><b>batimento = figura girando</b> — no <em>temperamento igual</em> nenhum intervalo além da oitava é uma razão exata: a quinta temperada é 1,4983, não 1,5. a diferença faz a figura <em>girar devagar</em>, no ritmo do <b>batimento</b> (a ondulação de volume que se ouve no acorde): o painel mostra o batimento, |q·f₂ − p·f₁|, e quanto tempo a figura leva pra completar um giro (q batimentos). troque para <em>afinação justa</em> e a figura congela — o batimento some.</p>
 <p><b>do teclado</b> — segure duas notas no piano de baixo (ou no círculo) e a figura mostra o intervalo real que você está tocando, oitava incluída.</p>
+<p><b>compostos</b> — a segunda linha traz os intervalos maiores que a oitava: 9ª, 10ª, 11ª, 12ª, 13ª, 15ª. são as <em>extensões</em> dos acordes (add9, m11, 13). a razão justa de um composto é a do intervalo simples vezes 2: a 9ª maior é 9:4, a 11ª justa 8:3, a 13ª maior 10:3. a figura fica mais rendada (mais voltas) mas, se a razão é exata, continua fechada.</p>
 ` },
   'progress': { title:'progresso · ordem de aprendizado', body:`
 <p>a página está organizada em <b>ordem pedagógica</b> — do concreto ao abstrato, do isolado ao integrado. cada seção depende cognitivamente das anteriores:</p>
@@ -4035,6 +4037,8 @@ function rpPlay(path){
 // ============ LISSAJOUS ============
 // x = sin(f1·t), y = sin(f2·t): razão simples fecha a figura; desvio da razão (temperamento) faz girar no ritmo do batimento.
 const LJ_INTERVALS = [[0,'1'],[1,'2m'],[2,'2M'],[3,'3m'],[4,'3M'],[5,'4J'],[6,'trítono'],[7,'5J'],[8,'6m'],[9,'6M'],[10,'7m'],[11,'7M'],[12,'8ª']];
+// compostos (simples + oitava) — as extensões dos acordes de jazz
+const LJ_COMPOUND = [[13,'9m'],[14,'9M'],[15,'10m'],[16,'10M'],[17,'11J'],[18,'♯11'],[19,'12J'],[20,'13m'],[21,'13M'],[24,'15ª']];
 let ljInterval = 7;
 let ljVisible = false;
 
@@ -4043,7 +4047,10 @@ const LJ_JUST_PQ = [[1,1],[16,15],[9,8],[6,5],[5,4],[4,3],[45,32],[3,2],[8,5],[5
 function ljJustFraction(semis){
   const pq = LJ_JUST_PQ[((semis % 12) + 12) % 12];
   const oct = Math.floor(semis / 12);
-  return oct >= 0 ? [pq[0] * Math.pow(2, oct), pq[1]] : [pq[0], pq[1] * Math.pow(2, -oct)];
+  const f = oct >= 0 ? [pq[0] * Math.pow(2, oct), pq[1]] : [pq[0], pq[1] * Math.pow(2, -oct)];
+  const gcd = function(x, y){ return y ? gcd(y, x % y) : x; };
+  const d = gcd(f[0], f[1]);
+  return [f[0] / d, f[1] / d]; // 9:8 × 2 = 9:4, não 18:8
 }
 
 function ljNotes(){
@@ -4098,10 +4105,15 @@ function ljLoop(now){
 }
 
 function renderLissajousTabs(){
-  const el = document.getElementById('lj-tabs');
+  [['lj-tabs', LJ_INTERVALS], ['lj-tabs2', LJ_COMPOUND]].forEach(function(pair){ renderLissajousRow(pair[0], pair[1]); });
+  document.querySelectorAll('#lj-actions [data-tune]').forEach(function(b){ b.classList.toggle('active', b.dataset.tune === tuningMode); });
+}
+
+function renderLissajousRow(id, list){
+  const el = document.getElementById(id);
   if(!el) return;
   el.innerHTML = '';
-  LJ_INTERVALS.forEach(function(iv){
+  list.forEach(function(iv){
     const b = document.createElement('button');
     b.textContent = iv[1];
     if(iv[0] === ljInterval) b.classList.add('active');
@@ -4112,7 +4124,6 @@ function renderLissajousTabs(){
     });
     el.appendChild(b);
   });
-  document.querySelectorAll('#lj-actions [data-tune]').forEach(function(b){ b.classList.toggle('active', b.dataset.tune === tuningMode); });
 }
 
 (function initLissajous(){
