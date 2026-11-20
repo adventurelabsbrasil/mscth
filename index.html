@@ -179,6 +179,13 @@
   .rp-svg .rp-key{cursor:pointer;transition:fill 0.06s}
   .rp-svg .rp-key.out{opacity:0.32}
   .rp-svg .rp-key.on{fill:var(--accent);opacity:1}
+  .rp-svg.trail .rp-key{fill-opacity:0;stroke-opacity:0}
+  .rp-svg.trail .rp-key.on{fill-opacity:0.16}
+  .rp-svg.trail .rp-label{display:none}
+  @keyframes rp-fade{from{opacity:1}to{opacity:0}}
+  @keyframes rp-ripple{from{transform:scale(0.6);opacity:0.9}to{transform:scale(4.5);opacity:0}}
+  .rp-trail-mark{animation-name:rp-fade;animation-timing-function:linear;animation-fill-mode:forwards}
+  .rp-ripple{transform-box:fill-box;transform-origin:center;animation:rp-ripple 0.7s ease-out forwards}
   .rp-now{margin-top:10px;width:100%;min-height:18px;text-align:center;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:0.02em}
   .rp-now .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
   .circle-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
@@ -857,6 +864,13 @@
     <button data-rpdir="out" class="active">grave na borda · agudo no centro</button>
     <button data-rpdir="in">grave no centro · agudo na borda</button>
   </div>
+  <div class="cat-tabs" id="rp-visual">
+    <button data-rpvis="keys" class="active">teclas</button>
+    <button data-rpvis="trail" data-mem="15000">rastro · 15 s</button>
+    <button data-rpvis="trail" data-mem="60000">rastro · 60 s</button>
+    <button data-rpvis="trail" data-mem="inf">rastro · ∞</button>
+    <button data-rpvis="clear">limpar rastro</button>
+  </div>
   <div class="cat-tabs" id="rp-timbre">
     <button data-timbre="synth" class="active">som · sintetizado</button>
     <button data-timbre="piano">som · piano de cauda</button>
@@ -1296,6 +1310,7 @@ const MODAL_DOCS = {
 <p>o piano comum é uma <b>linha</b>: do grave (esquerda) ao agudo (direita). aqui a mesma linha é <b>enrolada em espiral</b> — cada volta é uma oitava, e cada volta fica dentro da anterior. por isso o grave fica na borda e o agudo no centro.</p>
 <p><b>por que funciona</b> — a oitava (razão 2:1) é a equivalência mais forte da música: dó grave e dó agudo "são a mesma nota". no círculo, isso vira geometria: a nota define o <em>ângulo</em> e a oitava define o <em>raio</em>. todas as oitavas de uma nota ficam alinhadas no mesmo raio (a linha tracejada laranja marca o raio da tônica).</p>
 <p><b>inverter</b> — <em>grave no centro · agudo na borda</em> vira a espiral do avesso: o grave fica no meio e o agudo se abre pra fora, como uma onda que se espalha. aí as fatias apertadas do centro passam a ser as graves, e o registro agudo ganha espaço.</p>
+<p><b>rastro</b> — esconde as teclas (fica só um guia fraco dos anéis) e cada nota tocada deixa uma marca: um clique no ataque, um ponto que apaga devagar e uma linha até a nota anterior, se ela veio logo antes (até 2,5 s). a melodia vai desenhando o próprio caminho no círculo — a memória da música. escolha quanto tempo a memória dura (15 s, 60 s ou ∞) e use <em>limpar rastro</em> pra começar outro desenho. as teclas continuam tocáveis mesmo invisíveis.</p>
 <p><b>cromático · 12 por anel</b> — cada anel tem as 12 notas, 30° cada. os 88 teclas (A0 a C8) dão 7 oitavas cheias e mais duas pontas incompletas, por isso o anel de fora e o do centro ficam com fatias faltando. as notas fora do modo ficam pálidas.</p>
 <p><b>modo · notas do modo por anel</b> — cada anel mostra só as notas do modo escolhido (7 num modo diatônico, 5 numa pentatônica…), em fatias iguais. é o piano "sem notas erradas": qualquer gesto soa dentro do modo.</p>
 <p><b>gestos</b> — girar no mesmo anel = escala dentro da oitava. ir em linha reta para o centro = a mesma nota subindo de oitava em oitava. arrastar na diagonal = espiral ascendente.</p>
@@ -3625,6 +3640,9 @@ const RP_LOW = 21, RP_HIGH = 108, RP_CX = 200, RP_CY = 200, RP_R_OUT = 192, RP_R
 const RP_WHITE_PCS = [0,2,4,5,7,9,11];
 let rpLayout = '12'; // '12' cromático | '7' notas do modo
 let rpGraveOut = true; // true = grave na borda; false = grave no centro
+let rpVisual = 'keys';  // 'keys' | 'trail' (teclas ocultas, fica o rastro dos ataques)
+let rpMemory = 15000;   // ms que cada marca do rastro leva pra sumir (Infinity = não some)
+const rpTrail = [];     // {m, t, link}: ataques recentes; link = nota anterior, se veio logo antes
 let rpLastMidi = null;
 
 function rpArc(r0, r1, a0, a1){
@@ -3679,15 +3697,60 @@ function pianoVoice(midi, freq, t0, vol){
 const rpActive = new Map();
 
 function rpSetHeld(midi, on){
-  if(on) rpActive.set(midi, Infinity); else rpActive.delete(midi);
+  if(on){ rpActive.set(midi, Infinity); rpTrailAdd(midi); } else rpActive.delete(midi);
   rpDrawLinks();
 }
 function rpFlash(midi, ms){
   ms = ms || 350;
   const until = Date.now() + ms;
   if((rpActive.get(midi) || 0) < until) rpActive.set(midi, until);
+  rpTrailAdd(midi);
   rpDrawLinks();
   setTimeout(rpDrawLinks, ms + 20);
+}
+
+// ---- rastro: cada ataque deixa um ponto que apaga devagar, ligado ao ataque anterior ----
+function rpTrailAdd(midi){
+  const now = Date.now();
+  const last = rpTrail[rpTrail.length - 1];
+  if(last && last.m === midi && now - last.t < 150) return; // mesmo ataque chegando por dois caminhos
+  rpTrail.push({ m: midi, t: now, link: last && now - last.t < 2500 ? last.m : null });
+  while(rpTrail.length && (now - rpTrail[0].t > rpMemory || rpTrail.length > 800)) rpTrail.shift();
+  rpDrawTrail(true);
+}
+
+function rpDrawTrail(rippleLast){
+  const svg = document.getElementById('radial-piano');
+  if(!svg) return;
+  const old = document.getElementById('rp-trail');
+  if(old) old.remove();
+  if(rpVisual !== 'trail') return;
+  const pos = {};
+  svg.querySelectorAll('.rp-key').forEach(function(k){ pos[k.dataset.midi] = { x: +k.dataset.cx, y: +k.dataset.cy }; });
+  const now = Date.now();
+  const g = svgEl('g', { id: 'rp-trail', 'pointer-events': 'none' });
+  const fade = function(el, age){
+    if(rpMemory === Infinity) return el;
+    el.setAttribute('class', 'rp-trail-mark');
+    el.style.animationDuration = rpMemory + 'ms';
+    el.style.animationDelay = (-age) + 'ms';
+    return el;
+  };
+  rpTrail.forEach(function(e){
+    const p = pos[e.m];
+    if(!p) return;
+    const age = now - e.t;
+    const q = e.link !== null ? pos[e.link] : null;
+    if(q) g.appendChild(fade(svgEl('line', { x1: q.x, y1: q.y, x2: p.x, y2: p.y, stroke: '#e8451e', 'stroke-width': 0.9, 'stroke-opacity': 0.5, 'stroke-linecap': 'round' }), age));
+    g.appendChild(fade(svgEl('circle', { cx: p.x, cy: p.y, r: 3.2, fill: '#e8451e', 'fill-opacity': 0.85 }), age));
+  });
+  const last = rpTrail[rpTrail.length - 1];
+  if(rippleLast && last && pos[last.m]){
+    const rp = svgEl('circle', { cx: pos[last.m].x, cy: pos[last.m].y, r: 4, fill: 'none', stroke: '#e8451e', 'stroke-width': 1.2, 'class': 'rp-ripple' });
+    g.appendChild(rp);
+  }
+  const links = document.getElementById('rp-links');
+  if(links) svg.insertBefore(g, links); else svg.appendChild(g);
 }
 
 // pinta as teclas ativas e liga as notas (grave → agudo) num polígono, como os acordes do Tonnetz
@@ -3775,11 +3838,19 @@ function renderRadialPiano(){
     if(rm * (a1 - a0) >= 15 && w >= 11){
       const t = svgEl('text', {x: RP_CX + rm*Math.cos(am), y: RP_CY + rm*Math.sin(am), 'text-anchor':'middle',
         'dominant-baseline':'middle', fill: text, 'font-family':"'JetBrains Mono', monospace",
-        'font-size': Math.min(9, w*0.6).toFixed(1), 'font-weight': isTonic ? '700' : '500', 'pointer-events':'none'});
+        'font-size': Math.min(9, w*0.6).toFixed(1), 'font-weight': isTonic ? '700' : '500', 'pointer-events':'none', 'class':'rp-label'});
       t.textContent = (isTonic || pc === 0) ? rpNoteName(m) : NOTES[pc];
       svg.appendChild(t);
     }
   }
+  svg.classList.toggle('trail', rpVisual === 'trail');
+  if(rpVisual === 'trail'){
+    // guia bem fraco dos anéis: o círculo fica meio oculto
+    for(let i = 0; i <= nRings; i++){
+      svg.appendChild(svgEl('circle', {cx: RP_CX, cy: RP_CY, r: RP_R_IN + i*w, fill: 'none', stroke: '#ebebe5', 'stroke-width': 0.6, 'pointer-events': 'none'}));
+    }
+  }
+  rpDrawTrail(false);
   // raio da tônica: todas as oitavas dela alinhadas
   svg.appendChild(svgEl('line', {x1: RP_CX, y1: RP_CY - RP_R_IN + 2, x2: RP_CX, y2: RP_CY - RP_R_OUT - 4,
     stroke:'#e8451e', 'stroke-width':1, 'stroke-dasharray':'2 3', 'pointer-events':'none'}));
@@ -3851,6 +3922,15 @@ function rpPlay(path){
     b.addEventListener('click', function(){
       document.querySelectorAll('#rp-dir button').forEach(function(x){ x.classList.toggle('active', x === b); });
       rpGraveOut = b.dataset.rpdir === 'out';
+      renderRadialPiano();
+    });
+  });
+  document.querySelectorAll('#rp-visual button').forEach(function(b){
+    b.addEventListener('click', function(){
+      if(b.dataset.rpvis === 'clear'){ rpTrail.length = 0; rpDrawTrail(false); return; }
+      document.querySelectorAll('#rp-visual button').forEach(function(x){ x.classList.toggle('active', x === b); });
+      rpVisual = b.dataset.rpvis;
+      if(b.dataset.mem) rpMemory = b.dataset.mem === 'inf' ? Infinity : +b.dataset.mem;
       renderRadialPiano();
     });
   });
