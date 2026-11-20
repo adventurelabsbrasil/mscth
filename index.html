@@ -53,6 +53,30 @@
     --tense-3:#9b3b6a;       /* trítono — magenta */
     --tense-4:#6b2451;       /* 2m — magenta profundo */
   }
+  :root[data-theme="dark"]{
+    --bg:#0c0c0e;
+    --ink:#e9e7e1;
+    --mute:#9d9b95;
+    --line:#4a4a47;
+    --soft:#2c2c2b;
+    --softer:#19191a;
+    --accent:#ff5b2e;
+    --accent-deep:#ff9466;
+    color-scheme:dark;
+  }
+  :root[data-theme="dark"] .kb-key-white{background:#26262a}
+  :root[data-theme="dark"] .kb-key-white:hover{background:#2e2e33}
+  :root[data-theme="dark"] .kb-key-white.in-mode{background:#2e2e33}
+  :root[data-theme="dark"] .kb-key-white.tonic-key{background:#3a3a40}
+  :root[data-theme="dark"] .kb-key-black{background:#050506}
+  :root[data-theme="dark"] .kb-key-black:hover{background:#151517}
+  :root[data-theme="dark"] .kb-key-black.in-mode{background:#0e0e10}
+  :root[data-theme="dark"] .kb-key-black.tonic-key{background:#18181b}
+  .theme-btn{margin-right:6px}
+  .rp-spectrum{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;width:100%;margin-top:12px}
+  .rp-spectrum div{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;font-weight:600;color:var(--mute);letter-spacing:0.02em}
+  .rp-spectrum i{display:block;width:100%;height:14px;border-radius:2px}
+  .rp-spectrum-note{width:100%;margin-top:6px;font-size:10px;color:var(--mute);text-align:center;letter-spacing:0.04em}
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{
     background:var(--bg);color:var(--ink);
@@ -590,6 +614,13 @@
     .kb-mode-row button{font-size:8px;padding:6px 2px}
   }
 </style>
+<script>
+  // tema antes da primeira pintura: escolha salva, senão o tema do sistema
+  try{
+    var t = localStorage.getItem('mscth_theme') || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = t;
+  }catch(e){ document.documentElement.dataset.theme = 'light'; }
+</script>
 </head>
 <body>
 
@@ -599,6 +630,7 @@
     <span>SYS_AUDIO &nbsp;<b id="audio-state-text">clique em "ativar" para começar</b></span>
   </div>
   <div class="actions">
+    <button class="menu-btn theme-btn" id="theme-btn" aria-label="alternar tema claro/escuro" title="tema claro / escuro">◐</button>
     <button class="menu-btn" id="menu-btn" aria-label="abrir controles">≡ menu</button>
     <button id="audio-init-btn">▶ ativar áudio</button>
   </div>
@@ -890,6 +922,10 @@
     <button data-rpvis="trail" data-mem="inf">rastro · ∞</button>
     <button data-rpvis="clear">limpar rastro</button>
   </div>
+  <div class="cat-tabs" id="rp-light">
+    <button data-rplight="spectrum" class="active">luz · espectro (cor da nota)</button>
+    <button data-rplight="accent">luz · laranja</button>
+  </div>
   <div class="cat-tabs" id="rp-timbre">
     <button data-timbre="synth" class="active">som · sintetizado</button>
     <button data-timbre="piano">som · piano de cauda</button>
@@ -902,6 +938,8 @@
       <label>inclinação <input type="range" id="rp3d-tilt" min="0" max="88" step="1" value="58"><span class="v" id="rp3d-tilt-v">58°</span></label>
     </div>
     <div class="rp-now" id="rp-now"><span class="k">toque</span>—</div>
+    <div class="rp-spectrum" id="rp-spectrum"></div>
+    <div class="rp-spectrum-note" id="rp-spectrum-note">da nota à luz · cada nota subida ~40 oitavas cai na luz visível · comprimento de onda em nm</div>
     <div class="circle-legend">
       <span><i style="background:#fafaf7;border:1px solid #0a0a0a"></i>tecla branca</span>
       <span><i style="background:#0a0a0a"></i>tecla preta</span>
@@ -1028,6 +1066,13 @@
     <div class="drawer-block">
       <div class="drawer-label">inversão</div>
       <div class="tuning-row" id="drawer-inversions"></div>
+    </div>
+    <div class="drawer-block">
+      <div class="drawer-label">tema</div>
+      <div class="color-row" id="drawer-theme">
+        <button data-theme-set="light">claro</button>
+        <button data-theme-set="dark">escuro</button>
+      </div>
     </div>
     <div class="drawer-block">
       <div class="drawer-label">som · timbre</div>
@@ -1364,6 +1409,9 @@ const MODAL_DOCS = {
 <p>o piano comum é uma <b>linha</b>: do grave (esquerda) ao agudo (direita). aqui a mesma linha é <b>enrolada em espiral</b> — cada volta é uma oitava, e cada volta fica dentro da anterior. por isso o grave fica na borda e o agudo no centro.</p>
 <p><b>por que funciona</b> — a oitava (razão 2:1) é a equivalência mais forte da música: dó grave e dó agudo "são a mesma nota". no círculo, isso vira geometria: a nota define o <em>ângulo</em> e a oitava define o <em>raio</em>. todas as oitavas de uma nota ficam alinhadas no mesmo raio (a linha tracejada laranja marca o raio da tônica).</p>
 <p><b>vista · 3D</b> — o mesmo piano, mas cada tecla <em>sobe</em> conforme a nota fica mais aguda: o círculo vira uma <b>escada em espiral</b> (a "hélice de altura" da psicoacústica — Drobisch, 1855; Shepard, 1964). girar em volta é andar pela nota (o <em>croma</em>), subir é andar pela oitava (a <em>altura</em>). com inclinação 0° você vê de cima e é idêntico ao 2D; inclinando, aparece a espiral. <em>velocidade</em> ajusta o giro (0 para; negativo inverte o sentido), arrastar gira com a mão e clicar toca a tecla da frente. acordes ligados, rastro, quintas e inversão funcionam igual.</p>
+<p><b>luz · espectro · a cor de cada nota</b> — som e luz são ondas, e dá pra levar uma nota até a luz dobrando a frequência, oitava por oitava. o lá central (A4 = 440 Hz) subido 40 oitavas vira 440 × 2⁴⁰ ≈ 484 THz — luz de <b>≈ 620 nm</b>, um laranja-avermelhado. a luz que enxergamos vai de ~400 a ~790 THz: <em>quase exatamente uma oitava</em> (razão ≈ 1,97). por isso as 12 notas atravessam o arco-íris <b>uma vez</b>: C ≈ verde, D ≈ azul, E ≈ violeta, F no limite do ultravioleta, F# vermelho profundo, G vermelho, A laranja, A# amarelo, B verde-amarelado. e todas as oitavas de uma nota ganham a mesma cor — é a mesma dobra que faz C3 e C4 terem o mesmo nome.</p>
+<p><b>história</b> — Newton, no <em>Opticks</em> (1704), dividiu o arco-íris em 7 cores por analogia com as 7 notas da escala. o jesuíta Louis-Bertrand Castel projetou um <em>cravo ocular</em> (1725) que mostrava cores ao tocar. Scriabin escreveu uma parte para <em>teclado de luz</em> no <em>Prometeu</em> (1910). e há pessoas com <em>cromestesia</em> (sinestesia som-cor) que veem cores ao ouvir — cada uma com suas próprias cores.</p>
+<p><b>cuidado</b> — é uma <em>analogia matemática</em>, não física: luz é onda eletromagnética, som é onda mecânica no ar, e nenhuma nota "tem" cor de verdade. a mesma dobra por oitavas que conecta as duas é que é real. no tema escuro, as cores somam como luz (o centro de um acorde fica mais claro), num visual de espectrograma.</p>
 <p><b>ordem · quintas</b> — em vez de C C# D D#…, as notas ficam em volta na ordem do <em>círculo das quintas</em> (C G D A E B F#…). é a <b>espiral de quintas</b>: cada anel continua sendo uma oitava, mas agora vizinho = consonante. toda escala maior vira um <em>arco contínuo</em> de 7 fatias (as teclas brancas ficam todas juntas: F C G D A E B), mudar de tom é girar o arco uma casa, o trítono fica do lado oposto e os acordes viram formas compactas. com o rastro ligado, melodias tonais ficam num setor do círculo; música cromática se espalha.</p>
 <p><b>inverter</b> — <em>grave no centro · agudo na borda</em> vira a espiral do avesso: o grave fica no meio e o agudo se abre pra fora, como uma onda que se espalha. aí as fatias apertadas do centro passam a ser as graves, e o registro agudo ganha espaço.</p>
 <p><b>rastro</b> — esconde as teclas (fica só um guia fraco dos anéis) e cada nota tocada deixa uma marca: um clique no ataque, um ponto que apaga devagar e uma linha até a nota anterior, se ela veio logo antes (até 2,5 s). a melodia vai desenhando o próprio caminho no círculo — a memória da música. escolha quanto tempo a memória dura (3 s, 5 s ou ∞ pra guardar o desenho inteiro) e use <em>limpar rastro</em> pra começar outro desenho. as teclas continuam tocáveis mesmo invisíveis.</p>
@@ -1852,9 +1900,55 @@ function flashCell(el, ms){
   setTimeout(function(){ el.classList.remove('playing'); }, ms);
 }
 
+// ============ TEMA ============
+// os SVGs desenham com cores fixas da paleta clara; no escuro, svgEl traduz fill/stroke por este mapa
+const THEME_DARK_MAP = {
+  '#fafaf7':'#0c0c0e', '#0a0a0a':'#e9e7e1', '#ebebe5':'#232325', '#d4d4d0':'#3a3a3c',
+  '#555555':'#9d9b95', '#888':'#77756f', '#f5f5f0':'#1f1f21', '#e8e8e2':'#2a2a2c'
+};
+function isDark(){ return document.documentElement.dataset.theme === 'dark'; }
+function themeColor(c){ return isDark() && THEME_DARK_MAP[c] ? THEME_DARK_MAP[c] : c; }
+function setTheme(t){
+  document.documentElement.dataset.theme = t;
+  try{ localStorage.setItem('mscth_theme', t); }catch(e){}
+  document.querySelectorAll('[data-theme-set]').forEach(function(b){ b.classList.toggle('active', b.dataset.themeSet === t); });
+  if(typeof renderAll === 'function') renderAll();
+}
+
+// ============ COR DA NOTA = COR DA LUZ ============
+// dobra a frequência da nota (oitavas) até cair na luz visível (400–800 THz ≈ uma oitava de luz)
+// A4 = 440 Hz × 2⁴⁰ ≈ 484 THz ≈ 620 nm. oitavas da mesma nota → mesma cor.
+function noteLightNm(pc){
+  let f = 440 * Math.pow(2, (pc - 9) / 12);
+  while(f < 400e12) f *= 2;
+  while(f >= 800e12) f /= 2;
+  return 299792458 / f * 1e9;
+}
+// comprimento de onda → RGB (aproximação de Dan Bruton), com o violeta-limite reforçado pra ficar visível
+function nmToRgb(nm){
+  let r = 0, g = 0, b = 0;
+  if(nm < 440){ r = -(nm - 440) / 60; b = 1; }
+  else if(nm < 490){ g = (nm - 440) / 50; b = 1; }
+  else if(nm < 510){ g = 1; b = -(nm - 510) / 20; }
+  else if(nm < 580){ r = (nm - 510) / 70; g = 1; }
+  else if(nm < 645){ r = 1; g = -(nm - 645) / 65; }
+  else { r = 1; }
+  let k = 1;
+  if(nm < 420) k = 0.55 + 0.45 * (nm - 380) / 40;
+  else if(nm > 650) k = 0.5 + 0.5 * (780 - nm) / 130; // vermelho profundo escurece: G# ≠ G ≠ F#
+  const c = function(x){ return Math.round(255 * Math.pow(Math.max(0, Math.min(1, x * k)), 0.8)); };
+  return 'rgb(' + c(r) + ',' + c(g) + ',' + c(b) + ')';
+}
+const SPEC_COLORS = [];
+for(let pc = 0; pc < 12; pc++) SPEC_COLORS.push(nmToRgb(Math.max(380, Math.min(780, noteLightNm(pc)))));
+function specColor(pc){ return SPEC_COLORS[((pc % 12) + 12) % 12]; }
+
 function svgEl(name, attrs){
   const el = document.createElementNS('http://www.w3.org/2000/svg', name);
-  for(const k in attrs){ el.setAttribute(k, attrs[k]); }
+  for(const k in attrs){
+    const v = (k === 'fill' || k === 'stroke') ? themeColor(attrs[k]) : attrs[k];
+    el.setAttribute(k, v);
+  }
   return el;
 }
 
@@ -3705,6 +3799,8 @@ const RP_LOW = 21, RP_HIGH = 108, RP_CX = 200, RP_CY = 200, RP_R_OUT = 192, RP_R
 const RP_WHITE_PCS = [0,2,4,5,7,9,11];
 let rpLayout = '12'; // '12' cromático | '7' notas do modo
 let rpGraveOut = true; // true = grave na borda; false = grave no centro
+let rpLight = 'spectrum'; // 'spectrum' (cor da luz de cada nota) | 'accent' (laranja)
+function rpNoteColor(m){ return rpLight === 'spectrum' ? specColor(m % 12) : '#e8451e'; }
 let rpView = '2d';      // '2d' | '3d' (espiral de altura girando)
 let rpFifths = false;   // true = notas em volta na ordem das quintas (espiral de quintas)
 let rpVisual = 'keys';  // 'keys' | 'trail' (teclas ocultas, fica o rastro dos ataques)
@@ -3829,6 +3925,7 @@ function rpDrawTrail(rippleLast){
   svg.querySelectorAll('.rp-key').forEach(function(k){ pos[k.dataset.midi] = { x: +k.dataset.cx, y: +k.dataset.cy }; });
   const now = Date.now();
   const g = svgEl('g', { id: 'rp-trail', 'pointer-events': 'none' });
+  if(isDark()) g.setAttribute('filter', 'url(#rp-glow)');
   const fade = function(el, age){
     if(rpMemory === Infinity) return el;
     el.setAttribute('class', 'rp-trail-mark');
@@ -3841,12 +3938,19 @@ function rpDrawTrail(rippleLast){
     if(!p) return;
     const age = now - e.t;
     const q = e.link !== null ? pos[e.link] : null;
-    if(q) g.appendChild(fade(svgEl('line', { x1: q.x, y1: q.y, x2: p.x, y2: p.y, stroke: '#e8451e', 'stroke-width': 0.9, 'stroke-opacity': 0.5, 'stroke-linecap': 'round' }), age));
-    g.appendChild(fade(svgEl('circle', { cx: p.x, cy: p.y, r: 3.2, fill: '#e8451e', 'fill-opacity': 0.85 }), age));
+    if(q){
+      const ln = svgEl('line', { x1: q.x, y1: q.y, x2: p.x, y2: p.y, 'stroke-width': 1, 'stroke-opacity': 0.6, 'stroke-linecap': 'round' });
+      ln.setAttribute('stroke', rpNoteColor(e.m));
+      g.appendChild(fade(ln, age));
+    }
+    const dot = svgEl('circle', { cx: p.x, cy: p.y, r: 3.2, 'fill-opacity': 0.9 });
+    dot.setAttribute('fill', rpNoteColor(e.m));
+    g.appendChild(fade(dot, age));
   });
   const last = rpTrail[rpTrail.length - 1];
   if(rippleLast && last && pos[last.m]){
-    const rp = svgEl('circle', { cx: pos[last.m].x, cy: pos[last.m].y, r: 4, fill: 'none', stroke: '#e8451e', 'stroke-width': 1.2, 'class': 'rp-ripple' });
+    const rp = svgEl('circle', { cx: pos[last.m].x, cy: pos[last.m].y, r: 4, fill: 'none', 'stroke-width': 1.2, 'class': 'rp-ripple' });
+    rp.setAttribute('stroke', rpNoteColor(last.m));
     g.appendChild(rp);
   }
   const links = document.getElementById('rp-links');
@@ -3865,17 +3969,31 @@ function rpDrawLinks(){
   svg.querySelectorAll('.rp-key').forEach(function(k){
     const on = rpActive.has(+k.dataset.midi);
     k.classList.toggle('on', on);
+    k.style.fill = on ? rpNoteColor(+k.dataset.midi) : '';
     if(on) pts.push({ m: +k.dataset.midi, x: +k.dataset.cx, y: +k.dataset.cy });
   });
   pts.sort(function(a, b){ return a.m - b.m; });
   const g = svgEl('g', { id: 'rp-links', 'pointer-events': 'none' });
+  if(isDark()) g.setAttribute('filter', 'url(#rp-glow)');
+  if(pts.length >= 3){
+    g.appendChild(svgEl('polygon', { points: pts.map(function(p){ return p.x + ',' + p.y; }).join(' '),
+      fill: rpLight === 'spectrum' ? (isDark() ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)') : 'rgba(232,69,30,0.14)', stroke: 'none' }));
+  }
   if(pts.length >= 2){
-    const d = pts.map(function(p){ return p.x + ',' + p.y; }).join(' ');
-    g.appendChild(svgEl(pts.length >= 3 ? 'polygon' : 'polyline', { points: d,
-      fill: pts.length >= 3 ? 'rgba(232,69,30,0.14)' : 'none', stroke: '#e8451e', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }));
+    pts.forEach(function(p, i){
+      const q = pts[(i + 1) % pts.length];
+      if(i === pts.length - 1 && pts.length < 3) return;
+      const ln = svgEl('line', { x1: p.x, y1: p.y, x2: q.x, y2: q.y, 'stroke-width': 1.8, 'stroke-linecap': 'round' });
+      ln.setAttribute('stroke', rpNoteColor(p.m));
+      g.appendChild(ln);
+    });
   }
   pts.forEach(function(p){
-    g.appendChild(svgEl('circle', { cx: p.x, cy: p.y, r: 2.6, fill: '#fafaf7', stroke: '#e8451e', 'stroke-width': 1.4 }));
+    const c = svgEl('circle', { cx: p.x, cy: p.y, r: 3, 'stroke-width': 1.4 });
+    c.setAttribute('fill', rpNoteColor(p.m));
+    c.setAttribute('stroke', isDark() ? '#ffffff' : '#0a0a0a');
+    c.setAttribute('stroke-opacity', '0.5');
+    g.appendChild(c);
   });
   svg.appendChild(g);
   // nome do acorde no centro
@@ -3924,12 +4042,15 @@ function renderRadialPiano(){
     const pc = m % 12;
     const isWhite = RP_WHITE_PCS.indexOf(pc) >= 0;
     const isTonic = pc === tonic;
-    let fill = isWhite ? '#fafaf7' : '#0a0a0a';
-    let text = isWhite ? '#0a0a0a' : '#fafaf7';
+    const dk = isDark();
+    let fill = isWhite ? (dk ? '#2b2b30' : '#fafaf7') : (dk ? '#0a0a0c' : '#0a0a0a');
+    let text = isWhite ? (dk ? '#d8d6d0' : '#0a0a0a') : (dk ? '#8f8d88' : '#fafaf7');
     const tint = colorForPc(pc);
     if(tint && !isTonic){ fill = tint; text = '#0a0a0a'; }
-    const path = svgEl('path', {d: rpArc(r0, r1, a0, a1), fill: fill,
-      stroke: isTonic ? '#e8451e' : '#0a0a0a', 'stroke-width': isTonic ? 1.8 : 0.6});
+    const path = svgEl('path', {d: rpArc(r0, r1, a0, a1), 'stroke-width': isTonic ? 1.8 : 0.6});
+    // cores do piano definidas aqui (sem o mapa do tema: no escuro a tecla preta continua a mais escura)
+    path.setAttribute('fill', fill);
+    path.setAttribute('stroke', isTonic ? '#e8451e' : (dk ? '#4a4a4f' : '#0a0a0a'));
     path.setAttribute('class', 'rp-key' + (rpLayout === '12' && !inMode ? ' out' : ''));
     path.dataset.midi = m;
     path.dataset.fill = fill;
@@ -3944,10 +4065,14 @@ function renderRadialPiano(){
         'dominant-baseline':'middle', fill: text, 'font-family':"'JetBrains Mono', monospace",
         'font-size': Math.min(9, w*0.6).toFixed(1), 'font-weight': isTonic ? '700' : '500', 'pointer-events':'none', 'class':'rp-label'});
       t.textContent = (isTonic || pc === 0) ? rpNoteName(m) : NOTES[pc];
+      t.setAttribute('fill', text);
       svg.appendChild(t);
     }
   }
   svg.classList.toggle('trail', rpVisual === 'trail');
+  const defs = svgEl('defs', {});
+  defs.innerHTML = '<filter id="rp-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  svg.appendChild(defs);
   const cv3 = document.getElementById('rp3d'), ctl3 = document.getElementById('rp3d-ctrl');
   svg.style.display = rpView === '3d' ? 'none' : '';
   if(cv3) cv3.style.display = rpView === '3d' ? 'block' : 'none';
@@ -4090,9 +4215,10 @@ function rp3dDraw(){
   });
   tiles.sort(function(a, b){ return a.depth - b.depth; });
   ctx.clearRect(0, 0, W, W);
+  const dk = isDark();
   // eixo central
   const top = proj(0, 0, RP3D_H/2), bot = proj(0, 0, -RP3D_H/2);
-  ctx.strokeStyle = '#ebebe5'; ctx.lineWidth = 1.5;
+  ctx.strokeStyle = themeColor('#ebebe5'); ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(bot[0], bot[1]); ctx.lineTo(top[0], top[1]); ctx.stroke();
   tiles.forEach(function(tl){
     const path = new Path2D();
@@ -4102,16 +4228,20 @@ function rp3dDraw(){
     const on = rpActive.has(tl.m);
     const isTonic = tl.m % 12 === tonic;
     ctx.globalAlpha = on ? 1 : (trail ? 0.07 : (tl.key.classList.contains('out') ? 0.35 : 1));
-    ctx.fillStyle = on ? '#e8451e' : tl.key.dataset.fill;
+    ctx.fillStyle = on ? rpNoteColor(tl.m) : tl.key.dataset.fill;
+    if(on && dk){ ctx.shadowColor = rpNoteColor(tl.m); ctx.shadowBlur = 22; }
     ctx.fill(path);
+    ctx.shadowBlur = 0;
     ctx.globalAlpha = on ? 1 : (trail ? 0.12 : 1);
-    ctx.strokeStyle = isTonic ? '#e8451e' : '#0a0a0a';
+    ctx.strokeStyle = isTonic ? '#e8451e' : (dk ? '#4a4a4f' : '#0a0a0a');
     ctx.lineWidth = isTonic ? 2.2 : 0.8;
     ctx.stroke(path);
   });
   ctx.globalAlpha = 1;
   rp3dTiles = tiles;
   // rastro: pontos que apagam + linha até a nota anterior
+  // no escuro a luz soma (composição aditiva) e brilha — cara de espectrograma
+  if(dk) ctx.globalCompositeOperation = 'lighter';
   if(trail){
     const now = Date.now();
     rpTrail.forEach(function(e){
@@ -4119,25 +4249,48 @@ function rp3dDraw(){
       if(rpMemory !== Infinity && age > rpMemory) return;
       const p = centers[e.m]; if(!p) return;
       ctx.globalAlpha = rpMemory === Infinity ? 0.85 : 0.85 * (1 - age / rpMemory);
+      const col = rpNoteColor(e.m);
+      if(dk){ ctx.shadowColor = col; ctx.shadowBlur = 16; }
       const q = e.link !== null ? centers[e.link] : null;
-      if(q){ ctx.strokeStyle = '#e8451e'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.lineTo(p[0], p[1]); ctx.stroke(); }
-      ctx.fillStyle = '#e8451e'; ctx.beginPath(); ctx.arc(p[0], p[1], 5, 0, 2*Math.PI); ctx.fill();
+      if(q){
+        const gr = ctx.createLinearGradient(q[0], q[1], p[0], p[1]);
+        gr.addColorStop(0, rpNoteColor(e.link)); gr.addColorStop(1, col);
+        ctx.strokeStyle = gr; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.lineTo(p[0], p[1]); ctx.stroke();
+      }
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(p[0], p[1], 5.5, 0, 2*Math.PI); ctx.fill();
     });
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha = 1; ctx.shadowBlur = 0;
   }
   // ligação das notas ativas (grave → agudo) + nome do acorde
   const act = Array.from(rpActive.keys()).filter(function(m){ return centers[m]; }).sort(function(a, b){ return a - b; });
   if(act.length >= 2){
-    ctx.strokeStyle = '#e8451e'; ctx.lineWidth = 2.6; ctx.lineJoin = 'round';
-    ctx.fillStyle = 'rgba(232,69,30,0.14)';
-    ctx.beginPath();
-    act.forEach(function(m, i){ const p = centers[m]; if(i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
-    if(act.length >= 3){ ctx.closePath(); ctx.fill(); }
-    ctx.stroke();
+    if(act.length >= 3){
+      ctx.fillStyle = rpLight === 'spectrum' ? (dk ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)') : 'rgba(232,69,30,0.14)';
+      ctx.beginPath();
+      act.forEach(function(m, i){ const p = centers[m]; if(i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.lineWidth = 3; ctx.lineCap = 'round';
+    const n = act.length >= 3 ? act.length : 1;
+    for(let i = 0; i < n; i++){
+      const a = centers[act[i]], b = centers[act[(i + 1) % act.length]];
+      const gr = ctx.createLinearGradient(a[0], a[1], b[0], b[1]);
+      gr.addColorStop(0, rpNoteColor(act[i])); gr.addColorStop(1, rpNoteColor(act[(i + 1) % act.length]));
+      if(dk){ ctx.shadowColor = rpNoteColor(act[i]); ctx.shadowBlur = 18; }
+      ctx.strokeStyle = gr; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+    act.forEach(function(m){
+      const p = centers[m];
+      if(dk){ ctx.shadowColor = rpNoteColor(m); ctx.shadowBlur = 24; }
+      ctx.fillStyle = rpNoteColor(m); ctx.beginPath(); ctx.arc(p[0], p[1], 6, 0, 2*Math.PI); ctx.fill();
+    });
+    ctx.shadowBlur = 0;
   }
+  ctx.globalCompositeOperation = 'source-over';
   const name = document.getElementById('rp-center');
   if(name && act.length >= 2){
-    ctx.fillStyle = '#e8451e'; ctx.font = "600 26px 'JetBrains Mono', monospace"; ctx.textAlign = 'center';
+    ctx.fillStyle = dk ? '#e9e7e1' : '#0a0a0a'; ctx.font = "600 26px 'JetBrains Mono', monospace"; ctx.textAlign = 'center';
     ctx.fillText(name.textContent, C, 40);
   }
 }
@@ -4150,6 +4303,39 @@ function rp3dFrame(now){
   if(!rp3dDrag) rp3dAngle += rp3dSpeed * Math.PI / 180 * dt;
   rp3dDraw();
 }
+
+function renderSpectrumStrip(){
+  const el = document.getElementById('rp-spectrum'), note = document.getElementById('rp-spectrum-note');
+  if(!el) return;
+  const show = rpLight === 'spectrum';
+  el.style.display = show ? 'grid' : 'none';
+  if(note) note.style.display = show ? 'block' : 'none';
+  el.innerHTML = '';
+  for(let pc = 0; pc < 12; pc++){
+    const d = document.createElement('div');
+    d.title = NOTES[pc] + ' → ' + Math.round(noteLightNm(pc)) + ' nm';
+    d.innerHTML = '<i style="background:' + specColor(pc) + '"></i>' + NOTES[pc] + '<span>' + Math.round(noteLightNm(pc)) + '</span>';
+    el.appendChild(d);
+  }
+}
+
+(function initThemeAndLight(){
+  document.querySelectorAll('[data-theme-set]').forEach(function(b){
+    b.classList.toggle('active', b.dataset.themeSet === (isDark() ? 'dark' : 'light'));
+    b.addEventListener('click', function(){ setTheme(b.dataset.themeSet); });
+  });
+  const tb = document.getElementById('theme-btn');
+  if(tb) tb.addEventListener('click', function(){ setTheme(isDark() ? 'light' : 'dark'); });
+  document.querySelectorAll('#rp-light button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#rp-light button').forEach(function(x){ x.classList.toggle('active', x === b); });
+      rpLight = b.dataset.rplight;
+      renderSpectrumStrip();
+      renderRadialPiano();
+    });
+  });
+  renderSpectrumStrip();
+})();
 
 (function initRadialPiano3D(){
   const cv = document.getElementById('rp3d');
@@ -4239,9 +4425,13 @@ function ljDraw(now){
   const tau = 2 * Math.PI * n.fa * (now / 1000);
   const loops = Math.min(45, Math.max(2, fr[1])) * 2 * Math.PI;
   ctx.clearRect(0, 0, W, W);
-  ctx.strokeStyle = '#ebebe5'; ctx.lineWidth = 1;
+  ctx.strokeStyle = themeColor('#ebebe5'); ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(C - R, C); ctx.lineTo(C + R, C); ctx.moveTo(C, C - R); ctx.lineTo(C, C + R); ctx.stroke();
-  ctx.strokeStyle = n.live ? '#e8451e' : '#0a0a0a';
+  // cor: gradiente entre as cores-luz das duas notas
+  const lg = ctx.createLinearGradient(C - R, C + R, C + R, C - R);
+  lg.addColorStop(0, specColor(n.a % 12)); lg.addColorStop(1, specColor(n.b % 12));
+  ctx.strokeStyle = isDark() ? lg : (n.live ? '#e8451e' : '#0a0a0a');
+  if(isDark()){ ctx.shadowColor = specColor(n.b % 12); ctx.shadowBlur = 14; }
   ctx.lineWidth = 2.2; ctx.lineJoin = 'round';
   ctx.beginPath();
   const steps = 2600;
@@ -4252,6 +4442,7 @@ function ljDraw(now){
     if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   }
   ctx.stroke();
+  ctx.shadowBlur = 0;
   const info = document.getElementById('lj-info');
   if(info){
     const exact = Math.abs(r - fr[0] / fr[1]) < 1e-9;
