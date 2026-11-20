@@ -188,6 +188,12 @@
   .rp-ripple{transform-box:fill-box;transform-origin:center;animation:rp-ripple 0.7s ease-out forwards}
   .rp-now{margin-top:10px;width:100%;min-height:18px;text-align:center;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:0.02em}
   .rp-now .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
+  /* lissajous */
+  .lj-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
+  .lj-canvas{width:100%;max-width:360px;aspect-ratio:1;display:block}
+  .lj-info{margin-top:10px;width:100%;text-align:center;font-size:12px;font-weight:600;color:var(--ink);line-height:1.5}
+  .lj-info .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
+  .lj-info b{color:var(--accent)}
   .circle-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
   .circle-svg{width:100%;max-width:360px;height:auto}
   .circle-meta{margin-top:10px;width:100%;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--soft);font-size:10px;letter-spacing:0.06em}
@@ -860,6 +866,10 @@
     <button data-rp="12" class="active">cromático · 12 por anel</button>
     <button data-rp="7">modo · notas do modo por anel</button>
   </div>
+  <div class="cat-tabs" id="rp-order">
+    <button data-rporder="chrom" class="active">ordem · cromática (C C# D…)</button>
+    <button data-rporder="fifths">ordem · quintas (C G D…)</button>
+  </div>
   <div class="cat-tabs" id="rp-dir">
     <button data-rpdir="out" class="active">grave na borda · agudo no centro</button>
     <button data-rpdir="in">grave no centro · agudo na borda</button>
@@ -887,6 +897,28 @@
     <div class="circle-meta">
       <div><span class="k">borda</span><span class="v" id="rp-edge">A0 · 27,5 Hz</span></div>
       <div><span class="k">centro</span><span class="v" id="rp-core">C8 · 4186 Hz</span></div>
+    </div>
+  </div>
+</section>
+
+<section data-section-id="lissajous">
+  <div class="sec-head">
+    <span class="sec-label"><span class="num">12</span>lissajous · a forma de um intervalo</span>
+    <div class="sec-actions">
+      <span class="sec-hint">escolha o intervalo ou toque 2 notas</span>
+      <button class="level-btn" data-level="0" data-section="lissajous" title="seu nível de entendimento">○</button>
+      <button class="help-btn" data-help="12" aria-label="ajuda">?</button>
+    </div>
+  </div>
+  <p class="sec-desc">duas notas soando juntas, uma no eixo horizontal e outra no vertical: o ponto desenha a <em>forma do intervalo</em>. razões simples (oitava 2:1, quinta 3:2) fecham figuras limpas; dissonâncias viram novelos. no temperamento igual a quinta não é exatamente 3:2 — a figura <em>gira</em>, e a velocidade do giro é o batimento que você ouve. troque para afinação justa e ela para. segure 2 notas no piano de baixo pra ver o intervalo que você está tocando.</p>
+  <div class="cat-tabs" id="lj-tabs"></div>
+  <div class="lj-wrap">
+    <canvas class="lj-canvas" id="lj-canvas" width="720" height="720" aria-label="Figura de Lissajous do intervalo"></canvas>
+    <div class="lj-info" id="lj-info"></div>
+    <div class="cat-tabs" id="lj-actions" style="margin-top:10px;width:100%">
+      <button id="lj-play">▶ ouvir o intervalo</button>
+      <button data-tune="equal">afinação · igual</button>
+      <button data-tune="just">afinação · justa</button>
     </div>
   </div>
 </section>
@@ -1316,6 +1348,7 @@ const MODAL_DOCS = {
   '11': { title:'11 · piano circular', body:`
 <p>o piano comum é uma <b>linha</b>: do grave (esquerda) ao agudo (direita). aqui a mesma linha é <b>enrolada em espiral</b> — cada volta é uma oitava, e cada volta fica dentro da anterior. por isso o grave fica na borda e o agudo no centro.</p>
 <p><b>por que funciona</b> — a oitava (razão 2:1) é a equivalência mais forte da música: dó grave e dó agudo "são a mesma nota". no círculo, isso vira geometria: a nota define o <em>ângulo</em> e a oitava define o <em>raio</em>. todas as oitavas de uma nota ficam alinhadas no mesmo raio (a linha tracejada laranja marca o raio da tônica).</p>
+<p><b>ordem · quintas</b> — em vez de C C# D D#…, as notas ficam em volta na ordem do <em>círculo das quintas</em> (C G D A E B F#…). é a <b>espiral de quintas</b>: cada anel continua sendo uma oitava, mas agora vizinho = consonante. toda escala maior vira um <em>arco contínuo</em> de 7 fatias (as teclas brancas ficam todas juntas: F C G D A E B), mudar de tom é girar o arco uma casa, o trítono fica do lado oposto e os acordes viram formas compactas. com o rastro ligado, melodias tonais ficam num setor do círculo; música cromática se espalha.</p>
 <p><b>inverter</b> — <em>grave no centro · agudo na borda</em> vira a espiral do avesso: o grave fica no meio e o agudo se abre pra fora, como uma onda que se espalha. aí as fatias apertadas do centro passam a ser as graves, e o registro agudo ganha espaço.</p>
 <p><b>rastro</b> — esconde as teclas (fica só um guia fraco dos anéis) e cada nota tocada deixa uma marca: um clique no ataque, um ponto que apaga devagar e uma linha até a nota anterior, se ela veio logo antes (até 2,5 s). a melodia vai desenhando o próprio caminho no círculo — a memória da música. escolha quanto tempo a memória dura (15 s, 60 s ou ∞) e use <em>limpar rastro</em> pra começar outro desenho. as teclas continuam tocáveis mesmo invisíveis.</p>
 <p><b>cromático · 12 por anel</b> — cada anel tem as 12 notas, 30° cada. os 88 teclas (A0 a C8) dão 7 oitavas cheias e mais duas pontas incompletas, por isso o anel de fora e o do centro ficam com fatias faltando. as notas fora do modo ficam pálidas.</p>
@@ -1325,6 +1358,12 @@ const MODAL_DOCS = {
 <p><b>a forma do acorde</b> — as notas que soam juntas são ligadas (do grave pro agudo) num polígono, e o nome do acorde aparece no centro. como o ângulo é a nota, cada tipo de acorde tem sempre a mesma forma: todo acorde maior é o mesmo triângulo, só girado. toque notas em sequência rápida no círculo (até 1,2 s entre elas) e elas também se ligam.</p>
 <p><b>som · piano de cauda</b> — escolha global (também no menu <em>≡ → som · timbre</em>): troca o timbre do app inteiro — escalas, acordes, cadências, padrões, piano de baixo e este círculo — por gravações reais de um piano de cauda (<em>Salamander Grand Piano</em>, de Alexander Holm, licença CC-BY 3.0). há uma gravação a cada 3 semitons; as notas do meio são reafinadas a partir da vizinha mais próxima, respeitando a afinação escolhida (igual ou justa). o carregamento (~2 MB) só acontece na primeira vez que você escolhe esse som. a seção <em>série harmônica · timbre</em> continua com senoides de propósito: ali o assunto é montar o timbre parcial por parcial.</p>
 <p><b>a geometria</b> — os anéis têm a mesma espessura, então os de dentro são mais curtos: cada fatia do centro tem cerca de 1/8 do arco das fatias da borda. é o preço de pôr o agudo no meio. por isso os nomes só aparecem quando a fatia tem espaço.</p>
+` },
+  '12': { title:'12 · lissajous · a forma de um intervalo', body:`
+<p>uma nota é uma oscilação. ponha uma nota pra mover um ponto na <b>horizontal</b> e outra pra mover o mesmo ponto na <b>vertical</b>: o rastro do ponto é uma <b>figura de Lissajous</b> (Jules Lissajous, 1857, com espelhos presos em diapasões).</p>
+<p><b>razão simples = figura fechada</b> — se as frequências estão numa razão de números pequenos, o desenho se fecha e se repete: uníssono 1:1 é uma linha/elipse, oitava 2:1 um oito, quinta 3:2 um laço de três lóbulos, quarta 4:3, terça maior 5:4… quanto maiores os números, mais complexa a figura — e mais "tensa" a consonância. é a mesma hierarquia da série harmônica (seção 10), agora vista.</p>
+<p><b>batimento = figura girando</b> — no <em>temperamento igual</em> nenhum intervalo além da oitava é uma razão exata: a quinta temperada é 1,4983, não 1,5. a diferença faz a figura <em>girar devagar</em>, no ritmo do <b>batimento</b> (a ondulação de volume que se ouve no acorde): o painel mostra o batimento, |q·f₂ − p·f₁|, e quanto tempo a figura leva pra completar um giro (q batimentos). troque para <em>afinação justa</em> e a figura congela — o batimento some.</p>
+<p><b>do teclado</b> — segure duas notas no piano de baixo (ou no círculo) e a figura mostra o intervalo real que você está tocando, oitava incluída.</p>
 ` },
   'progress': { title:'progresso · ordem de aprendizado', body:`
 <p>a página está organizada em <b>ordem pedagógica</b> — do concreto ao abstrato, do isolado ao integrado. cada seção depende cognitivamente das anteriores:</p>
@@ -3649,6 +3688,7 @@ const RP_LOW = 21, RP_HIGH = 108, RP_CX = 200, RP_CY = 200, RP_R_OUT = 192, RP_R
 const RP_WHITE_PCS = [0,2,4,5,7,9,11];
 let rpLayout = '12'; // '12' cromático | '7' notas do modo
 let rpGraveOut = true; // true = grave na borda; false = grave no centro
+let rpFifths = false;   // true = notas em volta na ordem das quintas (espiral de quintas)
 let rpVisual = 'keys';  // 'keys' | 'trail' (teclas ocultas, fica o rastro dos ataques)
 let rpMemory = 15000;   // ms que cada marca do rastro leva pra sumir (Infinity = não some)
 const rpTrail = [];     // {m, t, link}: ataques recentes; link = nota anterior, se veio logo antes
@@ -3844,6 +3884,9 @@ function renderRadialPiano(){
   const mode = currentMode();
   const rels = mode.intervals.map(function(iv){ return ((iv % 12) + 12) % 12; });
   const N = rpLayout === '12' ? 12 : rels.length;
+  // posição angular de cada nota: semitons (cromática) ou passos de quinta (×7 mod 12) a partir da tônica
+  const angPos = function(rel){ return rpFifths ? (rel * 7) % 12 : rel; };
+  const relsByAng = rels.slice().sort(function(a, b){ return angPos(a) - angPos(b); });
   // tônica mais grave ≤ A0: base do anel 0
   const base = RP_LOW - (((RP_LOW % 12) - tonic + 12) % 12);
   const nRings = Math.floor((RP_HIGH - base) / 12) + 1;
@@ -3855,8 +3898,8 @@ function renderRadialPiano(){
     const rel = (m - base) % 12;
     const inMode = rels.indexOf(rel) >= 0;
     let slot;
-    if(rpLayout === '12') slot = rel;
-    else { if(!inMode) continue; slot = rels.indexOf(rel); }
+    if(rpLayout === '12') slot = angPos(rel);
+    else { if(!inMode) continue; slot = relsByAng.indexOf(rel); }
     const ring = Math.floor((m - base) / 12);
     const r1 = rpGraveOut ? RP_R_OUT - ring*w : RP_R_IN + (ring + 1)*w, r0 = r1 - w + 0.8;
     const a0 = -Math.PI/2 - span/2 + slot*span + gap, a1 = a0 + span - 2*gap;
@@ -3960,6 +4003,13 @@ function rpPlay(path){
       renderRadialPiano();
     });
   });
+  document.querySelectorAll('#rp-order button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#rp-order button').forEach(function(x){ x.classList.toggle('active', x === b); });
+      rpFifths = b.dataset.rporder === 'fifths';
+      renderRadialPiano();
+    });
+  });
   document.querySelectorAll('#rp-dir button').forEach(function(b){
     b.addEventListener('click', function(){
       document.querySelectorAll('#rp-dir button').forEach(function(x){ x.classList.toggle('active', x === b); });
@@ -3979,6 +4029,106 @@ function rpPlay(path){
   document.querySelectorAll('[data-timbre]').forEach(function(b){
     b.addEventListener('click', function(){ setTimbre(b.dataset.timbre); });
   });
+})();
+
+// ============ LISSAJOUS ============
+// x = sin(f1·t), y = sin(f2·t): razão simples fecha a figura; desvio da razão (temperamento) faz girar no ritmo do batimento.
+const LJ_INTERVALS = [[0,'1'],[1,'2m'],[2,'2M'],[3,'3m'],[4,'3M'],[5,'4J'],[6,'trítono'],[7,'5J'],[8,'6m'],[9,'6M'],[10,'7m'],[11,'7M'],[12,'8ª']];
+let ljInterval = 7;
+let ljVisible = false;
+
+// razão justa (5-limit, mesma tabela de JUST_RATIOS) do intervalo em semitons, com as oitavas
+const LJ_JUST_PQ = [[1,1],[16,15],[9,8],[6,5],[5,4],[4,3],[45,32],[3,2],[8,5],[5,3],[9,5],[15,8]];
+function ljJustFraction(semis){
+  const pq = LJ_JUST_PQ[((semis % 12) + 12) % 12];
+  const oct = Math.floor(semis / 12);
+  return oct >= 0 ? [pq[0] * Math.pow(2, oct), pq[1]] : [pq[0], pq[1] * Math.pow(2, -oct)];
+}
+
+function ljNotes(){
+  // 2 notas mais graves seguradas no piano de baixo/círculo, senão o intervalo escolhido a partir da tônica
+  if(typeof kbActiveNotes !== 'undefined' && kbActiveNotes.size >= 2){
+    const ms = Array.from(kbActiveNotes.keys()).sort(function(a, b){ return a - b; });
+    return { a: ms[0], b: ms[1], fa: midiToFreq(ms[0]), fb: midiToFreq(ms[1]), live: true };
+  }
+  const a = 60 + tonic, b = a + ljInterval;
+  return { a: a, b: b, fa: pitchHz(0, 0), fb: pitchHz(ljInterval % 12, Math.floor(ljInterval / 12)), live: false };
+}
+
+function ljDraw(now){
+  const cv = document.getElementById('lj-canvas');
+  if(!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, R = W * 0.42, C = W / 2;
+  const n = ljNotes();
+  const r = n.fb / n.fa;
+  const fr = ljJustFraction(n.b - n.a);
+  const beat = Math.abs(fr[1] * n.fb - fr[0] * n.fa);
+  const cycle = n.fa * Math.abs(r - fr[0] / fr[1]); // ciclos/s do giro da figura = batimento / q
+  // fase: avança no tempo real de f1, então o desvio da razão aparece como giro na velocidade do batimento
+  const tau = 2 * Math.PI * n.fa * (now / 1000);
+  const loops = Math.min(45, Math.max(2, fr[1])) * 2 * Math.PI;
+  ctx.clearRect(0, 0, W, W);
+  ctx.strokeStyle = '#ebebe5'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(C - R, C); ctx.lineTo(C + R, C); ctx.moveTo(C, C - R); ctx.lineTo(C, C + R); ctx.stroke();
+  ctx.strokeStyle = n.live ? '#e8451e' : '#0a0a0a';
+  ctx.lineWidth = 2.2; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  const steps = 2600;
+  for(let i = 0; i <= steps; i++){
+    const th = (i / steps) * loops;
+    const x = C + R * Math.sin(th + tau);
+    const y = C - R * Math.sin(r * (th + tau));
+    if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  const info = document.getElementById('lj-info');
+  if(info){
+    const exact = Math.abs(r - fr[0] / fr[1]) < 1e-9;
+    info.innerHTML = '<span class="k">' + (n.live ? 'tocando' : 'intervalo') + '</span>' + rpNoteName(n.a) + ' + ' + rpNoteName(n.b) +
+      ' · razão ' + r.toFixed(4) + ' · justa <b>' + fr[0] + ':' + fr[1] + '</b> = ' + (fr[0] / fr[1]).toFixed(4) + '<br>' +
+      (exact ? '<span class="k">batimento</span>nenhum — figura parada' : '<span class="k">batimento</span>' + beat.toFixed(2) + ' Hz · a figura completa um giro a cada ' + (1 / cycle).toFixed(1) + ' s');
+  }
+}
+
+function ljLoop(now){
+  if(ljVisible) ljDraw(now);
+  requestAnimationFrame(ljLoop);
+}
+
+function renderLissajousTabs(){
+  const el = document.getElementById('lj-tabs');
+  if(!el) return;
+  el.innerHTML = '';
+  LJ_INTERVALS.forEach(function(iv){
+    const b = document.createElement('button');
+    b.textContent = iv[1];
+    if(iv[0] === ljInterval) b.classList.add('active');
+    b.addEventListener('click', function(){
+      ljInterval = iv[0];
+      renderLissajousTabs();
+      playChord([0, ljInterval], 0.02, 1.6, 0.12);
+    });
+    el.appendChild(b);
+  });
+  document.querySelectorAll('#lj-actions [data-tune]').forEach(function(b){ b.classList.toggle('active', b.dataset.tune === tuningMode); });
+}
+
+(function initLissajous(){
+  const sec = document.querySelector('section[data-section-id="lissajous"]');
+  if(!sec) return;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){ ljVisible = es[0].isIntersecting; }).observe(sec);
+  } else ljVisible = true;
+  document.getElementById('lj-play').addEventListener('click', function(){ playChord([0, ljInterval], 0.02, 1.8, 0.12); });
+  document.querySelectorAll('#lj-actions [data-tune]').forEach(function(b){
+    b.addEventListener('click', function(){
+      tuningMode = b.dataset.tune;
+      renderAll(); // mesmo caminho do seletor de temperamento: tudo fica em sincronia
+    });
+  });
+  renderLissajousTabs();
+  requestAnimationFrame(ljLoop);
 })();
 
 // ============ CROSS-SECTION KB-ON ============
@@ -4039,7 +4189,7 @@ function syncCrossSectionHighlights(){
 }
 
 // ============ PROGRESS / LEVEL SYSTEM ============
-const SECTION_IDS = ['tonic','harmonic','scale','mode','character','patterns','harmonic-field','cadences','circle','tonnetz','radial-piano'];
+const SECTION_IDS = ['tonic','harmonic','scale','mode','character','patterns','harmonic-field','cadences','circle','tonnetz','radial-piano','lissajous'];
 const LEVEL_GLYPHS = ['○', '◔', '◕', '●'];
 const LEVEL_TIPS = ['não vi ainda', 'explorei', 'entendi', 'domino'];
 let levels = {}; // section_id -> level (0..3)
@@ -4348,6 +4498,7 @@ function renderAll(){
   renderTonnetz();
   renderPatternDisplay();
   renderRadialPiano();
+  renderLissajousTabs();
   renderPatternTabs();
   renderCadences();
   renderHarmonicTable();
