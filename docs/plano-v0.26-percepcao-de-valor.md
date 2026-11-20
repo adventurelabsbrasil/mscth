@@ -23,7 +23,7 @@ Conferido no código pelo Claude, e procede:
 
 ---
 
-## Fase 1 — Credibilidade (fazer ANTES de mandar o link)
+## Fase 1 — Credibilidade (fazer ANTES de mandar o link) · ✅ entregue na v0.26.0
 
 | # | O quê | Por quê (quem apontou) | Esforço |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Conferido no código pelo Claude, e procede:
 | 5 | **Lissajous honesto.** <ul><li>A forma se repete a cada **1 batimento** (hoje o app diz q batimentos; erro do Claude, apontado pelo matemático e confirmado pelo físico).</li><li>Fase que sempre fecha a figura.</li><li>Câmera lenta com aviso "×1/N" quando o batimento passa de ~3 Hz.</li><li>Razão calculada pelas frequências reais: a quinta do lobo do modo justo aparece e é explicada, em vez de "3:2 que gira".</li></ul> | Matemático e físico. | P/M |
 | 6 | **Numeração e ordem únicas.** Título do `?` = número da seção. A jornada inclui 11 e 12. Uma ordem só no welcome, no `progress`, no README e no modal do teclado. | Musicista e professor: aparece no primeiro clique. | P |
 
-## Fase 2 — Experiência (com a skill `/frontend-design`)
+## Fase 2 — Experiência (com a skill `/frontend-design`) · etapa A (itens 7, 8, 10) ✅ entregue na v0.27.0 · etapa B (9, 11) → v0.28
 
 | # | O quê | Esforço |
 |---|---|---|
@@ -63,7 +63,7 @@ Conferido no código pelo Claude, e procede:
 3. **Ordem das seções:**
    - a série harmônica sai do 2º lugar e vai para o bloco de acústica, junto com o Lissajous;
    - nova seção curta de **intervalos** entre tônica e escala?
-4. **Tema padrão** para o link da amiga: escuro (as partículas e a luz brilham mais)?
+4. ~~**Tema padrão** para o link da amiga: escuro?~~ **Decidido (2026-11-20): segue o sistema** (escolha salva vence).
 5. **Amostras de piano** copiadas para o repo (~2 MB), sem depender do site do Tone.js?
 
 ## Ordem de execução sugerida

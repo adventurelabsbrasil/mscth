@@ -10,14 +10,14 @@
 
 ## escopo
 
-12 seções interativas em **ordem pedagógica** (do concreto ao abstrato), com piano sticky no rodapé:
+12 seções interativas em **ordem pedagógica** (do concreto ao abstrato), com piano sticky no rodapé. O **console de som** acima das teclas vale para a página inteira: timbre (piano · sintético), tempo com tap, diapasão A4 (415–466 Hz), afinação igual/justa, volume, modo do teclado, transpor e oitava. `?pro` no endereço abre o **modo músico** (sem níveis, progresso nem desafio).
 
 1. **tônica** — 12 notas cromáticas, transposição completa
 2. **série harmônica · timbre** — 16 parciais com cents off, presets (senoide, quadrada, serra, órgão), síntese aditiva clicável e ativável parcial-a-parcial
 3. **escala** — visual + áudio, toggle 12-TET ↔ justa entonação 5-limit com cents off, opção de exibir frequências em Hz
 4. **modo** — 17 escalas em 5 categorias (gregos, harmônicas, exóticas, simétricas, pentatônicas)
 5. **caráter do modo** — nota característica, mood, flavor histórico-cultural
-6. **padrões melódicos** — ascendente, descendente, ida-e-volta, terças, quartas, tetracordes, com BPM ajustável (60-160) e visualização da nota atual sincronizada com a escala
+6. **padrões melódicos** — ascendente, descendente, ida-e-volta, terças, quartas, tetracordes, no tempo do console (40–220 BPM, com tap) e visualização da nota atual sincronizada com a escala
 7. **campo harmônico** — três tabs:
    - **diatônicos** — acordes do modo, com voicing tríade / tétrade / **quíntade (com 9ª)** e até 5 inversões (visualizadas em torre vertical)
    - **emprestados** — modal interchange (acordes do modo paralelo)

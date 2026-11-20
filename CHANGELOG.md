@@ -2,6 +2,35 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.27.0] — 2026-11-20
+
+### added
+- **Console de som** — uma faixa só, logo acima das teclas do piano, vale para a página inteira: `som` (piano · sintético), `♩` tempo 40–220 com `tap`, `A4` 415–466 Hz, afinação `igual`/`justa`, `vol` (ganho antes do limitador, salvo no navegador), modo do teclado (`livre`/`sustain`/`snap`), `tom` (transpor, `=tôn`) e `8ª`. No celular fica fechado em `⋯ console de som`, com o resumo do estado.
+- **Chips só de leitura** nas seções 03, 06, 11 e 12 (`afinação igual · 12-TET · mudar no console do piano`): o clique abre o console no controle certo e destaca o grupo.
+- **Hero** — piano circular de 3 oitavas girando devagar, nas cores da luz de cada nota. `toque uma nota` liga o som e toca um ii7–V7–I7M no piano (condução de vozes, tempo do console), acendendo as fatias e o piano de baixo; cada fatia toca a sua nota. Botão para pausar o giro.
+- **Modo músico** (`?pro` no endereço): sem níveis, sem progresso e sem desafio do dia.
+- **A4 no link compartilhado** (`a=442` quando ≠ 440).
+- **Selos** `senoide · didático` (seção 02) e `figura em senoide · didático` (seção 12).
+
+### changed
+- **Primeira tela**: saem `SYS_AUDIO` e `doc · index.html`; o manual do topo vira uma frase de proposta. Barra do topo em português (`som desligado` / `som ligado`, botão `ligar som`, que some com o som ligado).
+- Progresso e desafio do dia saem do topo e vão para o `≡ menu`.
+- Boas-vindas não abrem mais sozinhas: ficam em `como funciona` e no `?` do hero.
+- Tempo do console comanda padrões (1 nota por tempo), `play scale` (colcheias) e cadências (1 acorde a cada 2 tempos; antes era fixo em 0,95 s).
+- A4 deixa de ser fixo: `tonicFreq`, `midiToFreq` e os nomes/cents da série harmônica seguem o diapasão do console.
+- Saem os seletores duplicados: timbre (seção 11 e menu), temperamento (seções 03 e 12, menu) e BPM (seção 06).
+- Textos de ajuda (boas-vindas, 01, 06, 11, piano, progresso) apontam para o console.
+- Versão exibida: `v0.26.0` → `v0.27.0`.
+
+### fixed
+- **Acessibilidade**: foco visível (`:focus-visible`) em todos os controles; `prefers-reduced-motion` para o giro do hero, a vista 3D (começa parada), o lissajous (figura parada) e as rolagens suaves.
+- Contraste: atalhos do teclado (eram 1,4:1) e oitava das teclas; laranja em texto pequeno passa a `--accent-deep` (info do lissajous, nota de cadência, intervalo detectado, parcial microtonal, nível 2, legenda do pentagrama).
+- Legenda da seção 11 usava cores fixas e ficava errada no tema escuro.
+- Pentagrama no tema escuro (fundo branco do VexFlow) agora segue o tema.
+
+### rationale
+Fase 2, etapa A do plano `docs/plano-v0.26-percepcao-de-valor.md` (itens 7, 8 e 10): o que muda a primeira impressão. Um lugar só para o som, uma primeira tela que toca em vez de explicar, e a base de acessibilidade.
+
 ## [0.26.0] — 2026-11-20
 
 ### added
