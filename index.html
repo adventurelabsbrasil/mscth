@@ -173,7 +173,8 @@
   .row-cells > div.tonic .deg,.row-cells > div.tonic .nt,.row-cells > div.tonic .roman,.row-cells > div.tonic .name,.row-cells > div.tonic .cents,.row-cells > div.tonic .bass{color:var(--bg)}
   .row-cells > div.playing{background:var(--accent)}
   .row-cells > div.playing .deg,.row-cells > div.playing .nt,.row-cells > div.playing .roman,.row-cells > div.playing .name,.row-cells > div.playing .cents,.row-cells > div.playing .bass{color:var(--bg)}
-  .row-cells .deg,.row-cells .roman{font-size:10px;font-weight:500;letter-spacing:0.06em;color:var(--mute);margin-bottom:4px;min-height:14px;text-transform:uppercase}
+  .row-cells .deg,.row-cells .roman{font-size:10px;font-weight:500;letter-spacing:0.06em;color:var(--mute);margin-bottom:4px;min-height:14px}
+  .row-cells .roman{font-size:11px} /* sem uppercase: a caixa do numeral é a qualidade (IV maior × iv menor) */
   .row-cells .nt,.row-cells .name{font-size:15px;font-weight:600;color:var(--ink);line-height:1.15}
   .row-cells > div.char .deg{color:var(--accent-deep);font-weight:600}
   .row-cells > div.char .nt{color:var(--accent-deep)}
@@ -427,6 +428,10 @@
   .cadence-card .c-label{font-size:9px;font-weight:600;color:var(--mute);letter-spacing:0.12em;text-transform:uppercase;line-height:1.2}
   .cadence-card .c-roman{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:0.02em;line-height:1.2}
   .cadence-card .c-chords{font-size:10px;color:var(--mute);font-weight:500;line-height:1.3}
+  .cadence-card .c-alt{text-transform:none;letter-spacing:0.02em;font-weight:500}
+  .cadence-card .c-note{font-size:9.5px;color:var(--accent);line-height:1.3;margin-top:1px}
+  .cadence-card.out .c-roman{color:var(--mute)}
+  .cadence-card.playing .c-note{color:var(--bg)!important}
 
   /* PIANO KEYBOARD */
   .keyboard-bar{position:sticky;bottom:0;z-index:25;background:var(--bg);border-top:1px solid var(--line);padding:0;display:flex;flex-direction:column;box-shadow:0 -2px 8px rgba(10,10,10,0.04)}
@@ -654,7 +659,7 @@
 <header>
   <div class="meta-row">
     <span>doc · <b>index.html</b></span>
-    <span>v0.25.0<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
+    <span>v0.26.0<button class="meta-intro-btn" id="intro-btn" aria-label="abrir introdução" title="ver introdução">?</button></span>
   </div>
   <h1>mscth</h1>
   <p class="subtitle">modos<span class="slash">·</span>campos<span class="slash">·</span>cadências<span class="slash">·</span>timbre</p>
@@ -679,7 +684,7 @@
     <div class="sec-actions">
       <span class="sec-hint" id="harmonic-hint">fundamental: C3</span>
       <button class="level-btn" data-level="0" data-section="harmonic" title="seu nível de entendimento">○</button>
-      <button class="help-btn" data-help="10" aria-label="ajuda">?</button>
+      <button class="help-btn" data-help="02" aria-label="ajuda">?</button>
     </div>
   </div>
   <p class="sec-desc">cada nota natural contém uma série de <em>parciais</em> sobrepostos. clique nos quadrados ☐ pra ativar/desativar parciais individuais — ou use os <em>presets de timbre</em> (senoide = só fundamental; serra = todos com 1/n; órgão = drawbars do Hammond). depois <em>play timbre composto</em> toca a soma dos parciais ativos. é assim que a síntese aditiva funciona.</p>
@@ -709,7 +714,7 @@
     <div class="sec-actions">
       <span class="sec-hint">click → play note</span>
       <button class="level-btn" data-level="0" data-section="scale" title="seu nível de entendimento">○</button>
-      <button class="help-btn" data-help="04" aria-label="ajuda">?</button>
+      <button class="help-btn" data-help="03" aria-label="ajuda">?</button>
     </div>
   </div>
   <div class="row-cells" id="scale"></div>
@@ -734,7 +739,7 @@
     <div class="sec-actions">
       <span class="sec-hint" id="mode-hint">jônio</span>
       <button class="level-btn" data-level="0" data-section="mode" title="seu nível de entendimento">○</button>
-      <button class="help-btn" data-help="02" aria-label="ajuda">?</button>
+      <button class="help-btn" data-help="04" aria-label="ajuda">?</button>
     </div>
   </div>
   <div class="cat-tabs" id="cat-tabs"></div>
@@ -746,7 +751,7 @@
     <span class="sec-label"><span class="num">05</span>caráter do modo</span>
     <div class="sec-actions">
       <button class="level-btn" data-level="0" data-section="character" title="seu nível de entendimento">○</button>
-      <button class="help-btn" data-help="03" aria-label="ajuda">?</button>
+      <button class="help-btn" data-help="05" aria-label="ajuda">?</button>
     </div>
   </div>
   <div class="info">
@@ -761,7 +766,7 @@
     <div class="sec-actions">
       <span class="sec-hint" id="pattern-hint">ascendente · 1 oitava · 90 BPM</span>
       <button class="level-btn" data-level="0" data-section="patterns" title="seu nível de entendimento">○</button>
-      <button class="help-btn" data-help="08" aria-label="ajuda">?</button>
+      <button class="help-btn" data-help="06" aria-label="ajuda">?</button>
     </div>
   </div>
   <div class="pattern-tabs" id="pattern-tabs">
@@ -797,7 +802,7 @@
     <div class="sec-actions">
       <span class="sec-hint" id="voicing-hint">tríade · fundamental</span>
       <button class="level-btn" data-level="0" data-section="harmonic-field" title="seu nível de entendimento">○</button>
-      <button class="help-btn" data-help="05" aria-label="ajuda">?</button>
+      <button class="help-btn" data-help="07" aria-label="ajuda">?</button>
     </div>
   </div>
   <p class="sec-desc">acordes formados empilhando terças sobre cada grau do modo. <em>diatônicos</em> = nativos do modo. <em>emprestados</em> = trazidos do modo paralelo (modal interchange — recurso que permite "colorir" uma harmonia maior com cores menores e vice-versa). <em>dominantes secundárias</em> = acordes de preparação que tonalizam temporariamente outro grau (V7/V, V7/vi, etc.).</p>
@@ -817,7 +822,7 @@
     <div class="sec-actions">
       <span class="sec-hint">click → play sequence</span>
       <button class="level-btn" data-level="0" data-section="cadences" title="seu nível de entendimento">○</button>
-      <button class="help-btn" data-help="09" aria-label="ajuda">?</button>
+      <button class="help-btn" data-help="08" aria-label="ajuda">?</button>
     </div>
   </div>
   <div id="cadences-container"></div>
@@ -829,7 +834,7 @@
     <div class="sec-actions">
       <span class="sec-hint">click → play chord</span>
       <button class="level-btn" data-level="0" data-section="circle" title="seu nível de entendimento">○</button>
-      <button class="help-btn" data-help="06" aria-label="ajuda">?</button>
+      <button class="help-btn" data-help="09" aria-label="ajuda">?</button>
     </div>
   </div>
   <div class="circle-wrap">
@@ -853,7 +858,7 @@
     <div class="sec-actions">
       <span class="sec-hint">click → play chord</span>
       <button class="level-btn" data-level="0" data-section="tonnetz" title="seu nível de entendimento">○</button>
-      <button class="help-btn" data-help="07" aria-label="ajuda">?</button>
+      <button class="help-btn" data-help="10" aria-label="ajuda">?</button>
     </div>
   </div>
   <p class="sec-desc">cada triângulo é um acorde (▲ maior, ▽ menor). compartilhar lados = compartilhar duas notas. clique para tocar e ver o nome do acorde. ative <em>tétrades</em> para mostrar a 7ª associada como ponto auxiliar conectado por linha tracejada.</p>
@@ -1115,7 +1120,105 @@
 </div>
 
 <script>
-const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']; // id interno (hash, parsing) — para exibir use pcName()
+
+// ============ GRAFIA · uma letra por grau ============
+// Nos modos de 7 notas cada grau ganha a letra seguinte: dó menor = C D E♭ F G A♭ B♭ (nunca D♯).
+// Escalas que não têm 7 notas usam a letra do grau correspondente da escala-mãe (campo `letters` em MODES):
+//   pentatônica maior = graus 1 2 3 5 6 · pentatônica menor = 1 ♭3 4 5 ♭7
+//   tom inteiro = 1 2 3 ♯4 ♯5 ♭7 (C D E F♯ G♯ B♭, grafia de dominante 9♯11♭13)
+//   diminuta semitom-tom = 1 ♭2 ♭3 3 ♯4 5 6 ♭7 (C D♭ E♭ E F♯ G A B♭, grafia de 7♭9 — repete a letra do 3º grau)
+//   nessas escalas, se a regra der 𝄪/♭♭ a nota vira a enarmônica simples e E♯/B♯/C♭/F♭ viram a tecla branca (B tom inteiro = B C♯ D♯ F G A)
+// Tônica em tecla preta: fica a grafia (♯ ou ♭) com menos acidentes na escala; empate → ♯.
+// Nota fora da escala: grafia cromática relativa à tônica (♭2 ♭3 ♯4 ♭6 ♭7).
+const LETTERS = ['C','D','E','F','G','A','B'];
+const LETTER_PC = [0,2,4,5,7,9,11];
+const CHROMATIC_LETTER = [0,1,1,2,2,3,3,4,5,5,6,6]; // semitons acima da tônica → passos de letra
+function accText(a){ const t = ['♭♭','♭','','♯','𝄪'][a + 2]; return t === undefined ? '?' : t; }
+function noteAt(letterIdx, pc){
+  const L = ((letterIdx % 7) + 7) % 7;
+  pc = ((pc % 12) + 12) % 12;
+  let a = ((pc - LETTER_PC[L]) % 12 + 12) % 12;
+  if(a > 6) a -= 12;
+  return { letter: L, acc: a, pc: pc, name: LETTERS[L] + accText(a) };
+}
+function modeLetters(m){ return m.letters || m.intervals.map(function(_, i){ return i; }); }
+function spellWith(tonicLetter, tPc, intervals, letters){
+  return intervals.map(function(iv, i){ return noteAt(tonicLetter + letters[i], tPc + iv); });
+}
+function tonicLetterFor(tPc, m){
+  const nat = LETTER_PC.indexOf(tPc);
+  if(nat >= 0) return nat;
+  const sharpL = LETTER_PC.indexOf(tPc - 1), flatL = LETTER_PC.indexOf((tPc + 1) % 12);
+  const cost = function(L){
+    return spellWith(L, tPc, m.intervals, modeLetters(m)).reduce(function(s, n){ const a = Math.abs(n.acc); return s + a + (a > 1 ? 10 : 0); }, 0);
+  };
+  return cost(flatL) < cost(sharpL) ? flatL : sharpL;
+}
+function spellScaleFor(tPc, m){
+  const sp = spellWith(tonicLetterFor(tPc, m), tPc, m.intervals, modeLetters(m));
+  if(!m.letters) return sp; // 7 notas: dobrado é a grafia correta (F𝄪 na húngara de C♯)
+  // escalas simétricas/pentatônicas: a letra é convenção, não grau — dobrado vira a nota simples enarmônica
+  const flats = sp.some(function(n){ return n.acc < 0; });
+  return sp.map(function(n){
+    const whiteKey = LETTER_PC.indexOf(n.pc) >= 0;
+    if(Math.abs(n.acc) < 2 && !(whiteKey && n.acc !== 0)) return n; // E♯/C♭ também viram F/B aqui
+    const nat = LETTER_PC.indexOf(n.pc);
+    return nat >= 0 ? noteAt(nat, n.pc) : noteAt(LETTER_PC.indexOf(flats ? (n.pc + 1) % 12 : n.pc - 1), n.pc);
+  });
+}
+function tonicNameFor(tPc, m){ return spellScaleFor(tPc, m)[0].name; }
+function currentSpelling(){ return spellScaleFor(tonic, currentMode()); }
+function tonicName(){ return currentSpelling()[0].name; }
+// nota de uma pitch class no contexto da tônica e do modo atuais
+function pcNote(pc){
+  pc = ((pc % 12) + 12) % 12;
+  const sp = currentSpelling();
+  for(let i = 0; i < sp.length; i++) if(sp[i].pc === pc) return sp[i];
+  return noteAt(sp[0].letter + CHROMATIC_LETTER[((pc - tonic) % 12 + 12) % 12], pc);
+}
+function pcName(pc){ return pcNote(pc).name; }
+// nome com oitava científica — a oitava segue a letra (B♯3 soa como C4)
+function midiName(midi){
+  const n = pcNote(midi);
+  return n.name + (Math.floor((midi - n.acc) / 12) - 1);
+}
+// grafia cromática relativa à tônica, sem olhar a escala (série harmônica: parciais contam a partir da fundamental)
+function chromaticName(pc){ return noteAt(currentSpelling()[0].letter + CHROMATIC_LETTER[((pc - tonic) % 12 + 12) % 12], pc).name; }
+// alteração de um grau em relação ao maior/justo: '♭3', '♯5', '♭♭7' …
+function degreeLabel(fromNote, toNote){
+  const g = ((toNote.letter - fromNote.letter) % 7 + 7) % 7;
+  let dev = ((toNote.pc - fromNote.pc - LETTER_PC[g]) % 12 + 12) % 12;
+  if(dev > 6) dev -= 12;
+  return accText(dev) + (g + 1);
+}
+// intervalo grafado: letra de baixo, letra de cima, semitons ≥ 0 → 4ª aumentada ≠ 5ª diminuta, 10ª menor ≠ 9ª aumentada
+function spelledInterval(loLetter, hiLetter, semis){
+  const g = ((hiLetter - loLetter) % 7 + 7) % 7;
+  const base = LETTER_PC[g];
+  const k = Math.round((semis - base) / 12);
+  const dev = semis - base - 12 * k;
+  const num = g + 1 + 7 * k;
+  if(num < 1 || Math.abs(dev) > 2) return null;
+  const perfect = (g === 0 || g === 3 || g === 4);
+  let q, word;
+  if(perfect){
+    q = dev === 0 ? 'J' : dev > 0 ? 'A' : 'd';
+    word = dev === 0 ? 'justa' : dev > 0 ? 'aumentada' : 'diminuta';
+  } else {
+    q = dev === 0 ? 'M' : dev === -1 ? 'm' : dev > 0 ? 'A' : 'd';
+    word = dev === 0 ? 'maior' : dev === -1 ? 'menor' : dev > 0 ? 'aumentada' : 'diminuta';
+  }
+  if(Math.abs(dev) === 2) word = (dev > 0 ? 'duplamente aumentada' : 'duplamente diminuta');
+  let name;
+  if(num === 1) name = dev === 0 ? 'uníssono' : 'uníssono ' + (dev > 0 ? 'aumentado' : 'diminuto');
+  else if(num === 8 && dev === 0) name = 'oitava';
+  else if(num === 15 && dev === 0) name = '15ª (2 oitavas)';
+  else name = num + 'ª ' + word;
+  return { short: (dev === 0 && (num === 1 || num % 7 === 1)) ? String(num) : num + q, name: name };
+}
+function letterOfName(name){ return LETTERS.indexOf(String(name || '').charAt(0)); }
+
 
 const JUST_RATIOS = {
   0: 1/1, 1: 16/15, 2: 9/8, 3: 6/5, 4: 5/4, 5: 4/3,
@@ -1147,27 +1250,53 @@ const MODES = [
   { cat:'exóticas', pt:'húngara menor', en:'hungarian minor', intervals:[0,2,3,6,7,8,11], char:3, mood:'também chamada "cigana". duas 2ªs aumentadas (♭3-#4 e ♭6-7) criam um som intenso, dançante, dos balcãs. liszt, bartók, brahms.', flavor:'menor com #4 e 7M'},
   { cat:'exóticas', pt:'dupla harmônica', en:'double harmonic', intervals:[0,1,4,5,7,8,11], char:1, mood:'também chamada "byzantine" ou "árabe maior". maior com ♭2 e ♭6 — duas 2ªs aumentadas. soa exótica até para ouvidos não-ocidentais.', flavor:'maior com ♭2 e ♭6'},
 
-  { cat:'simétricas', pt:'tom inteiro', en:'whole tone', intervals:[0,2,4,6,8,10], char:null, mood:'só tons inteiros — sem semitons, sem hierarquia tonal. usada por debussy ("voiles"). soa flutuante, suspensa, sem direção — como sonho ou submersão.', flavor:'6 notas · só 2M'},
-  { cat:'simétricas', pt:'diminuta H-W', en:'half-whole dim.', intervals:[0,1,3,4,6,7,9,10], char:null, mood:'8 notas alternando ½ tom e tom inteiro. base do vocabulário improvisatório sobre acordes dim7 e 7♭9. tensa, jazzística, oscilante.', flavor:'8 notas · ½–1–½–1...'},
+  { cat:'simétricas', pt:'tom inteiro', en:'whole tone', intervals:[0,2,4,6,8,10], letters:[0,1,2,3,4,6], char:null, mood:'só tons inteiros — sem semitons, sem hierarquia tonal. usada por debussy ("voiles"). soa flutuante, suspensa, sem direção — como sonho ou submersão.', flavor:'6 notas · só 2M'},
+  { cat:'simétricas', pt:'diminuta H-W', en:'half-whole dim.', intervals:[0,1,3,4,6,7,9,10], letters:[0,1,2,2,3,4,5,6], char:null, mood:'8 notas alternando ½ tom e tom inteiro. é a escala do acorde dominante 7♭9 (com ♯9, ♯11 e 13) — a versão tom-semitom é a que serve ao dim7. tensa, jazzística, oscilante.', flavor:'8 notas · ½–1–½–1...'},
 
-  { cat:'pentatônicas', pt:'pent. maior', en:'major pentatonic', intervals:[0,2,4,7,9], char:null, mood:'5 notas — esqueleto do som "popular ocidental". sem semitons, impossível tocar nota errada. country, gospel, folk, j-pop.', flavor:'5 notas · sem semitom'},
-  { cat:'pentatônicas', pt:'pent. menor', en:'minor pentatonic', intervals:[0,3,5,7,10], char:null, mood:'5 notas — base do blues, rock, soul. relativa menor da pentatônica maior. consonância máxima com mínimo material melódico.', flavor:'5 notas · sem 2 e 6'},
+  { cat:'pentatônicas', pt:'pent. maior', en:'major pentatonic', intervals:[0,2,4,7,9], letters:[0,1,2,4,5], char:null, mood:'5 notas — esqueleto do som "popular ocidental". sem semitons, impossível tocar nota errada. country, gospel, folk, j-pop.', flavor:'5 notas · sem semitom'},
+  { cat:'pentatônicas', pt:'pent. menor', en:'minor pentatonic', intervals:[0,3,5,7,10], letters:[0,2,3,4,6], char:null, mood:'5 notas — base do blues, rock, soul. relativa menor da pentatônica maior. consonância máxima com mínimo material melódico.', flavor:'5 notas · sem 2 e 6'},
 ];
 
+// Cadências por função: cada acorde tem raiz (r, semitons acima da tônica), qualidade (q: M maior · m menor · d diminuto)
+// e 7ª (s7, semitons acima da raiz, usada no voicing tétrade) fixas. `maj` vale para modos de 3ª maior e `min` para
+// os de 3ª menor; acorde que não cabe no modo atual aparece sinalizado (empréstimo), nunca trocado em silêncio.
+// inv:1 = 1ª inversão (3ª no baixo).
 const CADENCES = [
-  { group:'clássicas', label:'autêntica',  rom:'V → I',           degrees:[4,0]     },
-  { group:'clássicas', label:'plagal',     rom:'IV → I',          degrees:[3,0]     },
-  { group:'clássicas', label:'deceptiva',  rom:'V → vi',          degrees:[4,5]     },
-  { group:'clássicas', label:'meia',       rom:'I → V',           degrees:[0,4]     },
-  { group:'clássicas', label:'completa',   rom:'I-IV-V-I',        degrees:[0,3,4,0] },
-  { group:'jazz',      label:'turnaround', rom:'ii-V-I',          degrees:[1,4,0]   },
-  { group:'jazz',      label:'rhythm',     rom:'I-vi-ii-V',       degrees:[0,5,1,4] },
-  { group:'pop',       label:'doo-wop',    rom:'I-vi-IV-V',       degrees:[0,5,3,4] },
-  { group:'pop',       label:'axis',       rom:'I-V-vi-IV',       degrees:[0,4,5,3] },
-  { group:'pop',       label:'pop-alt',    rom:'vi-IV-I-V',       degrees:[5,3,0,4] },
-  { group:'modal',     label:'modal min',  rom:'i-iv-v-i',        degrees:[0,3,4,0] },
-  { group:'modal',     label:'andaluza',   rom:'i-♭VII-♭VI-V',    degrees:[0,6,5,4] },
-  { group:'modal',     label:'rock min',   rom:'i-♭VII-♭VI-♭VII', degrees:[0,6,5,6] },
+  { group:'clássicas', label:'perfeita', alt:'autêntica',
+    maj:[{r:7,q:'M',s7:10},{r:0,q:'M',s7:11}], min:[{r:7,q:'M',s7:10},{r:0,q:'m',s7:10}] },
+  { group:'clássicas', label:'imperfeita', alt:'sensível no baixo',
+    maj:[{r:7,q:'M',s7:10,inv:1},{r:0,q:'M',s7:11}], min:[{r:7,q:'M',s7:10,inv:1},{r:0,q:'m',s7:10}] },
+  { group:'clássicas', label:'plagal', alt:'amém',
+    maj:[{r:5,q:'M',s7:11},{r:0,q:'M',s7:11}], min:[{r:5,q:'m',s7:10},{r:0,q:'m',s7:10}] },
+  { group:'clássicas', label:'de engano', alt:'interrompida',
+    maj:[{r:7,q:'M',s7:10},{r:9,q:'m',s7:10}], min:[{r:7,q:'M',s7:10},{r:8,q:'M',s7:11}] },
+  { group:'clássicas', label:'suspensiva', alt:'meia cadência',
+    maj:[{r:0,q:'M',s7:11},{r:7,q:'M',s7:10}], min:[{r:0,q:'m',s7:10},{r:7,q:'M',s7:10}] },
+  { group:'clássicas', label:'completa', alt:'tônica · subdominante · dominante · tônica',
+    maj:[{r:0,q:'M',s7:11},{r:5,q:'M',s7:11},{r:7,q:'M',s7:10},{r:0,q:'M',s7:11}],
+    min:[{r:0,q:'m',s7:10},{r:5,q:'m',s7:10},{r:7,q:'M',s7:10},{r:0,q:'m',s7:10}] },
+  { group:'jazz', label:'ii-V-I', alt:'dois-cinco-um',
+    maj:[{r:2,q:'m',s7:10},{r:7,q:'M',s7:10},{r:0,q:'M',s7:11}], min:[{r:2,q:'d',s7:10},{r:7,q:'M',s7:10},{r:0,q:'m',s7:10}] },
+  { group:'jazz', label:'turnaround', alt:'volta ao início',
+    maj:[{r:0,q:'M',s7:11},{r:9,q:'m',s7:10},{r:2,q:'m',s7:10},{r:7,q:'M',s7:10}],
+    min:[{r:0,q:'m',s7:10},{r:8,q:'M',s7:11},{r:2,q:'d',s7:10},{r:7,q:'M',s7:10}] },
+  { group:'pop', label:'doo-wop', alt:'anos 50',
+    maj:[{r:0,q:'M',s7:11},{r:9,q:'m',s7:10},{r:5,q:'M',s7:11},{r:7,q:'M',s7:10}] },
+  { group:'pop', label:'axis', alt:'pop dos anos 2000',
+    maj:[{r:0,q:'M',s7:11},{r:7,q:'M',s7:10},{r:9,q:'m',s7:10},{r:5,q:'M',s7:11}] },
+  { group:'pop', label:'pop-alt', alt:'começa no menor',
+    maj:[{r:9,q:'m',s7:10},{r:5,q:'M',s7:11},{r:0,q:'M',s7:11},{r:7,q:'M',s7:10}],
+    min:[{r:0,q:'m',s7:10},{r:8,q:'M',s7:11},{r:3,q:'M',s7:11},{r:10,q:'M',s7:10}] },
+  { group:'modal', label:'menor modal', alt:'v menor, sem sensível',
+    min:[{r:0,q:'m',s7:10},{r:5,q:'m',s7:10},{r:7,q:'m',s7:10},{r:0,q:'m',s7:10}] },
+  { group:'modal', label:'dórica', alt:'IV maior no menor',
+    min:[{r:0,q:'m',s7:10},{r:5,q:'M',s7:10},{r:0,q:'m',s7:10}] },
+  { group:'modal', label:'mixolídia', alt:'♭VII maior no maior',
+    maj:[{r:0,q:'M',s7:10},{r:10,q:'M',s7:11},{r:5,q:'M',s7:11},{r:0,q:'M',s7:10}] },
+  { group:'modal', label:'andaluza', alt:'desce até o V maior',
+    min:[{r:0,q:'m',s7:10},{r:10,q:'M',s7:10},{r:8,q:'M',s7:11},{r:7,q:'M',s7:10}] },
+  { group:'modal', label:'rock menor', alt:'sem dominante',
+    min:[{r:0,q:'m',s7:10},{r:10,q:'M',s7:10},{r:8,q:'M',s7:11},{r:10,q:'M',s7:10}] },
 ];
 
 // MODAL CONTENT
@@ -1177,17 +1306,17 @@ const MODAL_DOCS = {
 
 <p><b>P · parallel</b> — troca a 3ª. <code>C → Cm</code>. mantém fundamental e 5ª; uma nota se move por semitom (E → E♭). é o que a teoria tradicional chama de "modo paralelo".</p>
 
-<p><b>L · leading-tone</b> — em acorde maior, desliza a fundamental um semitom abaixo virando a 7ª maior do novo acorde. <code>C (C-E-G) → Em (E-G-B)</code>: C vira B. em acorde menor, é a 5ª que sobe um semitom: <code>Cm (C-E♭-G) → A♭ (A♭-C-E♭)</code>.</p>
+<p><b>L · leading-tone</b> — em acorde maior, a fundamental desce um semitom e vira a 5ª do novo acorde. <code>C (C-E-G) → Em (E-G-B)</code>: C vira B, a 5ª do Em. em acorde menor, é a 5ª que sobe um semitom: <code>Cm (C-E♭-G) → A♭ (A♭-C-E♭)</code>.</p>
 
 <p><b>R · relative</b> — maior ↔ menor relativo. <code>C → Am</code>: a fundamental desce uma 3ª menor (uma nota se move por tom inteiro). mantém duas notas em comum.</p>
 
-<p><em>princípio da parsimônia</em> — cada transformação move o mínimo possível. esse "voice leading suave" é o que faz progressões neo-riemann soarem fluidas mesmo entre acordes distantes pelo círculo das quintas. <code>C → A♭</code> via dominantes seria estranho; via P-L-P chega lá em três passos quase imperceptíveis.</p>
+<p><em>princípio da parsimônia</em> — cada transformação move o mínimo possível. esse "voice leading suave" é o que faz progressões neo-riemann soarem fluidas mesmo entre acordes distantes pelo círculo das quintas. <code>C → A♭</code> via dominantes seria estranho; via <code>PL</code> chega lá em dois passos (<code>C → Cm → A♭</code>), cada um movendo uma nota só.</p>
 
 <p><em>história</em> — a ideia é de <b>hugo riemann</b> (1849-1919), formalizada por <b>david lewin</b> em <em>Generalized Musical Intervals and Transformations</em> (1987). <b>richard cohn</b> popularizou no séc. xxi com <em>Audacious Euphony</em> (Oxford, 2012), aplicando à harmonia cromática de wagner, schubert, brahms.</p>
 
-<p><em>ciclos</em> — alternar P-L gera o <b>hexatônico</b>: 6 acordes equidistantes (<code>C → Cm → A♭ → A♭m → E → Em → C</code>). alternar L-R gera o <b>octatônico</b>. esses ciclos são vocabulário de scriabin, debussy, bartók, e da abertura de <em>tristão e isolda</em>.</p>
+<p><em>ciclos</em> — alternar P-L gera o <b>hexatônico</b>: 6 acordes equidistantes (<code>C → Cm → A♭ → A♭m → E → Em → C</code>). alternar P-R gera o <b>octatônico</b>: 8 acordes (<code>C → Cm → E♭ → E♭m → G♭ → F♯m → A → Am → C</code>) cujas notas cabem todas na escala diminuta. alternar L-R anda pelo círculo das quintas (<code>C → Em → G → Bm → D…</code>). esses ciclos aparecem em liszt, wagner, rimsky-korsakov e na harmonia de trilha de cinema.</p>
 
-<p><em>cultura recente</em> — <b>jacob collier</b> trouxe essas ideias pro mainstream junto com o conceito de <em>harmonia negativa</em> (espelhar acordes pelo eixo entre 3M e 5J). os vídeos dele sobre L e R são gateway pra muita gente.</p>
+<p><em>cultura recente</em> — <b>jacob collier</b> trouxe essas ideias pro mainstream junto com o conceito de <em>harmonia negativa</em> (ideia de ernst levy: espelhar as notas pelo eixo que fica entre a 3ª menor e a 3ª maior da tônica — em dó, entre E♭ e E; assim G vira C e o V vira um iv). os vídeos dele sobre L e R são gateway pra muita gente.</p>
 
 <p><em>geometria no tonnetz</em> — P, L e R são <b>reflexões através das três arestas</b> do triângulo do acorde atual. cada aresta liga duas notas comuns aos dois acordes; a transformação "espelha" a terceira nota pra outro lado. clique um triângulo, depois P, L ou R, e veja a animação.</p>
 ` },
@@ -1213,23 +1342,25 @@ const MODAL_DOCS = {
   <div class="welcome-card">
     <div class="wc-num">04 · seu progresso</div>
     <div class="wc-title">marque seu nível</div>
-    <div class="wc-body">o círculo <code>○</code> ao lado de cada seção alterna entre <em>não vi</em>, <em>aprendendo</em> e <em>domino</em>. fica salvo no navegador. a barra no topo mostra o avanço geral.</div>
+    <div class="wc-body">o círculo <code>○</code> ao lado de cada seção alterna entre <em>não vi</em>, <em>explorei</em>, <em>entendi</em> e <em>domino</em>. fica salvo no navegador. a barra no topo mostra o avanço geral.</div>
   </div>
 </div>
 
 <div class="welcome-journey">
-<b>a jornada — 10 seções em ordem pedagógica</b>
+<b>a jornada — 12 seções em ordem pedagógica</b>
 <ol>
   <li><b>tônica</b> — a "casa" da escala</li>
   <li><b>série harmônica · timbre</b> — de onde vem cada som</li>
   <li><b>escala</b> — temperamento igual vs justa entonação</li>
-  <li><b>modo</b> — 16 escalas em 5 famílias</li>
+  <li><b>modo</b> — 17 escalas em 5 famílias</li>
   <li><b>caráter do modo</b> — o que torna cada modo único</li>
   <li><b>padrões melódicos</b> — escalas em movimento</li>
-  <li><b>círculo das quintas</b> — relações tonais</li>
-  <li><b>cadências</b> — gestos harmônicos canônicos</li>
   <li><b>campo harmônico</b> — acordes nativos do modo</li>
+  <li><b>cadências</b> — gestos harmônicos canônicos</li>
+  <li><b>círculo das quintas</b> — relações tonais</li>
   <li><b>tonnetz</b> — geometria da harmonia</li>
+  <li><b>piano circular</b> — oitavas em anéis, croma e altura</li>
+  <li><b>lissajous</b> — a forma de um intervalo</li>
 </ol>
 </div>
 
@@ -1246,29 +1377,29 @@ const MODAL_DOCS = {
 <p>a escolha da tônica define a armadura de chave (quantos sustenidos ou bemóis aparecem). a cada passo no sentido horário do ciclo de quintas, acrescenta-se um sustenido. anti-horário, um bemol. <code>C → G → D → A → E → B → F#</code>.</p>
 <p><em>frequência de A4 = 440 Hz</em> é padrão internacional desde 1955. orquestras barrocas usam <code>A=415 Hz</code> (quase um semitom abaixo). algumas orquestras europeias modernas afinam em <code>A=442</code> ou <code>A=443 Hz</code> pra um som mais "brilhante".</p>
 ` },
-  '02': { title:'02 · modo', body:`
+  '04': { title:'04 · modo', body:`
 <p><b>modo</b> é um padrão específico de intervalos que define o caráter melódico/harmônico. os 7 modos gregos são as 7 rotações possíveis da escala maior — cada um começando em um grau diferente.</p>
 <p>os 7 modos diatônicos compartilham as <em>mesmas notas</em> mas geram 7 sonoridades distintas porque a tônica é diferente em cada um. <code>C jônio</code> e <code>D dórico</code> têm exatamente as teclas brancas do piano — mas seu "centro" é diferente, então soam diferente.</p>
 <p>além dos gregos, existem famílias inteiras agrupadas em categorias:</p>
-<p><b>harmônicas</b> — menor harmônica (com 7M elevada para criar dominante real) e seus modos derivados (frígia dominante, lídio dominante).</p>
+<p><b>harmônicas</b> — duas famílias de menor com 7M elevada: a <em>menor harmônica</em> (que cria a dominante real) e seu 5º modo, a <em>frígia dominante</em>; e a <em>menor melódica</em> e seu 4º modo, o <em>lídio dominante</em>.</p>
 <p><b>simétricas</b> — dividem a oitava em partes iguais. <em>tom inteiro</em> (6 notas, todas separadas por 2M) e <em>diminuta</em> (8 notas, alternando ½ tom e 1 tom). não têm hierarquia tonal — são intervalos repetidos.</p>
-<p><b>exóticas</b> — escalas com duas 2ªs aumentadas (frígia dominante, dupla harmônica, húngara menor). som inconfundível de flamenco, klezmer, balcãs, oriente médio.</p>
+<p><b>exóticas</b> — dupla harmônica e húngara menor, cada uma com duas 2ªs aumentadas (a frígia dominante tem uma só). som inconfundível de flamenco, klezmer, balcãs, oriente médio.</p>
 <p><b>pentatônicas</b> — 5 notas, sem semitons. base universal de música popular (blues, country, gospel, j-pop, africana).</p>
 ` },
-  '03': { title:'03 · caráter do modo', body:`
+  '05': { title:'05 · caráter do modo', body:`
 <p>cada modo tem uma <b>nota característica</b> — o grau que mais o distingue do paralelo maior ou menor. é nela que o "som modal" mora.</p>
 <p>em <em>dórico</em>, a 6ª maior (acima da 6ª menor do menor natural) cria aquela "melancolia esperançosa". em <em>lídio</em>, a 4ª aumentada cria o etéreo, suspenso. em <em>frígio</em>, a 2ª menor cria o exótico, espanhol. em <em>mixolídio</em>, a 7ª menor cria o ensolarado-sem-resolução.</p>
 <p>quando você quer escrever <em>no modo</em> (não apenas usá-lo de passagem), enfatize a nota característica — a escolha da tônica + uso recorrente dessa nota define o som modal. sem ela, jônio e mixolídio podem soar quase iguais; eólio e dórico idem.</p>
 <p>a nota característica também guia <em>de qual acorde do campo harmônico</em> você obtém o caráter modal. em lídio, é o II maior (que não existe em jônio); em frígio, é o ♭II maior; em mixolídio, é o ♭VII maior.</p>
 ` },
-  '04': { title:'04 · escala', body:`
+  '03': { title:'03 · escala', body:`
 <p>a <b>escala</b> é a sequência ordenada das notas do modo, partindo da tônica e subindo até a oitava. os números 1-7 (ou 1-N) são os "graus" da escala.</p>
 <p><b>temperamento igual (12-TET)</b> divide a oitava em 12 semitons exatamente iguais (cada um = 100 cents = razão de frequência <code>¹²√2 ≈ 1.0595</code>). isso permite tocar em qualquer tom no piano sem reafinar — preço a pagar: nenhum intervalo (exceto a oitava) é matematicamente "puro". a terça maior está cerca de <span class="accent">+14¢</span> desafinada em relação à terça pura.</p>
 <p><b>justa entonação (5-limit)</b> usa razões inteiras: oitava <code>2/1</code>, quinta <code>3/2</code>, quarta <code>4/3</code>, terça maior <code>5/4</code>, terça menor <code>6/5</code>, sexta maior <code>5/3</code>, sétima maior <code>15/8</code>. os intervalos soam mais cristalinos, consonantes — mas ao modular pra outro tom, as notas saem desafinadas em relação à nova tônica.</p>
 <p>bach popularizou o "cravo bem temperado" (precursor do temperamento igual) pra poder modular livremente entre todos os 24 tons maiores e menores. a maioria da música ocidental hoje é em 12-TET. quartetos de cordas e corais a cappella tendem a deslizar pra justa entonação naturalmente — porque o ouvido prefere razões inteiras quando elas são possíveis.</p>
-<p>maqamat árabes e ragas indianas <em>preservam</em> microtonalidades — o quarto-de-tom árabe e o shruti indiano não cabem em 12-TET, e isso é parte da identidade cultural dessas tradições.</p>
+<p>maqamat árabes e ragas indianas <em>preservam</em> microtonalidades: as <em>notas neutras</em> do maqam (como uma 3ª entre a menor e a maior, muitas vezes escrita como "quarto de tom", mas afinada de forma variável de região para região) e os shruti indianos não cabem em 12-TET — e isso é parte da identidade dessas tradições.</p>
 ` },
-  '05': { title:'05 · campo harmônico · formação · empréstimos · preparação', body:`
+  '07': { title:'07 · campo harmônico · formação · empréstimos · preparação', body:`
 <p>empilhando terças sobre cada grau da escala, formamos os <b>acordes diatônicos</b> do modo — o "vocabulário harmônico" disponível.</p>
 <p>em jônio: <code>I, ii, iii, IV, V, vi, vii°</code>. em harmônica menor: <code>i, ii°, ♭III+, iv, V, ♭VI, vii°</code> — note o V <em>maior</em> (não menor) e o ♭III aumentado, que vêm da 7M elevada.</p>
 <p>cada terça empilhada é maior (4 semitons) ou menor (3 semitons) dependendo de quais notas da escala caem em cima. essa alternância gera os 4 tipos básicos de tríade:</p>
@@ -1288,32 +1419,32 @@ const MODAL_DOCS = {
 <p>clique em qualquer acorde diatônico para ver a <b>visualização do empilhamento</b> (torre de notas) — o baixo aparece em preto na base, e cada nota é marcada pelo intervalo que tem em relação à fundamental. troque a inversão no menu lateral pra ver a torre se reorganizar.</p>
 <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
 <p><b>empréstimos modais</b> (modal interchange) — recurso composicional que permite "trazer" acordes do modo paralelo (mesmo tonic, modo oposto). em <code>C jônio</code>, o paralelo é <code>C eólio</code> (menor) — então acordes como <code>Cm</code>, <code>Fm</code>, <code>A♭</code>, <code>B♭</code>, <code>E♭</code> ficam disponíveis como empréstimos.</p>
-<p>esse é o segredo do colorido harmônico de muita música pop, jazz e cinema: <em>The Beatles</em> em "Eleanor Rigby" e "While My Guitar Gently Weeps"; <em>Radiohead</em> em "Creep" (♭III emprestado de eólio); <em>Coldplay</em> em "Yellow"; trilhas de Hans Zimmer e John Williams. permite passagens "agridoces" — som em maior com cor de menor, ou vice-versa.</p>
+<p>esse é o segredo do colorido harmônico de muita música pop, jazz e cinema: o <em>iv menor</em> em tom maior — <em>The Beatles</em> em "In My Life" (Dm em lá maior) e <em>Radiohead</em> em "Creep" (Cm em sol maior, depois do B maior, que é outro recurso: a dominante do vi); o <em>♭VII</em> do coro final de "Hey Jude" (E♭ em fá maior); trilhas de Hans Zimmer e John Williams. permite passagens "agridoces" — som em maior com cor de menor, ou vice-versa.</p>
 <p><b>na aba "emprestados"</b> aparecem só os acordes que <em>não</em> são diatônicos do modo atual. em jônio você verá os acordes característicos do paralelo menor, em eólio você verá os do paralelo maior.</p>
 <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
 <p><b>dominantes secundárias</b> (acordes de preparação) — <code>V7</code> de qualquer outro grau, não só do I. um <code>V7/V</code> "tonaliza" temporariamente o V — ele aparece como se fosse a tônica por um instante. em C jônio: <code>D7 → G</code> é o V7/V. em jazz é onipresente — base de "rhythm changes" (Anthropology, I Got Rhythm).</p>
 <p>cada V7 secundário introduz uma nota cromática (a 3M do V7 que vira leading-tone — sensível — pro alvo). são "atalhos" que adicionam tensão dirigida sem modular permanentemente. <em>Bach</em> usava obsessivamente. <em>Burt Bacharach</em> em "Anyone Who Had a Heart". <em>Tom Jobim</em> em quase todo standard de bossa.</p>
 <p><b>na aba "dominantes 2ª"</b> aparece um V7 apontando pra cada grau diatônico (exceto vii°). cada card mostra "→ alvo" — você ouve o acorde de preparação <em>e</em> sabe pra onde ele resolve. clique e pratique a sensação de tensão dirigida.</p>
 <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
-<p><b>quíntades · acordes com 9ª</b> — empilhando 5 terças, formamos extensões além da tétrade: <code>maj9</code>, <code>9</code> (dom9), <code>m9</code>, <code>m7♭9</code>, etc. são o vocabulário do jazz tradicional, bossa, MPB sofisticada, R&B contemporâneo. <em>Bill Evans</em>, <em>Tom Jobim</em>, <em>Stevie Wonder</em>, <em>Burt Bacharach</em> — todos viviam de acordes com 9ª.</p>
+<p><b>quíntades · acordes com 9ª</b> — empilhando 4 terças (5 notas), formamos extensões além da tétrade: <code>maj9</code>, <code>9</code> (dom9), <code>m9</code>, <code>m7♭9</code>, etc. são o vocabulário do jazz tradicional, bossa, MPB sofisticada, R&B contemporâneo. <em>Bill Evans</em>, <em>Tom Jobim</em>, <em>Stevie Wonder</em>, <em>Burt Bacharach</em> — todos viviam de acordes com 9ª.</p>
 <p><b>diferença entre 2ª e 9ª</b> — tecnicamente é a mesma nota (D em relação a C), mas o nome muda conforme a oitava: 2ª = <em>colada</em> à fundamental (cluster áspero, fricção); 9ª = <em>uma oitava acima</em> (espaçada, doce, brilhante). a sub-seção <em>intervalos compostos</em> abaixo do campo harmônico permite ouvir a diferença diretamente.</p>
-<p>o nome <code>add9</code> diz pro músico: "toque o D no agudo, não colado no C". Já <code>add2</code> ou <code>sus2</code> diz: "toque o D no mesmo registro do C". A escolha entre uma e outra carrega <em>intenção sonora</em>. <code>Cadd9</code> (C-E-G + D agudo) tem o som romântico de "Let It Be"; <code>Csus2</code> (C-D-G) tem o som ambíguo de "every Police song".</p>
+<p><code>add9</code> e <code>add2</code> <em>somam</em> o D à tríade e mantêm a 3ª: <code>Cadd9</code> = C-E-G + D no agudo (aberto, brilhante); <code>Cadd2</code> = C-D-E-G, com o D colado (mais áspero). <code>sus2</code> é outra coisa: o D <em>substitui</em> a 3ª — <code>Csus2</code> = C-D-G, nem maior nem menor, um som suspenso que pede resolução. a escolha carrega <em>intenção sonora</em>.</p>
 <p>a mesma lógica aplica-se a 4ª/11ª e 6ª/13ª. todos são <b>intervalos compostos</b> — a 9ª = 2ª + oitava, a 11ª = 4ª + oitava, a 13ª = 6ª + oitava.</p>
 <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
-<p><b>numerais romanos</b> — maiúsculos para maiores, minúsculos para menores. <code>°</code> = diminuto, <code>+</code> = aumentado. <code>♭</code>/<code>#</code> antes do numeral indicam alteração da fundamental. esse sistema é a base da harmonia funcional desde Rameau (1722).</p>
+<p><b>numerais romanos</b> — maiúsculos para maiores, minúsculos para menores. <code>°</code> = diminuto, <code>+</code> = aumentado. <code>♭</code>/<code>♯</code> antes do numeral indicam alteração da fundamental em relação à escala maior. os numerais romanos vêm de <em>Abbé Vogler</em> (1776) e <em>Gottfried Weber</em> (1817); a ideia de baixo fundamental por trás deles é de <em>Rameau</em> (1722).</p>
 ` },
-  '06': { title:'06 · círculo das quintas', body:`
+  '09': { title:'09 · círculo das quintas', body:`
 <p>cada passo no sentido <b>horário</b> sobe uma quinta justa (+7 semitons, ou em armadura de chave: <em>+1 sustenido</em>). anti-horário, sobe uma quarta justa (+5 semitons, ou +1 bemol).</p>
 <p>os 12 passos completam a volta — mas só em temperamento igual. em quintas justas <em>puras</em> (razão 3/2), 12 quintas seriam ligeiramente maiores que 7 oitavas — diferença chamada <b>comma pitagórica</b> (~23¢, perceptível). é por isso que o piano é "temperado": cada quinta é levemente diminuída pra fechar o ciclo.</p>
 <p><b>anel externo</b> — tons maiores. <b>anel interno</b> — relativos menores (a 6ª maior de cada tom maior). a mesma armadura de chave serve pra ambos: <code>C maior</code> e <code>A menor</code> não têm sustenidos nem bemóis.</p>
 <p>quando o modo atual é selecionado, os anéis mostram quais acordes maiores e menores estão presentes no campo harmônico. a tônica fica em destaque (preto). acordes que contêm a nota característica recebem borda laranja.</p>
 <p>compositores usam o círculo intuitivamente: progressões "fortes" se movem por quintas (V → I, ii → V → I), porque cada salto compartilha 6 notas das 7 da escala — máxima continuidade. saltos longos no círculo (ex: C → F#) soam dramáticos porque saem totalmente da armadura.</p>
 ` },
-  '07': { title:'07 · tonnetz · rede tonal', body:`
+  '10': { title:'10 · tonnetz · rede tonal', body:`
 <p>o <b>tonnetz</b> é uma rede tonal descoberta por <em>leonhard euler</em> em 1739, redescoberta por <em>hugo riemann</em> no séc. xix, e levada ao extremo por <em>dmitri tymoczko</em> (princeton) em <em>a geometry of music</em> (2011).</p>
 <p>cada <b>vértice</b> é uma nota; cada <b>triângulo</b> é um acorde. vizinhança geométrica = vizinhança harmônica.</p>
 <p><b>eixos</b> — <code>→</code> quintas justas (+7), <code>↗</code> terças maiores (+4), <code>↘</code> terças menores (−3). triângulos <code>▲</code> apontando para cima são acordes maiores; <code>▽</code> apontando para baixo são menores.</p>
-<p>acordes que <em>compartilham um lado</em> compartilham 2 notas — são "vizinhos próximos" harmonicamente. <code>C maior</code> e <code>A menor</code> compartilham o lado <code>C-E</code> (relativa menor). <code>C maior</code> e <code>F maior</code> compartilham <code>C-E</code> também (mediante). isso explica por que essas progressões soam "naturais" — geometricamente não saíram do lugar.</p>
+<p>acordes que <em>compartilham um lado</em> compartilham 2 notas — são "vizinhos próximos" harmonicamente. <code>C maior</code> e <code>A menor</code> compartilham o lado <code>C-E</code> (R, relativa). <code>C maior</code> e <code>E menor</code> compartilham <code>E-G</code> (L). <code>C maior</code> e <code>C menor</code> compartilham <code>C-G</code> (P, paralela). isso explica por que essas progressões soam "naturais" — geometricamente não saíram do lugar.</p>
 <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
 <p><b>nome do acorde ao tocar</b> — clique em qualquer triângulo e o nome do acorde aparece flutuando dentro dele por um instante. ajuda a memorizar a posição visual de cada acorde.</p>
 <p><b>tétrades (modo 7ª)</b> — ao ativar a aba <em>tétrades</em>, cada triângulo ganha um overlay tracejado conectando o centróide à posição da 7ª no tonnetz. tríades maiores recebem 7M (formando <code>maj7</code>) com tracejado laranja; tríades menores recebem 7m (formando <code>m7</code>) com tracejado preto.</p>
@@ -1323,33 +1454,40 @@ const MODAL_DOCS = {
 <p>quando você muda de modo, observe como os triângulos do campo harmônico se reorganizam. em <code>C jônio</code> os 6 acordes maj/min do campo formam um cluster contíguo. em modos exóticos (frígia dominante, double harmonic) os triângulos saltam, refletindo as 2ªs aumentadas da escala.</p>
 <p>tymoczko provou que o espaço dos acordes é um <b>orbifold</b> topológico — modulações são caminhos contínuos nesse espaço. a primeira frase de <em>tristão e isolda</em> de wagner traçada no tonnetz é uma espiral elegantíssima.</p>
 ` },
-  '08': { title:'08 · padrões melódicos', body:`
+  '06': { title:'06 · padrões melódicos', body:`
 <p>tocar uma escala em <b>padrões</b> é como músicos praticam — e cada padrão revela aspectos diferentes do modo.</p>
 <p><b>ascendente / descendente</b> — afirma a estrutura intervalar. ouvir nos dois sentidos revela como o modo "soa" subindo vs. descendo. modos com nota característica saliente (lídio, frígio, mixolídio) mudam de cor dependendo da direção.</p>
 <p><b>ida e volta</b> — útil pra perceber a tensão entre tônica e oitava. a nota característica aparece duas vezes (no caminho de subida e no de descida).</p>
 <p><b>em terças</b> — sequência <code>1-3-2-4-3-5-4-6-5-7-6-8</code>. cada par é uma terça (maior ou menor) da escala. revela como as cores intervalares alternam ao longo da escala — fundamental para entender vozes paralelas em terças.</p>
-<p><b>em quartas</b> — <code>1-4-2-5-3-6-4-7-5-8</code>. mais aberto, mais "moderno". <em>coltrane</em> construiu solos inteiros em quartas em "giant steps" e "a love supreme".</p>
+<p><b>em quartas</b> — <code>1-4-2-5-3-6-4-7-5-8</code>. mais aberto, mais "moderno" — o som de <em>mccoy tyner</em>, pianista de coltrane em "a love supreme", que popularizou acordes e linhas em quartas. ("giant steps" é outra ideia: tonalidades que andam por terças maiores.)</p>
 <p><b>tetracordes</b> — grupos de 4 notas adjacentes que rodam pela escala: <code>1234-2345-3456-...</code>. estudo essencial de articulação em jazz, clássico, e técnica de instrumentos.</p>
 <p>caso especial: a <em>melódica menor</em> tradicional tem versão diferente subindo (com 6M e 7M, como aqui) e descendo (com 6m e 7m, voltando ao eólio). essa "dupla face" é a justificativa histórica do nome — "melódica" porque seu uso melódico ascendente cria linhas mais fluidas que a harmônica menor. a versão moderna (jazz minor) usa as mesmas notas nos dois sentidos.</p>
 <p><b>BPM</b> = batidas por minuto, uma nota por batida. <code>60</code> = lento contemplativo (largo), <code>90</code> = andante, <code>120</code> = allegro confortável, <code>160</code> = rápido (jazz uptempo).</p>
 ` },
-  '09': { title:'09 · cadências', body:`
+  '08': { title:'08 · cadências', body:`
 <p>uma <b>cadência</b> é uma sequência de acordes que cria sentido harmônico — uma frase com início, meio e fim. cada cadência tem uma função expressiva específica, refinada por séculos de prática musical.</p>
-<p><b>autêntica</b> · <code>V → I</code> — a resolução máxima. o V (com 7m formando trítono entre 3M e 7m) "puxa" pra I com força gravitacional. é a frase final por excelência. mozart, bach, beatles — qualquer música em tom maior tende a encerrar com isso.</p>
-<p><b>plagal</b> · <code>IV → I</code> — cadência "amém". som de igreja, mais suave que a autêntica. hinos protestantes, "let it be" dos beatles termina assim.</p>
-<p><b>deceptiva</b> · <code>V → vi</code> — frustra a expectativa. você espera o I e recebe o vi. usado para prolongar tensão, criar virada inesperada. wagner abusava disso em <em>tristão</em>.</p>
-<p><b>meia cadência</b> · <code>I → V</code> — termina no V, suspendendo. som de "to be continued". muito comum em frases de exposição de sonatas clássicas.</p>
-<p><b>ii-V-I</b> — turnaround do jazz. cada acorde "puxa" pro próximo via círculo de quintas: ii (predominante) → V (dominante) → I (tônica). forma blocos de 8 compassos em <em>standards</em>. duke ellington, miles davis, bill evans — toda a gramática do jazz pré-modal está aqui.</p>
-<p><b>I-vi-IV-V</b> (doo-wop) — a progressão dos anos 50. "stand by me", "earth angel", "blue moon", "every breath you take". cíclica, infantil, memorável.</p>
-<p><b>I-V-vi-IV</b> (axis of awesome) — a progressão pop dominante desde os anos 90. centenas de hits compartilham essa progressão idêntica: "let it be", "no woman no cry", "with or without you", "where is the love", "someone like you", "complicated", "viva la vida". virou meme — o axis of awesome fez um medley demonstrando.</p>
-<p><b>vi-IV-I-V</b> — variação da axis começando no relativo menor. "cryin'" do aerosmith, "self esteem" do offspring, "take on me" do a-ha. dá um caráter melancólico-pra-feliz.</p>
-<p><b>i-iv-v-i</b> (modal menor) — em modos menores. dependendo do modo, o V pode ser maior (harmônica menor: tem dominante real) ou menor (eólio, dórico, frígio: cadência modal sem força gravitacional).</p>
-<p><b>i-♭VII-♭VI-V</b> (andaluza) — descida flamenca clássica. <code>Am - G - F - E</code> em A harmônica menor. é o "som flamenco" arquetípico, base de séculos de música espanhola, e do flamenco moderno (paco de lucía, camarón).</p>
-<p><b>i-♭VII-♭VI-♭VII</b> (rock minor) — variante moderna sem a tensão dominante. base de inúmeras músicas de rock, metal e indie em modo menor.</p>
-<p>todas essas cadências usam <em>graus relativos</em> à tônica do modo atual. troque a tônica ou o modo e ouça como cada uma soa diferente. em modos exóticos (frígia dominante, hungária menor, double harmonic) algumas soam estranhas — porque elas evoluíram dentro da gramática diatônica ocidental, e os modos exóticos têm gramática própria.</p>
+<p><b>perfeita</b> (autêntica) · <code>V → I</code> — a resolução máxima. a 3ª do V é a <em>sensível</em>, que sobe meio tom até a tônica; com a 7ª (V7), o trítono entre 3M e 7m se resolve para dentro. em tom menor o V continua <em>maior</em> — a sensível vem da menor harmônica.</p>
+<p><b>imperfeita</b> · <code>V⁶ → I</code> — o mesmo movimento, mas com o V invertido (a sensível no baixo) ou com a melodia fora da tônica: resolve, mas sem o ponto final.</p>
+<p><b>plagal</b> · <code>IV → I</code> — cadência "amém". som de igreja, mais suave que a perfeita. em menor, <code>iv → i</code>.</p>
+<p><b>de engano</b> (interrompida) · <code>V → vi</code> — frustra a expectativa: você espera o I e recebe o vi (em menor, o <code>♭VI</code>). prolonga a frase.</p>
+<p><b>suspensiva</b> (meia cadência) · <code>I → V</code> — termina no V, em suspenso: "continua…". muito comum no fim da primeira frase de uma melodia.</p>
+<p><b>completa</b> · <code>I-IV-V-I</code> — as três funções em sequência: tônica, subdominante, dominante, tônica.</p>
+<p><b>ii-V-I</b> — a célula básica do jazz: ii (subdominante) → V (dominante) → I (tônica), andando por quintas. em menor vira <code>iiø7-V7-im7</code>.</p>
+<p><b>turnaround</b> · <code>I-vi-ii-V</code> — a "volta" do fim de um chorus que leva de novo ao I (a base das <em>rhythm changes</em> de "I Got Rhythm").</p>
+<p><b>I-vi-IV-V</b> (doo-wop) — a progressão dos anos 50: "stand by me", "earth angel", "every breath you take".</p>
+<p><b>I-V-vi-IV</b> (axis) — a progressão pop mais reciclada: "let it be", "no woman no cry", "with or without you", "someone like you".</p>
+<p><b>vi-IV-I-V</b> — a mesma, começando no relativo menor. "zombie" dos cranberries. em modo menor o app mostra o equivalente <code>i-♭VI-♭III-♭VII</code>.</p>
+<p><b>menor modal</b> · <code>i-iv-v-i</code> — o v <em>menor</em> do eólio e do dórico: sem sensível, sem força gravitacional. no frígio o v é diminuto (<code>v°</code>), por isso essa cadência aparece marcada lá.</p>
+<p><b>dórica</b> · <code>i-IV-i</code> — o IV maior, que nasce da 6ª maior do dórico ("oye como va", "scarborough fair").</p>
+<p><b>mixolídia</b> · <code>I-♭VII-IV-I</code> — o ♭VII maior, que nasce da 7ª menor do mixolídio ("sweet child o' mine", "norwegian wood").</p>
+<p><b>andaluza</b> · <code>i-♭VII-♭VI-V</code> — a descida flamenca: <code>Am - G - F - E</code>. o último acorde é <em>maior</em> (o V com a sensível), não o v do eólio.</p>
+<p><b>rock menor</b> · <code>i-♭VII-♭VI-♭VII</code> — a mesma descida sem a dominante. base de inúmeras músicas de rock, metal e indie.</p>
+<p><b>qualidade fixa, modo variável</b> — cada cadência é definida pela <em>função</em> dos acordes, com qualidade fixa (o V da perfeita é sempre maior). o app escolhe a versão maior ou menor conforme a 3ª do modo atual; quando um acorde não pertence ao modo, o card avisa — é um empréstimo, não um erro. em tétrade, os acordes ganham a 7ª típica da função (V7, iim7, Imaj7, iiø7).</p>
+<p><b>condução de vozes</b> — o baixo fica perto de C3 e as vozes de cima escolhem, a cada acorde, a inversão que menos se move — como um pianista faria, em vez de saltar em bloco.</p>
+<p>troque a tônica ou o modo e ouça como cada uma soa. em modos exóticos (frígia dominante, húngara menor, dupla harmônica) muitas aparecem como empréstimo — elas nasceram na gramática tonal ocidental, e esses modos têm gramática própria.</p>
 ` },
-  '10': { title:'10 · série harmônica · timbre', body:`
-<p>quando uma corda, tubo de ar ou qualquer fonte sonora vibra, ela não produz uma única frequência — produz uma <b>série harmônica</b>: a fundamental f₀ mais múltiplos inteiros (2f₀, 3f₀, 4f₀, ...). cada múltiplo é um <em>parcial</em> ou <em>harmônico</em>.</p>
+  '02': { title:'02 · série harmônica · timbre', body:`
+<p>quando uma corda ou uma coluna de ar vibra, ela não produz uma única frequência — produz (quase exatamente) uma <b>série harmônica</b>: a fundamental f₀ mais múltiplos inteiros (2f₀, 3f₀, 4f₀, ...). nem toda fonte é assim: sinos, membranas de tambor e placas têm parciais <em>inarmônicos</em> (fora dos múltiplos inteiros), e até a corda do piano, por ser rígida, tem parciais um pouco acima dos harmônicos. cada múltiplo é um <em>parcial</em> ou <em>harmônico</em>.</p>
 <p>a relação entre os parciais e nossa percepção de notas musicais é direta:</p>
 <p><b>parcial 1</b> · fundamental — a "nota" que ouvimos.<br>
 <b>parcial 2</b> · oitava acima (razão 2:1).<br>
@@ -1360,38 +1498,39 @@ const MODAL_DOCS = {
 <b>parcial 7</b> · sétima HARMÔNICA, ~31¢ mais grave que B♭. <em>microtonal</em>. base da "blue note" do blues.<br>
 <b>parcial 8</b> · três oitavas acima.<br>
 <b>parcial 9</b> · segunda maior (razão 9:8).<br>
-<b>parcial 11</b> · "quarta neutra" microtonal, ~50¢ entre F e F#. base do <em>maqamat</em> árabe.<br>
-<b>parcial 13</b> · sexta neutra microtonal, ~+41¢ acima de A.</p>
+<b>parcial 11</b> · "quarta neutra" microtonal, ~50¢ entre F e F♯.<br>
+<b>parcial 13</b> · sexta neutra microtonal, ~41¢ acima de A♭.</p>
 <p><b>os parciais 4-5-6 produzem o acorde maior natural</b> (1-3-5 da tônica). por isso a tríade maior soa "natural" e "consonante" — ela já <em>emerge</em> da física do som. o mesmo som natural contém C, E, G nas razões 4:5:6.</p>
 <p><b>microtonalidade na série</b> — os parciais 7, 11, 13, 14 não cabem em 12-TET. tradições musicais usam essa "afinação natural":</p>
-<p>• <b>blues americano</b> usa o 7º harmônico como "blue 7th" — entre 7m e 7M temperadas;<br>
-• <b>maqamat árabes</b> usam o 11º como "quarta neutra" entre 4J e #4;<br>
-• <b>barbershop quartet</b> harmoniza naturalmente em 4:5:6:7 (não em 4:5:6:8 como o jazz);<br>
-• <b>cantos islandeses, povos sami, polifonia georgiana</b> exploram parciais 7-13 corporalmente.</p>
-<p><b>timbre = espectro</b> — o que distingue um piano de um violino tocando a mesma nota é a distribuição de amplitudes entre os parciais. piano: parciais 1-2 dominantes, decay rápido. violino: parciais 1-8 ricos, sustained. clarinete: só parciais ímpares (1, 3, 5, 7) — daí seu som "oco". flauta: praticamente só parcial 1, daí o som "puro".</p>
+<p>• o <b>7º harmônico</b> fica ~31¢ <em>abaixo</em> da 7m temperada — é a "7ª natural" que cantores de blues e de barbershop tendem a procurar;<br>
+• o <b>barbershop quartet</b> afina o acorde de sétima como 4:5:6:7 — a 7ª do 7º harmônico, mais grave e mais lisa que a temperada;<br>
+• as <b>notas neutras</b> dos maqamat árabes lembram o 11º e o 13º harmônicos, mas vêm de uma tradição de afinação própria, não da série;<br>
+• o <b>canto difônico</b> (tuvano, mongol) torna audíveis, um por um, parciais da própria voz — em geral do 6º ao 12º.</p>
+<p><b>timbre = espectro</b> — o que distingue um piano de um violino tocando a mesma nota é a distribuição de amplitudes entre os parciais. piano: parciais 1-2 dominantes, decay rápido. violino: parciais 1-8 ricos, sustained. clarinete: no registro grave, predominam os parciais ímpares (1, 3, 5, 7) — daí seu som "oco". flauta: praticamente só parcial 1, daí o som "puro".</p>
 <p><b>síntese aditiva</b> — somar senoides nas frequências dos parciais. método de jean-baptiste joseph fourier (1822): qualquer som periódico pode ser decomposto numa soma de senoides em razões inteiras com a fundamental. inverso: você pode <em>construir</em> qualquer timbre periódico somando senoides.</p>
 <p>experimente os presets — <em>senoide pura</em> é o parcial 1 sozinho. <em>dente-de-serra</em> é todos os parciais com amplitude 1/n (cordas friccionadas). <em>quadrada</em> é só ímpares com 1/n (clarinete-ish). cada combinação produz um timbre distinto.</p>
 <p><b>fundamental</b> = tônica atual da página, deslocada uma oitava abaixo (C3 quando tônica = C). troque a tônica e a série inteira transpõe — é a mesma estrutura de razões em todas as alturas.</p>
 ` },
   'kb': { title:'piano · cores · sincronização', body:`
-<p>o <b>piano</b> no rodapé é um teclado interativo de duas oitavas (C4–B5) para tocar qualquer combinação de notas e ouvir como soa.</p>
+<p>o <b>piano</b> no rodapé é um teclado interativo de três oitavas (C4–B6) para tocar qualquer combinação de notas e ouvir como soa.</p>
 <p><b>identificação automática</b> — sempre que você toca duas ou mais notas, o sistema identifica em tempo real:</p>
 <p>• o <b>acorde</b> com qualidade e inversão (ex: <code>Cmaj7/E</code> = Cmaj7 em primeira inversão);<br>
 • se ele é um <b>grau do campo harmônico</b> atual (mostra numeral romano, ex: <code>V7</code>);<br>
 • se as notas estão <b>dentro ou fora do modo</b> selecionado.</p>
 <p><b>sincronização cross-section</b> — quando você toca o piano, todas as outras seções da página acendem em laranja para mostrar onde aquela nota aparece:</p>
-<p>• <b>escala (seção 04)</b> — célula da nota tocada acende e pulsa;<br>
-• <b>campo harmônico (seção 05)</b> — acordes cuja fundamental você tá tocando acendem;<br>
-• <b>círculo das quintas (seção 06)</b> — nodes externos (maior) e internos (menor) com a nota tocada;<br>
-• <b>tonnetz (seção 07)</b> — nodes da nota tocada + triângulos das tríades reconhecidas;<br>
-• <b>tabela harmônica (seção 10)</b> — parciais cuja nota mais próxima é a tocada.</p>
+<p>• <b>série harmônica (seção 02)</b> — parciais cuja nota mais próxima é a tocada;<br>
+• <b>escala (seção 03)</b> — célula da nota tocada acende e pulsa;<br>
+• <b>campo harmônico (seção 07)</b> — acordes cuja fundamental você tá tocando acendem;<br>
+• <b>círculo das quintas (seção 09)</b> — nodes externos (maior) e internos (menor) com a nota tocada;<br>
+• <b>tonnetz (seção 10)</b> — nodes da nota tocada + triângulos das tríades reconhecidas;<br>
+• <b>piano circular (seção 11)</b> — as teclas tocadas acendem e o acorde ganha forma.</p>
 <p>É o sistema completo se mostrando: você toca um <code>C-E-G</code> e *vê* simultaneamente as três notas no Tonnetz, no círculo, na escala. A página inteira pulsa junto.</p>
 <p><b>três modos de operação:</b></p>
 <p><b>livre</b> — notas tocam e desligam ao soltar. modo padrão, ideal para dedilhado e melodias.<br>
 <b>sustain</b> — notas permanecem ativas até serem clicadas novamente ou até apertar <em>clear</em>. permite construir acordes complexos uma nota por vez.<br>
 <b>snap ao modo</b> — só permite tocar notas dentro do modo atual. útil para improvisar dentro de um modo específico sem se preocupar com acertar as notas certas.</p>
 <p><b>teclado do computador</b> — mesmo padrão dos pianos virtuais: as 36 teclas de <code>1</code> até <code>M</code>, lidas em sequência (<code>1 2 3 … 0</code>, <code>Q … P</code>, <code>A … L</code>, <code>Z … M</code>), são as teclas <b>brancas</b> do grave pro agudo — de C2 (tecla <code>1</code>) até C7 (tecla <code>M</code>). a tecla <code>T</code> é o dó central (C4).</p>
-<p><b>shift + tecla</b> = a tecla <b>preta</b> logo à direita (sustenido). ex.: <code>T</code> = C4, <code>shift+T</code> = C#4. em E e B não há preta, então shift não toca nada.</p>
+<p><b>shift + tecla</b> = a tecla <b>preta</b> logo à direita. ex.: <code>T</code> = C4, <code>shift+T</code> = C♯4 (ou D♭4, conforme a tonalidade). em E e B não há preta, então shift não toca nada.</p>
 <p><b>espaço</b> = pedal de sustain enquanto pressionado.<br>
 <b>esc</b> = clear (libera todas as notas).<br>
 <b>← / →</b> = transpor meio tom (o mesmo que os botões <em>transpor − / +</em>).<br>
@@ -1401,15 +1540,15 @@ const MODAL_DOCS = {
 <p><b>cores semânticas</b> — no menu lateral (<em>≡ menu</em>) você encontra um toggle de cores que aplica paleta semântica em toda a página. três modos:</p>
 <p><b>off</b> — paleta minimalista padrão (preto/branco/laranja).</p>
 <p><b>distância tonal</b> — colore cada nota pela distância no <em>círculo de quintas</em> em relação à tônica do modo. notas próximas (5J, 4J) ficam em verde-azulado consonante. notas a 2-3 quintas em amarelo neutro. notas a 5-6 quintas (que incluem o trítono) em magenta tenso. é a paleta <em>funcional</em> — mostra a relação harmônica que cada nota tem com o centro tonal.</p>
-<p><b>dissonância</b> — colore cada intervalo pela <em>dissonância sensorial</em> baseada em Plomp-Levelt (1965): quanto rugosa é a interferência das duas senoides na cóclea humana. uníssono e oitava → consonância máxima. quinta justa → próxima da consonância. trítono e segunda menor → dissonância máxima. é a paleta <em>psicoacústica</em> — independe de modo, descreve a fisiologia da audição.</p>
+<p><b>dissonância</b> — colore cada intervalo pela <em>dissonância sensorial</em> baseada em Plomp-Levelt (1965). eles mediram a <em>rugosidade</em> entre duas senoides: ela só é forte quando as duas estão dentro de uma mesma banda crítica da cóclea (mais ou menos uma 3ª menor no registro médio). a ordem "oitava e quinta consonantes, 2ª menor e trítono ásperos" só aparece quando se soma essa rugosidade sobre todos os parciais de sons com harmônicos (Kameoka-Kuriyagawa, Sethares) — é essa soma que a paleta usa. é a paleta <em>psicoacústica</em> — independe de modo, descreve a fisiologia da audição.</p>
 <p>os dois modos revelam coisas diferentes. distância tonal é o mapa de Bach. dissonância é o mapa de Helmholtz. ative o piano e troque entre os dois para ouvir e ver simultaneamente.</p>
-<p><b>caso de uso</b> — toque um <code>C-E-G</code> e veja: o sistema identifica "C", o triângulo do C maior acende no Tonnetz, e se você estiver em jônio aparece "I". Toque <code>C-E♭-G-B♭</code> e identifica "Cm7". Toque <code>F-A-C-E</code> e o sistema mostra "Fmaj7" e o numeral "IV" se estiver em C jônio. Toque <code>C-F#</code> em modo de cores "dissonância" e veja o trítono ardendo em magenta — Maria Sklodowska sentiria orgulho da clareza pedagógica.</p>
+<p><b>caso de uso</b> — toque um <code>C-E-G</code> e veja: o sistema identifica "C", o triângulo do C maior acende no Tonnetz, e se você estiver em jônio aparece "I". Toque <code>C-E♭-G-B♭</code> e identifica "Cm7". Toque <code>F-A-C-E</code> e o sistema mostra "Fmaj7" e o numeral "IV" se estiver em C jônio. Toque <code>C-F♯</code> em modo de cores "dissonância" e veja o trítono em magenta.</p>
 ` },
   '11': { title:'11 · piano circular', body:`
 <p>o piano comum é uma <b>linha</b>: do grave (esquerda) ao agudo (direita). aqui a mesma linha é <b>enrolada em espiral</b> — cada volta é uma oitava, e cada volta fica dentro da anterior. por isso o grave fica na borda e o agudo no centro.</p>
 <p><b>por que funciona</b> — a oitava (razão 2:1) é a equivalência mais forte da música: dó grave e dó agudo "são a mesma nota". no círculo, isso vira geometria: a nota define o <em>ângulo</em> e a oitava define o <em>raio</em>. todas as oitavas de uma nota ficam alinhadas no mesmo raio (a linha tracejada laranja marca o raio da tônica).</p>
 <p><b>vista · 3D</b> — o mesmo piano, mas cada tecla <em>sobe</em> conforme a nota fica mais aguda: o círculo vira uma <b>escada em espiral</b> (a "hélice de altura" da psicoacústica — Drobisch, 1855; Shepard, 1964). girar em volta é andar pela nota (o <em>croma</em>), subir é andar pela oitava (a <em>altura</em>). com inclinação 0° você vê de cima e é idêntico ao 2D; inclinando, aparece a espiral. <em>velocidade</em> ajusta o giro (0 para; negativo inverte o sentido), arrastar gira com a mão e clicar toca a tecla da frente. acordes ligados, rastro, quintas e inversão funcionam igual.</p>
-<p><b>luz · espectro · a cor de cada nota</b> — som e luz são ondas, e dá pra levar uma nota até a luz dobrando a frequência, oitava por oitava. o lá central (A4 = 440 Hz) subido 40 oitavas vira 440 × 2⁴⁰ ≈ 484 THz — luz de <b>≈ 620 nm</b>, um laranja-avermelhado. a luz que enxergamos vai de ~400 a ~790 THz: <em>quase exatamente uma oitava</em> (razão ≈ 1,97). por isso as 12 notas atravessam o arco-íris <b>uma vez</b>: C ≈ verde, D ≈ azul, E ≈ violeta, F no limite do ultravioleta, F# vermelho profundo, G vermelho, A laranja, A# amarelo, B verde-amarelado. e todas as oitavas de uma nota ganham a mesma cor — é a mesma dobra que faz C3 e C4 terem o mesmo nome.</p>
+<p><b>luz · espectro · a cor de cada nota</b> — som e luz são ondas, e dá pra levar uma nota até a luz dobrando a frequência, oitava por oitava. o lá central (A4 = 440 Hz) subido 40 oitavas vira 440 × 2⁴⁰ ≈ 484 THz — luz de <b>≈ 620 nm</b>, um laranja-avermelhado. a luz que enxergamos vai de ~380 a ~780 nm, ou ~385 a ~790 THz: <em>quase exatamente uma oitava</em> (razão ≈ 2,05). por isso as 12 notas atravessam o arco-íris <b>uma vez</b>: C ≈ verde, D ≈ azul, E ≈ violeta, F no limite do ultravioleta, F# vermelho profundo, G vermelho, A laranja, A# amarelo, B verde-amarelado. e todas as oitavas de uma nota ganham a mesma cor — é a mesma dobra que faz C3 e C4 terem o mesmo nome.</p>
 <p><b>história</b> — Newton, no <em>Opticks</em> (1704), dividiu o arco-íris em 7 cores por analogia com as 7 notas da escala. o jesuíta Louis-Bertrand Castel projetou um <em>cravo ocular</em> (1725) que mostrava cores ao tocar. Scriabin escreveu uma parte para <em>teclado de luz</em> no <em>Prometeu</em> (1910). e há pessoas com <em>cromestesia</em> (sinestesia som-cor) que veem cores ao ouvir — cada uma com suas próprias cores.</p>
 <p><b>cuidado</b> — é uma <em>analogia matemática</em>, não física: luz é onda eletromagnética, som é onda mecânica no ar, e nenhuma nota "tem" cor de verdade. a mesma dobra por oitavas que conecta as duas é que é real. no tema escuro, as cores somam como luz (o centro de um acorde fica mais claro), num visual de espectrograma.</p>
 <p><b>ordem · quintas</b> — em vez de C C# D D#…, as notas ficam em volta na ordem do <em>círculo das quintas</em> (C G D A E B F#…). é a <b>espiral de quintas</b>: cada anel continua sendo uma oitava, mas agora vizinho = consonante. toda escala maior vira um <em>arco contínuo</em> de 7 fatias (as teclas brancas ficam todas juntas: F C G D A E B), mudar de tom é girar o arco uma casa, o trítono fica do lado oposto e os acordes viram formas compactas. com o rastro ligado, melodias tonais ficam num setor do círculo; música cromática se espalha.</p>
@@ -1425,8 +1564,10 @@ const MODAL_DOCS = {
 ` },
   '12': { title:'12 · lissajous · a forma de um intervalo', body:`
 <p>uma nota é uma oscilação. ponha uma nota pra mover um ponto na <b>horizontal</b> e outra pra mover o mesmo ponto na <b>vertical</b>: o rastro do ponto é uma <b>figura de Lissajous</b> (Jules Lissajous, 1857, com espelhos presos em diapasões).</p>
-<p><b>razão simples = figura fechada</b> — se as frequências estão numa razão de números pequenos, o desenho se fecha e se repete: uníssono 1:1 é uma linha/elipse, oitava 2:1 um oito, quinta 3:2 um laço de três lóbulos, quarta 4:3, terça maior 5:4… quanto maiores os números, mais complexa a figura — e mais "tensa" a consonância. é a mesma hierarquia da série harmônica (seção 10), agora vista.</p>
-<p><b>batimento = figura girando</b> — no <em>temperamento igual</em> nenhum intervalo além da oitava é uma razão exata: a quinta temperada é 1,4983, não 1,5. a diferença faz a figura <em>girar devagar</em>, no ritmo do <b>batimento</b> (a ondulação de volume que se ouve no acorde): o painel mostra o batimento, |q·f₂ − p·f₁|, e quanto tempo a figura leva pra completar um giro (q batimentos). troque para <em>afinação justa</em> e a figura congela — o batimento some.</p>
+<p><b>razão simples = figura fechada</b> — se as frequências estão numa razão de números pequenos, o desenho se fecha e se repete: uníssono 1:1 é uma linha/elipse, oitava 2:1 um oito, quinta 3:2 um laço de três lóbulos, quarta 4:3, terça maior 5:4… quanto maiores os números, mais complexa a figura — e mais "tensa" a consonância. é a mesma hierarquia da série harmônica (seção 02), agora vista.</p>
+<p><b>batimento = figura girando</b> — no <em>temperamento igual</em> nenhum intervalo além da oitava é uma razão exata: a quinta temperada é 1,4983, não 1,5. a diferença faz a figura <em>girar devagar</em>, no ritmo do <b>batimento</b> |q·f₂ − p·f₁|: a forma volta a ser a mesma a cada <b>um</b> batimento. quando o batimento passa de ~3 Hz o olho não acompanha, e o painel mostra a figura em câmera lenta (<em>×1/N</em>). troque para <em>afinação justa</em> e a figura congela.</p>
+<p><b>a quinta do lobo</b> — a afinação justa do app é <em>relativa à tônica</em>: cada nota é uma razão pura em relação a ela, não às outras. por isso, em dó justo, C–G é 3:2 exato, mas D–A sai 40:27 (21,5¢ mais estreita) e a figura revela isso. não existe afinação em que todos os intervalos sejam puros ao mesmo tempo — é esse o problema que o temperamento resolve dividindo o erro.</p>
+<p><b>ouvir o batimento</b> — o batimento de uma 5ª, 4ª, 3ª ou 8ª acontece entre <em>harmônicos</em> das duas notas (o 3º da grave com o 2º da aguda, na 5ª). o timbre sintetizado é triangular, só com harmônicos ímpares, então esse batimento quase não se ouve; com o <em>piano de cauda</em> ele aparece.</p>
 <p><b>do teclado</b> — segure duas notas no piano de baixo (ou no círculo) e a figura mostra o intervalo real que você está tocando, oitava incluída.</p>
 <p><b>compostos</b> — a segunda linha traz os intervalos maiores que a oitava: 9ª, 10ª, 11ª, 12ª, 13ª, 15ª. são as <em>extensões</em> dos acordes (add9, m11, 13). a razão justa de um composto é a do intervalo simples vezes 2: a 9ª maior é 9:4, a 11ª justa 8:3, a 13ª maior 10:3. a figura fica mais rendada (mais voltas) mas, se a razão é exata, continua fechada.</p>
 ` },
@@ -1434,14 +1575,16 @@ const MODAL_DOCS = {
 <p>a página está organizada em <b>ordem pedagógica</b> — do concreto ao abstrato, do isolado ao integrado. cada seção depende cognitivamente das anteriores:</p>
 <p><b>01 tônica</b> — o ponto de referência. uma nota apenas.<br>
 <b>02 série harmônica</b> — <em>por que</em> as notas existem. a física do som que justifica tudo o que vem.<br>
-<b>03 escala</b> — sequência de notas. estrutura básica.<br>
-<b>04 modo</b> — escala com tônica. abstração construída sobre a escala.<br>
-<b>05 caráter do modo</b> — como interpretamos o modo expressivamente.<br>
+<b>03 escala</b> — sequência de notas e afinação (temperamento igual × justa).<br>
+<b>04 modo</b> — o padrão de intervalos que dá o caráter.<br>
+<b>05 caráter do modo</b> — a nota característica e como o modo soa.<br>
 <b>06 padrões melódicos</b> — exercícios práticos para internalizar o modo.<br>
 <b>07 campo harmônico</b> — empilhar terças. transição da melodia para harmonia.<br>
 <b>08 cadências</b> — sequências de acordes. composição harmônica básica.<br>
 <b>09 círculo das quintas</b> — relações entre tonalidades. modulação.<br>
-<b>10 tonnetz</b> — geometria das relações harmônicas. matemática avançada.</p>
+<b>10 tonnetz</b> — geometria das relações harmônicas.<br>
+<b>11 piano circular</b> — a mesma geometria aplicada ao teclado: croma no ângulo, oitava no raio.<br>
+<b>12 lissajous</b> — o intervalo como forma: razões simples, batimento, afinação.</p>
 <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
 <p><b>marque seu nível de entendimento</b> em cada seção clicando no círculo ao lado do <em>?</em>. quatro níveis:</p>
 <p><b>○</b> · não vi ainda — seção sem progresso.<br>
@@ -1499,6 +1642,7 @@ function initAudio(){
   playPitchAt(4, 0, t0 + 0.18, 0.25, 0.18);
   playPitchAt(7, 0, t0 + 0.36, 0.40, 0.18);
   setAudioState('active');
+  if(!timbreUserSet && pianoTimbre === 'synth') setTimbre('piano');
 }
 
 function ensureAudio(){
@@ -1508,6 +1652,24 @@ function ensureAudio(){
   }
   if(audioCtx.state === 'suspended'){ audioCtx.resume(); }
   return true;
+}
+
+// bus master: tudo passa por um limitador antes da saída — acordes de 5 vozes no piano não clipam
+let masterBus = null;
+function masterOut(){
+  if(!masterBus){
+    const comp = audioCtx.createDynamicsCompressor();
+    comp.threshold.value = -6; comp.knee.value = 0; comp.ratio.value = 20;
+    comp.attack.value = 0.003; comp.release.value = 0.25;
+    comp.connect(audioCtx.destination);
+    masterBus = comp;
+  }
+  return masterBus;
+}
+// congela o valor atual de um AudioParam antes de uma rampa (sem degrau → sem clique)
+function holdParam(param, t){
+  if(param.cancelAndHoldAtTime) param.cancelAndHoldAtTime(t);
+  else { param.cancelScheduledValues(t); param.setValueAtTime(param.value, t); }
 }
 
 function tonicFreq(){ return 440 * Math.pow(2, (60 + tonic - 69)/12); }
@@ -1543,7 +1705,7 @@ function playPitchAt(intervalFromTonic, octaveOffset, absTime, dur, vol){
   gain.gain.setValueAtTime(0, absTime);
   gain.gain.linearRampToValueAtTime(vol, absTime+0.018);
   gain.gain.exponentialRampToValueAtTime(0.001, absTime+dur);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterOut());
   osc.start(absTime);
   osc.stop(absTime+dur+0.05);
 }
@@ -1576,8 +1738,9 @@ function modesInCategory(catId){ return MODES.map(function(m,i){ return {m:m, i:
 
 function getCurrentScale(){
   const mode = currentMode();
+  const sp = currentSpelling();
   return mode.intervals.map(function(iv, i){
-    return { degree:i, interval:iv, name:NOTES[(tonic + iv) % 12], chromatic:(tonic + iv) % 12 };
+    return { degree:i, interval:iv, name:sp[i].name, chromatic:(tonic + iv) % 12 };
   });
 }
 
@@ -1680,7 +1843,7 @@ function getBorrowedChords(){
     const ch = chordOfDegree(i, 0);
     if(ch){
       const rootPc = (tonic + ch.rootInterval) % 12;
-      diatonicRoots.add(rootPc + ':' + ch.triadSym); // root+qualidade
+      diatonicRoots.add(rootPc + ':' + ch.quality); // root+qualidade ('', 'm', 'dim', 'aug')
     }
   }
 
@@ -1689,7 +1852,7 @@ function getBorrowedChords(){
     const ch = chordFromScale(parallel, i, voicing);
     if(!ch) continue;
     const rootPc = (tonic + ch.rootInterval) % 12;
-    const key = rootPc + ':' + ch.triadSym;
+    const key = rootPc + ':' + ch.triadQ;
     if(diatonicRoots.has(key)) continue; // pula os que já são diatônicos
     // construir display
     const ROM = ['I','II','III','IV','V','VI','VII'];
@@ -1698,12 +1861,13 @@ function getBorrowedChords(){
     const expectedMajor = [0,2,4,5,7,9,11];
     let prefix = '';
     if(ch.rootInterval < expectedMajor[i]) prefix = '♭';
-    else if(ch.rootInterval > expectedMajor[i]) prefix = '#';
+    else if(ch.rootInterval > expectedMajor[i]) prefix = '♯';
     let romSuffix = '';
     if(ch.triadQ==='dim') romSuffix='°';
     else if(ch.triadQ==='aug') romSuffix='+';
     if(ch.sevSuffix) romSuffix += ch.sevSuffix === 'ø' ? 'ø7' : ch.sevSuffix;
-    const rootName = NOTES[rootPc];
+    // paralelo tem 7 notas e a mesma tônica: o grau i leva a letra i acima da letra da tônica
+    const rootName = noteAt(currentSpelling()[0].letter + i, rootPc).name;
     let displayName;
     if(ch.sevSuffix === 'ø') displayName = rootName + 'ø7';
     else if(ch.triadQ==='dim' && ch.sevSuffix==='7') displayName = rootName + '°7';
@@ -1731,9 +1895,9 @@ function getSecondaryDominants(){
   // Para cada grau (exceto I e vii°), criar um V7 que aponta pra ele
   const targets = [];
   for(let i = 1; i < N; i++){
-    const targetCh = chordOfDegree(i, 0);
+    const targetCh = chordOfDegree(i, 0, 'triad');
     if(!targetCh) continue;
-    if(targetCh.triadQ === 'dim') continue; // não fazem sentido em ii° / vii° tradicional
+    if(targetCh.quality === 'dim') continue; // não fazem sentido em ii° / vii° tradicional
 
     // V7 do alvo: root é uma quinta justa acima do alvo (ou 7 semitons)
     const targetRootPc = (tonic + targetCh.rootInterval) % 12;
@@ -1742,9 +1906,9 @@ function getSecondaryDominants(){
     // V7 sempre maj-3, perf-5, min-7 (= 7 dominante)
     const intervals = [v7RootInterval, v7RootInterval+4, v7RootInterval+7, v7RootInterval+10];
 
-    const targetRoman = ['','ii','iii','IV','V','vi','vii°','viii'][i] || ((i+1)+'');
-    const v7DisplayName = NOTES[v7RootPc] + '7';
-    const roman = 'V7/' + targetRoman.toUpperCase();
+    // o V7 fica uma 5ª acima do alvo: 4 letras acima (alvo D → A7, alvo E♭ → B♭7)
+    const v7DisplayName = noteAt(currentSpelling()[i].letter + 4, v7RootPc).name + '7';
+    const roman = 'V7/' + targetCh.roman; // mantém a caixa do alvo: V7/ii, V7/IV, V7/♭VI
 
     targets.push({
       degreeIdx: i,
@@ -1759,13 +1923,14 @@ function getSecondaryDominants(){
   return targets;
 }
 
-function chordOfDegree(degreeIdx, overrideInv){
+function chordOfDegree(degreeIdx, overrideInv, overrideVoicing){
   const mode = currentMode();
   const ivs = mode.intervals;
   const N = ivs.length;
   if(N < 6) return null; // pentatônicas
 
-  const stackSize = voicing === 'ninth' ? 5 : (voicing === 'seventh' ? 4 : 3);
+  const vc = overrideVoicing || voicing;
+  const stackSize = vc === 'ninth' ? 5 : (vc === 'seventh' ? 4 : 3);
 
   // construir intervalos absolutos (relativos à tônica) com wrap pra serem crescentes
   const intervals = [];
@@ -1838,7 +2003,7 @@ function chordOfDegree(degreeIdx, overrideInv){
   voiced.sort(function(a,b){ return a-b; });
 
   // nome do acorde
-  const rootName = NOTES[(tonic + root) % 12];
+  const rootName = currentSpelling()[degreeIdx].name;
   let triadSym = '';
   if(triadQ==='m') triadSym='m';
   else if(triadQ==='dim') triadSym='°';
@@ -1858,7 +2023,7 @@ function chordOfDegree(degreeIdx, overrideInv){
   let bassNote = '';
   if(inv > 0){
     const bassChrom = (tonic + (voiced[0] % 12) + 12) % 12;
-    bassNote = NOTES[bassChrom];
+    bassNote = pcName(bassChrom);
   }
 
   // numeral romano (sem inversão)
@@ -1869,7 +2034,7 @@ function chordOfDegree(degreeIdx, overrideInv){
   let prefix = '';
   if(degreeIdx < 7){
     if(root < expectedMajor[degreeIdx]) prefix = '♭';
-    else if(root > expectedMajor[degreeIdx]) prefix = '#';
+    else if(root > expectedMajor[degreeIdx]) prefix = '♯';
   }
   let romSuffix = '';
   if(triadQ==='dim') romSuffix='°';
@@ -1960,18 +2125,18 @@ function renderTonics(){
     el.innerHTML = '';
     NOTES.forEach(function(n,i){
       const b = document.createElement('button');
-      b.textContent = n;
+      b.textContent = tonicNameFor(i, currentMode()); // grafia que essa tônica teria no modo atual (D♭ jônio, C♯ eólio)
       if(i === tonic) b.classList.add('active');
       b.onclick = function(){
         tonic = i;
         renderAll();
         playPitch(0, 0, 0.02, 0.4, 0.16);
-        logTonalNote(i, NOTES[i]);
+        logTonalNote(i, tonicName());
       };
       el.appendChild(b);
     });
   });
-  document.getElementById('tonic-hint').textContent = NOTES[tonic];
+  document.getElementById('tonic-hint').textContent = tonicName();
 }
 
 function renderCatTabs(){
@@ -2027,12 +2192,12 @@ function renderModes(){
 
 function renderInfo(){
   const m = currentMode();
-  const tonicName = NOTES[tonic];
-  const charNote = m.char !== null ? NOTES[(tonic + m.intervals[m.char]) % 12] : null;
+  const tonicNm = tonicName();
+  const charNote = m.char !== null ? currentSpelling()[m.char].name : null;
   const charDeg = m.char !== null ? (m.char + 1) : null;
   const charLabel = charDeg !== null ? (charDeg + 'ª · ' + charNote) : '—';
   document.getElementById('info-body').innerHTML =
-    '<div class="info-title">' + tonicName + ' <span class="accent">' + m.pt + '</span></div>' +
+    '<div class="info-title">' + tonicNm + ' <span class="accent">' + m.pt + '</span></div>' +
     '<div class="info-desc">' + m.mood + '</div>' +
     '<div class="info-meta">' +
       '<div><span class="k">caráter</span><span class="v">' + m.flavor + '</span></div>' +
@@ -2174,13 +2339,14 @@ function showInversionStack(chord){
   const sorted = chord.intervals.slice().sort(function(a,b){ return a-b; });
   const rows = sorted.map(function(iv, i){
     const pc = ((tonic + (iv % 12)) % 12 + 12) % 12;
-    const noteName = NOTES[pc];
+    const noteName = pcName(pc);
     const oct = Math.floor(iv / 12);
     const isBass = (i === 0);
     // identificar qual é o intervalo a partir da fundamental real do acorde
     const rootInt = chord.rootInterval;
     const intFromRoot = ((iv - rootInt) % 12 + 12) % 12;
-    const intName = ['1','♭2','2','♭3','3','4','♭5','5','♭6','6','♭7','7'][intFromRoot] || ('?'+intFromRoot);
+    // pela letra: C+ mostra ♯5 (não ♭6), B° mostra ♭5, dim7 mostra ♭♭7
+    const intName = intFromRoot === 0 ? '1' : degreeLabel(pcNote(tonic + rootInt), pcNote(pc));
     return { pc:pc, noteName:noteName, oct:oct, isBass:isBass, intName:intName, iv:iv };
   });
 
@@ -2283,7 +2449,7 @@ function renderCompoundIntervals(){
       const lastMidi = 60;
       const newMidi = target.midiPair[1];
       lastTonalNote = { chrom: lastMidi % 12, name: 'C4', timestamp: Date.now() - 100, midi: lastMidi };
-      logTonalNote(newMidi % 12, NOTES[newMidi % 12] + (Math.floor(newMidi/12)-1), newMidi);
+      logTonalNote(newMidi % 12, noteAt(CHROMATIC_LETTER[newMidi % 12], newMidi).name + (Math.floor(newMidi/12)-1), newMidi); // referência fixa em C4
     });
   });
   el.querySelectorAll('.ci-play-both').forEach(function(btn){
@@ -2417,14 +2583,15 @@ function renderCircle(){
     gO.setAttribute('data-pc', chromMaj);
     gO.appendChild(svgEl('circle', {cx:xOut, cy:yOut, r:NR_OUT, fill:fillO, stroke:strokeO, 'stroke-width':swO}));
     const tO = svgEl('text', {x:xOut, y:yOut, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:textO, 'font-family':"'JetBrains Mono', monospace", 'font-size':'12', 'font-weight':'600'});
-    tO.textContent = NOTES[chromMaj];
+    const nameMaj = majInMode ? pcName(chromMaj) : tonicNameFor(chromMaj, MODES[0]);
+    tO.textContent = nameMaj;
     gO.appendChild(tO);
     gO.addEventListener('click', function(){
       const r = ((chromMaj - tonic) % 12 + 12) % 12;
       playChord([r, r+4, r+7], 0.02, 1.4, 0.13);
       flashSvgNode(gO, fillO, strokeO, textO);
       pianoEchoChord([r, r+4, r+7], 1100);
-      logTonalNote(chromMaj, NOTES[chromMaj]);
+      logTonalNote(chromMaj, nameMaj);
     });
     svg.appendChild(gO);
 
@@ -2443,21 +2610,22 @@ function renderCircle(){
     gI.setAttribute('data-pc', chromMin);
     gI.appendChild(svgEl('circle', {cx:xIn, cy:yIn, r:NR_IN, fill:fillI, stroke:strokeI, 'stroke-width':swI}));
     const tI = svgEl('text', {x:xIn, y:yIn, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:textI, 'font-family':"'JetBrains Mono', monospace", 'font-size':'10', 'font-weight':'600'});
-    tI.textContent = NOTES[chromMin] + 'm';
+    const nameMin = (minInMode ? pcName(chromMin) : tonicNameFor(chromMin, MODES[5])) + 'm';
+    tI.textContent = nameMin;
     gI.appendChild(tI);
     gI.addEventListener('click', function(){
       const r = ((chromMin - tonic) % 12 + 12) % 12;
       playChord([r, r+3, r+7], 0.02, 1.4, 0.13);
       flashSvgNode(gI, fillI, strokeI, textI);
       pianoEchoChord([r, r+3, r+7], 1100);
-      logTonalNote(chromMin, NOTES[chromMin] + 'm');
+      logTonalNote(chromMin, nameMin);
     });
     svg.appendChild(gI);
   }
 
   // centro
   const cText1 = svgEl('text', {x:cx, y:cy - 7, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0a0a0a', 'font-family':"'JetBrains Mono', monospace", 'font-size':'15', 'font-weight':'700'});
-  cText1.textContent = NOTES[tonic];
+  cText1.textContent = tonicName();
   svg.appendChild(cText1);
   const cText2 = svgEl('text', {x:cx, y:cy + 8, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#555', 'font-family':"'JetBrains Mono', monospace", 'font-size':'9', 'font-weight':'500', 'letter-spacing':'0.1em'});
   cText2.textContent = mode.pt.toUpperCase();
@@ -2511,11 +2679,11 @@ function nrPlayTri(col, row, type){
   const third = (type === 'major') ? rootRel + 4 : rootRel + 3;
   const fifth = rootRel + 7;
   let chordIntervals = [rootRel, third, fifth];
-  let chordName = NOTES[rootChrom] + (type === 'minor' ? 'm' : '');
+  let chordName = pcName(rootChrom) + (type === 'minor' ? 'm' : '');
   if(showSevenths){
     const seventh = type === 'major' ? rootRel + 11 : rootRel + 10;
     chordIntervals = [rootRel, third, fifth, seventh];
-    chordName = NOTES[rootChrom] + (type === 'minor' ? 'm7' : 'maj7');
+    chordName = pcName(rootChrom) + (type === 'minor' ? 'm7' : 'maj7');
   }
   playChord(chordIntervals, 0.02, 1.4, 0.13);
   pianoEchoChord(chordIntervals, 1100);
@@ -2727,7 +2895,7 @@ function renderTonnetz(){
       g.setAttribute('data-pc', chrom);
       g.appendChild(svgEl('circle', {cx:p.x, cy:p.y, r:TON_NODE_R, fill:fill, stroke:stroke, 'stroke-width':'1'}));
       const t = svgEl('text', {x:p.x, y:p.y, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:textColor, 'font-family':"'JetBrains Mono', monospace", 'font-size':'11', 'font-weight':'600'});
-      t.textContent = NOTES[chrom];
+      t.textContent = pcName(chrom);
       g.appendChild(t);
       // click toca a nota isolada
       g.addEventListener('click', function(){
@@ -2738,7 +2906,7 @@ function renderTonnetz(){
         c.setAttribute('fill', '#e8451e');
         setTimeout(function(){ c.setAttribute('fill', oldFill); }, 500);
         pianoEcho([chrom], 700);
-        logTonalNote(chrom, NOTES[chrom]);
+        logTonalNote(chrom, pcName(chrom));
       });
       nodeLayer.appendChild(g);
     }
@@ -2841,8 +3009,7 @@ function renderPatternDisplay(){
 function stopPattern(){
   if(patternMasterGain && audioCtx){
     try{
-      patternMasterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-      patternMasterGain.gain.setValueAtTime(patternMasterGain.gain.value, audioCtx.currentTime);
+      holdParam(patternMasterGain.gain, audioCtx.currentTime);
       patternMasterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.04);
     }catch(e){}
     const old = patternMasterGain;
@@ -2867,7 +3034,7 @@ function playPattern(){
 
   patternMasterGain = audioCtx.createGain();
   patternMasterGain.gain.value = 1;
-  patternMasterGain.connect(audioCtx.destination);
+  patternMasterGain.connect(masterOut());
 
   const noteIntv = 60 / patternBpm; // segundos por nota
   const dur = noteIntv * 0.85;
@@ -2940,34 +3107,115 @@ function stopCadence(){
   document.querySelectorAll('#chords > div.playing').forEach(function(c){ c.classList.remove('playing'); });
 }
 
+const CAD_ROM = ['I','♭II','II','♭III','III','IV','♯IV','V','♭VI','VI','♭VII','VII'];
+function cadSev(){ return voicing !== 'triad'; }
+// versão da cadência para o modo atual: a do gênero do modo (3ª maior/menor); senão a outra, marcada como fora
+function cadenceVariant(c, mode){
+  const isMaj = (mode || currentMode()).intervals.indexOf(4) >= 0;
+  const want = isMaj ? 'maj' : 'min';
+  return { chords: c[want] || c.maj || c.min, sameGender: !!c[want] };
+}
+// semitons acima da tônica, na ordem fundamental-3ª-5ª(-7ª)
+function cadTones(ch, sev){
+  const t = [ch.r, ch.r + (ch.q === 'M' ? 4 : 3), ch.r + (ch.q === 'd' ? 6 : 7)];
+  if(sev) t.push(ch.r + ch.s7);
+  return t;
+}
+function cadChordRoman(ch, sev){
+  let r = CAD_ROM[ch.r];
+  if(ch.q !== 'M') r = r.toLowerCase();
+  if(ch.inv) return r + (ch.q === 'd' ? (sev ? 'ø' : '°') : '') + (sev ? '⁶₅' : '⁶'); // V⁶₅: a cifra já diz que tem 7ª
+  if(ch.q === 'd') r += sev ? (ch.s7 === 10 ? 'ø7' : '°7') : '°';
+  else if(sev) r += (ch.q === 'M' && ch.s7 === 11) ? 'maj7' : '7';
+  return r;
+}
+function cadChordName(ch, sev){
+  let suf;
+  if(!sev) suf = ch.q === 'm' ? 'm' : ch.q === 'd' ? '°' : '';
+  else if(ch.q === 'd') suf = ch.s7 === 10 ? 'ø7' : '°7';
+  else if(ch.q === 'm') suf = ch.s7 === 11 ? 'm(maj7)' : 'm7';
+  else suf = ch.s7 === 11 ? 'maj7' : '7';
+  let name = pcName(tonic + ch.r) + suf;
+  if(ch.inv) name += '/' + pcName(tonic + cadTones(ch, sev)[ch.inv]);
+  return name;
+}
+function cadChordInMode(ch, sev){
+  return cadTones(ch, sev).every(function(t){ return modeContainsChrom((tonic + t) % 12) >= 0; });
+}
+function cadenceRoman(c, mode){
+  const sev = cadSev();
+  return cadenceVariant(c, mode).chords.map(function(ch){ return cadChordRoman(ch, sev); }).join(' → ');
+}
+// condução de vozes: baixo perto de C3 (no máximo um salto curto), vozes de cima em posição fechada
+// na inversão que menos se move em relação ao acorde anterior
+function cadenceVoicings(chords, sev){
+  let prevBass = 48, prevUp = null;
+  return chords.map(function(ch){
+    const tones = cadTones(ch, sev);
+    const bassPc = (tonic + tones[ch.inv || 0]) % 12;
+    let bass = null;
+    for(let m = 40; m <= 55; m++){
+      if(m % 12 === bassPc && (bass === null || Math.abs(m - prevBass) < Math.abs(bass - prevBass))) bass = m;
+    }
+    const pcs = tones.map(function(t){ return (tonic + t) % 12; });
+    let best = null, bestScore = Infinity;
+    for(let j = 0; j < (prevUp ? pcs.length : 1); j++){ // 1º acorde: posição fundamental a partir do C4
+      const rot = pcs.slice(j).concat(pcs.slice(0, j));
+      for(let start = prevUp ? 55 : 60; start < (prevUp ? 68 : 72); start++){
+        if(start % 12 !== rot[0]) continue;
+        const v = [start];
+        for(let k = 1; k < rot.length; k++){
+          let m = v[k-1] + 1;
+          while(m % 12 !== rot[k]) m++;
+          v.push(m);
+        }
+        const score = prevUp
+          ? v.reduce(function(s, m, i){ return s + Math.abs(m - prevUp[i]); }, 0)
+          : Math.abs(v[0] - 60);
+        if(score < bestScore){ bestScore = score; best = v; }
+      }
+    }
+    prevBass = bass; prevUp = best;
+    return [bass].concat(best);
+  });
+}
+function playMidiAt(midi, t, dur, vol){
+  const rel = midi - 60 - tonic;
+  playPitchAt(((rel % 12) + 12) % 12, Math.floor(rel / 12), t, dur, vol);
+}
+// grau do campo diatônico que tem a mesma tríade (raiz + qualidade), ou -1
+function cadFieldIndex(ch){
+  const N = currentMode().intervals.length;
+  const qmap = { M:'', m:'m', d:'dim' };
+  for(let i = 0; i < N; i++){
+    const f = chordOfDegree(i, 0, 'triad');
+    if(f && (f.rootInterval % 12) === ch.r && f.quality === qmap[ch.q]) return i;
+  }
+  return -1;
+}
+
 function playCadence(cadence, cardEl){
   stopCadence();
   stopPattern();
   if(!ensureAudio()) return;
-  const N = currentMode().intervals.length;
-  if(N < 6) return;
-  const seq = cadence.degrees;
+  const sev = cadSev();
+  const seq = cadenceVariant(cadence).chords;
+  const voices = cadenceVoicings(seq, sev);
   const t0 = audioCtx.currentTime + 0.06;
-  const intv = 0.85;
+  const intv = 0.95;
 
-  seq.forEach(function(deg, i){
-    const ch = chordOfDegree(deg % N, 0); // sempre fundamental
-    if(!ch) return;
-    ch.intervals.forEach(function(iv){
-      const oct = Math.floor(iv / 12);
-      playPitchAt(((iv % 12) + 12) % 12, oct, t0 + i*intv, 1.0, 0.13);
-    });
+  voices.forEach(function(v, i){
+    v.forEach(function(m, k){ playMidiAt(m, t0 + i*intv, 1.1, k === 0 ? 0.13 : 0.1); });
   });
 
   const cells = document.querySelectorAll('#chords > div');
-  seq.forEach(function(deg, i){
+  seq.forEach(function(ch, i){
     const tid = setTimeout(function(){
       cells.forEach(function(c){ c.classList.remove('playing'); });
-      const cell = cells[deg % N];
-      if(cell) flashCell(cell, intv*1000*0.85);
-      // eco no piano sincronizado com o som
-      const ch = chordOfDegree(deg % N, 0);
-      if(ch) pianoEchoChord(ch.intervals, intv * 1000 * 0.9);
+      const idx = cadFieldIndex(ch);
+      if(idx >= 0 && cells[idx]) flashCell(cells[idx], intv*1000*0.85);
+      // eco no piano sincronizado com o som (as alturas reais da condução de vozes)
+      pianoEchoMidiList(voices[i], intv * 1000 * 0.9);
     }, i * intv * 1000);
     cadenceTimeoutIds.push(tid);
   });
@@ -2985,14 +3233,8 @@ function renderCadences(){
   const el = document.getElementById('cadences-container');
   if(!el) return;
   el.innerHTML = '';
-  const N = currentMode().intervals.length;
-  if(N < 6){
-    const note = document.createElement('div');
-    note.style.cssText = 'border:1px solid var(--soft);padding:14px 16px;background:var(--softer);color:var(--mute);font-size:13px;line-height:1.55';
-    note.textContent = 'cadências indisponíveis para pentatônicas — sem campo harmônico tradicional. troque para uma escala de 6+ notas.';
-    el.appendChild(note);
-    return;
-  }
+  const sev = cadSev();
+  const modeLabel = tonicName() + ' ' + currentMode().pt;
   const groups = {};
   CADENCES.forEach(function(c){
     if(!groups[c.group]) groups[c.group] = [];
@@ -3013,13 +3255,17 @@ function renderCadences(){
     groups[grp].forEach(function(c){
       const card = document.createElement('button');
       card.className = 'cadence-card';
-      const chordNames = c.degrees.map(function(d){
-        const ch = chordOfDegree(d % N, 0);
-        return ch ? ch.displayName : '?';
-      });
-      card.innerHTML = '<div class="c-label">'+c.label+'</div>' +
-                       '<div class="c-roman">'+c.rom+'</div>' +
-                       '<div class="c-chords">'+chordNames.join(' → ')+'</div>';
+      const v = cadenceVariant(c);
+      const outside = v.chords.filter(function(ch){ return !cadChordInMode(ch, sev); }).map(function(ch){ return cadChordName(ch, sev); });
+      const uniq = outside.filter(function(x, i){ return outside.indexOf(x) === i; });
+      let note = '';
+      if(!v.sameGender) note = 'só existe em ' + (c.maj ? 'maior' : 'menor') + ' · fora de ' + modeLabel;
+      else if(uniq.length) note = 'emprestado · ' + uniq.join(', ') + ' não ' + (uniq.length > 1 ? 'são' : 'é') + ' de ' + modeLabel;
+      if(note) card.classList.add('out');
+      card.innerHTML = '<div class="c-label">'+c.label+(c.alt ? ' <span class="c-alt">· '+c.alt+'</span>' : '')+'</div>' +
+                       '<div class="c-roman">'+cadenceRoman(c)+'</div>' +
+                       '<div class="c-chords">'+v.chords.map(function(ch){ return cadChordName(ch, sev); }).join(' → ')+'</div>' +
+                       (note ? '<div class="c-note">'+note+'</div>' : '');
       card.addEventListener('click', function(){ playCadence(c, card); });
       grid.appendChild(card);
     });
@@ -3060,7 +3306,8 @@ function harmonicInfo(n, fundHz){
   return {
     n: n,
     freq: freq,
-    note: NOTES[noteNum] + octave,
+    note: chromaticName(noteNum) + octave,
+    pc: noteNum,
     cents: cents,
     isMicrotonal: Math.abs(cents) >= 20,
   };
@@ -3104,8 +3351,7 @@ function renderHarmonicTable(){
     });
   });
   // hint
-  const tonicName = NOTES[tonic];
-  document.getElementById('harmonic-hint').textContent = 'fundamental: ' + tonicName + '3 · ' + fund.toFixed(1) + ' Hz';
+  document.getElementById('harmonic-hint').textContent = 'fundamental: ' + tonicName() + '3 · ' + fund.toFixed(1) + ' Hz';
 }
 
 function playSingleParcial(n){
@@ -3120,7 +3366,7 @@ function playSingleParcial(n){
   g.gain.setValueAtTime(0, t0);
   g.gain.linearRampToValueAtTime(0.22, t0 + 0.018);
   g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.7);
-  osc.connect(g).connect(audioCtx.destination);
+  osc.connect(g).connect(masterOut());
   osc.start(t0);
   osc.stop(t0 + 0.8);
 }
@@ -3141,7 +3387,7 @@ function playCompositeTimbre(){
   masterGain.gain.linearRampToValueAtTime(1, t0 + 0.025);
   masterGain.gain.setValueAtTime(1, t0 + dur*0.6);
   masterGain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
-  masterGain.connect(audioCtx.destination);
+  masterGain.connect(masterOut());
   const oscs = [];
   activeNs.forEach(function(n){
     const osc = audioCtx.createOscillator();
@@ -3182,7 +3428,7 @@ function playHarmonicArpeggio(){
     g.gain.setValueAtTime(0, when);
     g.gain.linearRampToValueAtTime(0.22, when + 0.018);
     g.gain.exponentialRampToValueAtTime(0.001, when + dur);
-    osc.connect(g).connect(audioCtx.destination);
+    osc.connect(g).connect(masterOut());
     osc.start(when);
     osc.stop(when + dur + 0.05);
   }
@@ -3202,8 +3448,7 @@ function playHarmonicArpeggio(){
 function stopHarmonicPlayer(){
   if(harmonicPlayState && harmonicPlayState.masterGain && audioCtx){
     try{
-      harmonicPlayState.masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-      harmonicPlayState.masterGain.gain.setValueAtTime(harmonicPlayState.masterGain.gain.value, audioCtx.currentTime);
+      holdParam(harmonicPlayState.masterGain.gain, audioCtx.currentTime);
       harmonicPlayState.masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.04);
     }catch(e){}
     const old = harmonicPlayState.masterGain;
@@ -3276,9 +3521,13 @@ const KB_CHORD_PATTERNS = {
   '0,3,7,10':    { suffix:'m7',       label:'min7' },
   '0,3,7,11':    { suffix:'m(maj7)',  label:'min-maj7' },
   '0,3,6,9':     { suffix:'°7',       label:'dim7' },
-  '0,3,6,10':    { suffix:'m7♭5',     label:'half-dim ø7' },
+  '0,3,6,10':    { suffix:'ø7',       label:'meio-diminuto (m7♭5)' },
   '0,4,8,10':    { suffix:'7♯5',      label:'aug7' },
   '0,4,8,11':    { suffix:'maj7♯5',   label:'maj7♯5' },
+  // 6ª no lugar da 7ª — mesmas notas de um m7/ø7 invertido; o baixo decide (C-E-G-A com C no baixo = C6, não Am7/C)
+  '0,4,7,9':     { suffix:'6',        label:'maior com 6ª' },
+  '0,3,7,9':     { suffix:'m6',       label:'menor com 6ª' },
+  '0,5,7,10':    { suffix:'7sus4',    label:'dominante suspenso' },
   // tríades + 9ª (sem 7ª) — chamados "add9"
   '0,2,4,7':     { suffix:'add9',     label:'maj add9' },
   '0,2,3,7':     { suffix:'m(add9)',  label:'min add9' },
@@ -3291,13 +3540,20 @@ const KB_CHORD_PATTERNS = {
   '0,3,4,7,10':  { suffix:'7♯9',      label:'dom 7♯9 (Hendrix)' },
   '0,2,3,6,10':  { suffix:'m9♭5',     label:'half-dim 9' },
   '0,2,3,6,9':   { suffix:'°9',       label:'dim 9' },
+  '0,2,4,7,9':   { suffix:'6/9',      label:'seis-nove' },
+  '0,2,5,7,10':  { suffix:'11',       label:'11 sem 3ª (9sus4)' },
+  '0,2,4,5,7,10':{ suffix:'11',       label:'dominante com 11ª' },
+  '0,2,3,5,7,10':{ suffix:'m11',      label:'menor com 11ª' },
+  '0,4,7,9,10':  { suffix:'13',       label:'dominante com 13ª' },
+  '0,2,4,7,9,10':{ suffix:'13',       label:'dominante com 9ª e 13ª' },
+  '0,2,4,7,9,11':{ suffix:'maj13',    label:'maj13' },
   // dyads (apenas 2 notas)
   '0,7':         { suffix:'5',        label:'power' },
   '0,4':         { suffix:'(3M)',     label:'maj 3rd' },
   '0,3':         { suffix:'(3m)',     label:'min 3rd' },
   '0,5':         { suffix:'(4J)',     label:'4th' },
-  '0,7,12':      { suffix:'',         label:'1+5+8' },
 };
+const KB_PATTERN_RANK = Object.keys(KB_CHORD_PATTERNS); // ordem acima = mais comum primeiro (desempate)
 
 // recebe array de pitch classes (0-11) e bass pc, retorna acorde identificado ou null
 function identifyChord(pcs, bassPc){
@@ -3309,8 +3565,9 @@ function identifyChord(pcs, bassPc){
     const intervals = unique.map(function(p){ return ((p - root + 12) % 12); }).sort(function(a,b){return a-b;});
     const ivStr = intervals.join(',');
     if(KB_CHORD_PATTERNS[ivStr]){
-      const score = (root === bassPc ? 100 : 50) - (root === unique[0] ? 0 : 5);
-      candidates.push({ root: root, pattern: KB_CHORD_PATTERNS[ivStr], score: score });
+      // baixo manda; depois raiz dentro do modo; depois o padrão mais comum (sem favorecer a nota mais baixa da lista, que era sempre C)
+      const score = (root === bassPc ? 100 : 50) + (modeContainsChrom(root) >= 0 ? 3 : 0) - KB_PATTERN_RANK.indexOf(ivStr) * 0.01;
+      candidates.push({ root: root, pattern: KB_CHORD_PATTERNS[ivStr], score: score, ivs: ivStr });
     }
   }
 
@@ -3331,7 +3588,8 @@ function identifyChord(pcs, bassPc){
             candidates.push({
               root: root,
               pattern: { suffix: KB_CHORD_PATTERNS[triad].suffix + extraLabel, label: 'extended' },
-              score: (root === bassPc ? 80 : 30)
+              score: (root === bassPc ? 80 : 30) + (modeContainsChrom(root) >= 0 ? 3 : 0),
+              ivs: null
             });
             break;
           }
@@ -3344,10 +3602,10 @@ function identifyChord(pcs, bassPc){
   candidates.sort(function(a,b){ return b.score - a.score; });
   const best = candidates[0];
 
-  let displayName = NOTES[best.root] + best.pattern.suffix;
+  let displayName = pcName(best.root) + best.pattern.suffix;
   let bassName = '';
   if(bassPc !== null && bassPc !== best.root && unique.indexOf(bassPc) >= 0){
-    bassName = NOTES[bassPc];
+    bassName = pcName(bassPc);
     displayName += '/' + bassName;
   }
 
@@ -3356,26 +3614,25 @@ function identifyChord(pcs, bassPc){
     root: best.root,
     bass: bassPc,
     label: best.pattern.label,
+    ivs: best.ivs, // intervalos a partir da raiz ('0,4,7'), null se foi casamento parcial
     inversion: (bassPc !== null && bassPc !== best.root) ? 'inv' : 'fund',
   };
 }
 
 // Determina se o acorde identificado corresponde a um grau do campo harmônico
+// Grau do campo harmônico com a MESMA raiz e o MESMO conjunto de intervalos (tríade ou tétrade).
+// Comparar por qualidade evita Cm/C7/C+ casarem com "I" — e ø7 casa com m7♭5 porque são as mesmas notas.
 function chordToRoman(chordInfo){
-  if(!chordInfo) return null;
+  if(!chordInfo || !chordInfo.ivs) return null;
   const N = currentMode().intervals.length;
   if(N < 6) return null;
   for(let i = 0; i < N; i++){
-    const ch = chordOfDegree(i, 0);
-    if(!ch) continue;
-    const expectedRootPc = (tonic + ch.rootInterval) % 12;
-    if(expectedRootPc === chordInfo.root){
-      // checar se as qualidades batem (tríade)
-      const expectedSuffix = ch.displayName.replace(NOTES[expectedRootPc], '');
-      if(chordInfo.displayName.indexOf(NOTES[expectedRootPc] + expectedSuffix) === 0 ||
-         chordInfo.displayName === NOTES[expectedRootPc] + expectedSuffix){
-        return ch.roman;
-      }
+    for(const vc of ['triad','seventh']){
+      const ch = chordOfDegree(i, 0, vc);
+      if(!ch || (tonic + ch.rootInterval) % 12 !== chordInfo.root) continue;
+      const set = ch.intervals.map(function(x){ return ((x - ch.rootInterval) % 12 + 12) % 12; })
+        .filter(function(x, k, a){ return a.indexOf(x) === k; }).sort(function(a, b){ return a - b; }).join(',');
+      if(set === chordInfo.ivs) return ch.roman;
     }
   }
   return null;
@@ -3414,7 +3671,8 @@ function kbStartNote(midi){
     osc.frequency.value = midiToFreq(midi);
     g.gain.setValueAtTime(0, t0);
     g.gain.linearRampToValueAtTime(0.16, t0 + 0.012);
-    osc.connect(g).connect(audioCtx.destination);
+    g.gain.setTargetAtTime(0, t0 + 0.012, 1.4); // decaimento natural (~6 s), não sustenta como órgão
+    osc.connect(g).connect(masterOut());
     osc.start(t0);
     kbActiveNotes.set(midi, { osc: osc, gain: g, started: t0 });
   }
@@ -3427,7 +3685,7 @@ function kbStartNote(midi){
   // log: pegar a nota tocada e seu nome com oitava
   const pc = ((midi % 12) + 12) % 12;
   const oct = Math.floor(midi / 12) - 1;
-  logTonalNote(pc, NOTES[pc] + oct, midi);
+  logTonalNote(pc, midiName(midi), midi);
 }
 
 function kbStopNote(midi, force){
@@ -3437,10 +3695,9 @@ function kbStopNote(midi, force){
 
   const t0 = audioCtx.currentTime;
   try{
-    note.gain.gain.cancelScheduledValues(t0);
-    note.gain.gain.setValueAtTime(note.gain.gain.value, t0);
-    note.gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.4);
-    note.osc.stop(t0 + 0.45);
+    holdParam(note.gain.gain, t0);
+    note.gain.gain.setTargetAtTime(0, t0, 0.12); // abafador: ~0,6 s até o silêncio
+    note.osc.stop(t0 + 0.9);
   }catch(e){}
   kbActiveNotes.delete(midi);
   rpSetHeld(midi, false);
@@ -3522,7 +3779,7 @@ function updateChordDetection(){
     // destacar triângulo no Tonnetz (se for tríade)
     highlightTonnetzChord(chord);
   } else {
-    const noteNames = pcs.sort(function(a,b){return a-b;}).map(function(pc){ return NOTES[pc]; }).join(' ');
+    const noteNames = pcs.sort(function(a,b){return a-b;}).map(function(pc){ return pcName(pc); }).join(' ');
     nameEl.textContent = noteNames;
     nameEl.classList.remove('empty');
     metaEl.textContent = pcs.length + ' notas · ' + (inMode > 0 ? inMode + ' no modo' : '') + (outOfMode > 0 ? ' · ' + outOfMode + ' fora' : '');
@@ -3604,7 +3861,7 @@ function buildKeyboard(){
     const pc = b.midi % 12;
     if(pc === tonic) key.classList.add('tonic-key');
     if(modeContainsChrom(pc) >= 0) key.classList.add('in-mode');
-    const noteName = NOTES[pc];
+    const noteName = pcName(pc); // tecla preta: ♯ ou ♭ conforme a tonalidade
     const hintKey = kbQwertyHint(b.midi - kbShift);
     key.innerHTML = '<div class="kb-label">'+noteName+'</div>' + (hintKey ? '<div class="kb-shortcut">'+hintKey.toUpperCase()+'</div>' : '');
     attachKeyHandlers(key, b.midi);
@@ -3820,7 +4077,8 @@ function rpArc(r0, r1, a0, a1){
 const PIANO_URL = 'https://tonejs.github.io/audio/salamander/';
 const PIANO_PC_NAME = {0:'C', 3:'Ds', 6:'Fs', 9:'A'};
 const PIANO_BUFS = {};
-let pianoTimbre = 'synth'; // 'synth' | 'piano'
+let pianoTimbre = 'synth'; // 'synth' | 'piano' — vira 'piano' quando as amostras carregam (initAudio)
+let timbreUserSet = false;   // escolha explícita do usuário vence o padrão
 let pianoLoading = null;
 
 function loadPiano(onProgress){
@@ -3851,7 +4109,7 @@ function pianoVoice(midi, freq, t0, vol, dest){
   src.buffer = buf;
   src.playbackRate.value = freq / (440 * Math.pow(2, (s - 69) / 12));
   g.gain.setValueAtTime(vol, t0);
-  src.connect(g).connect(dest || audioCtx.destination);
+  src.connect(g).connect(dest || masterOut());
   src.start(t0);
   return { osc: src, gain: g };
 }
@@ -3863,8 +4121,8 @@ function pianoNote(midi, freq, t0, dur, vol, dest){
   if(!v) return false;
   const rel = Math.max(dur, 0.25);
   v.gain.gain.setValueAtTime(Math.min(0.6, vol * 3), t0 + rel);
-  v.gain.gain.exponentialRampToValueAtTime(0.001, t0 + rel + 0.45);
-  v.osc.stop(t0 + rel + 0.5);
+  v.gain.gain.setTargetAtTime(0, t0 + rel, 0.3); // abafador: cauda de ~1,5 s em vez de cortar
+  v.osc.stop(t0 + rel + 1.6);
   return true;
 }
 
@@ -3999,7 +4257,7 @@ function rpDrawLinks(){
   // nome do acorde no centro
   const c = document.getElementById('rp-center');
   if(!c) return;
-  let label = NOTES[tonic], color = '#555555';
+  let label = tonicName(), color = '#555555';
   if(rpActive.size >= 2){
     const mids = Array.from(rpActive.keys());
     const pcs = mids.map(function(m){ return m % 12; }).filter(function(pc, i, a){ return a.indexOf(pc) === i; });
@@ -4011,7 +4269,7 @@ function rpDrawLinks(){
   svg.appendChild(c);
 }
 
-function rpNoteName(midi){ return NOTES[midi % 12] + (Math.floor(midi/12) - 1); }
+function rpNoteName(midi){ return midiName(midi); }
 
 function renderRadialPiano(){
   const svg = document.getElementById('radial-piano');
@@ -4064,7 +4322,7 @@ function renderRadialPiano(){
       const t = svgEl('text', {x: RP_CX + rm*Math.cos(am), y: RP_CY + rm*Math.sin(am), 'text-anchor':'middle',
         'dominant-baseline':'middle', fill: text, 'font-family':"'JetBrains Mono', monospace",
         'font-size': Math.min(9, w*0.6).toFixed(1), 'font-weight': isTonic ? '700' : '500', 'pointer-events':'none', 'class':'rp-label'});
-      t.textContent = (isTonic || pc === 0) ? rpNoteName(m) : NOTES[pc];
+      t.textContent = (isTonic || pc === 0) ? rpNoteName(m) : pcName(pc);
       t.setAttribute('fill', text);
       svg.appendChild(t);
     }
@@ -4095,7 +4353,7 @@ function renderRadialPiano(){
     edge.textContent = rpGraveOut ? 'A0 · 27,5 Hz' : 'C8 · 4186 Hz';
     core.textContent = rpGraveOut ? 'C8 · 4186 Hz' : 'A0 · 27,5 Hz';
   }
-  c.textContent = NOTES[tonic];
+  c.textContent = tonicName();
   svg.appendChild(c);
   rpDrawLinks();
 }
@@ -4119,7 +4377,7 @@ function rpPlay(path){
   if(!v) playPitch(((rel % 12) + 12) % 12, Math.floor(rel / 12), 0.02, 0.6, 0.16);
   if(typeof pianoEchoMidiList === 'function') pianoEchoMidiList([m], 600);
   rpFlash(m, 1200);
-  logTonalNote(m % 12, NOTES[m % 12], m);
+  logTonalNote(m % 12, midiName(m), m);
   const now = document.getElementById('rp-now');
   if(now) now.innerHTML = '<span class="k">toque</span>' + rpNoteName(m) + ' · ' + hz.toFixed(1) + ' Hz';
 }
@@ -4175,7 +4433,7 @@ function rpPlay(path){
     });
   });
   document.querySelectorAll('[data-timbre]').forEach(function(b){
-    b.addEventListener('click', function(){ setTimbre(b.dataset.timbre); });
+    b.addEventListener('click', function(){ timbreUserSet = true; setTimbre(b.dataset.timbre); });
   });
 })();
 
@@ -4313,8 +4571,8 @@ function renderSpectrumStrip(){
   el.innerHTML = '';
   for(let pc = 0; pc < 12; pc++){
     const d = document.createElement('div');
-    d.title = NOTES[pc] + ' → ' + Math.round(noteLightNm(pc)) + ' nm';
-    d.innerHTML = '<i style="background:' + specColor(pc) + '"></i>' + NOTES[pc] + '<span>' + Math.round(noteLightNm(pc)) + '</span>';
+    d.title = pcName(pc) + ' → ' + Math.round(noteLightNm(pc)) + ' nm';
+    d.innerHTML = '<i style="background:' + specColor(pc) + '"></i>' + pcName(pc) + '<span>' + Math.round(noteLightNm(pc)) + '</span>';
     el.appendChild(d);
   }
 }
@@ -4411,6 +4669,27 @@ function ljNotes(){
   return { a: a, b: b, fa: pitchHz(0, 0), fb: pitchHz(ljInterval % 12, Math.floor(ljInterval / 12)), live: false };
 }
 
+// razão p:q do que está soando, pelas frequências reais: fração contínua até q ≤ 64 que bata em < 0,05¢.
+// No temperamento igual nada bate (só a oitava) → usa a razão canônica do intervalo e a figura gira.
+// Na afinação justa (relativa à tônica) devolve a razão verdadeira — inclusive a quinta do lobo D–A = 40:27.
+function ljFraction(n){
+  const r = n.fb / n.fa;
+  // temperado: só a oitava é razão inteira (sem isso, 2^(1/3) "vira" 63:50 a 0,1¢)
+  if(tuningMode !== 'just' && (n.b - n.a) % 12 !== 0) return { pq: ljJustFraction(n.b - n.a), exact: false };
+  let h0 = 0, h1 = 1, k0 = 1, k1 = 0, x = r;
+  for(let i = 0; i < 24; i++){
+    const a = Math.floor(x);
+    const h2 = a * h1 + h0, k2 = a * k1 + k0;
+    if(k2 > 64) break;
+    h0 = h1; h1 = h2; k0 = k1; k1 = k2;
+    if(Math.abs(1200 * Math.log2(r * k1 / h1)) < 0.05) return { pq: [h1, k1], exact: true };
+    const f = x - a;
+    if(f < 1e-12) break;
+    x = 1 / f;
+  }
+  return { pq: ljJustFraction(n.b - n.a), exact: false };
+}
+
 function ljDraw(now){
   const cv = document.getElementById('lj-canvas');
   if(!cv) return;
@@ -4418,12 +4697,15 @@ function ljDraw(now){
   const W = cv.width, R = W * 0.42, C = W / 2;
   const n = ljNotes();
   const r = n.fb / n.fa;
-  const fr = ljJustFraction(n.b - n.a);
-  const beat = Math.abs(fr[1] * n.fb - fr[0] * n.fa);
-  const cycle = n.fa * Math.abs(r - fr[0] / fr[1]); // ciclos/s do giro da figura = batimento / q
-  // fase: avança no tempo real de f1, então o desvio da razão aparece como giro na velocidade do batimento
-  const tau = 2 * Math.PI * n.fa * (now / 1000);
-  const loops = Math.min(45, Math.max(2, fr[1])) * 2 * Math.PI;
+  const res = ljFraction(n);
+  const pN = res.pq[0], qN = res.pq[1];
+  // f₂ = (p/q)·f₁ + δ  →  y = sin((p/q)·u + φ(t)), φ = 2π·δ·t. A curva com φ e φ + 2π/q é a mesma,
+  // então a forma se repete a cada 1/(q·|δ|) s = 1 batimento (|q·f₂ − p·f₁|).
+  const delta = n.fb - n.fa * pN / qN;
+  const beat = Math.abs(qN * n.fb - pN * n.fa);
+  const slow = beat > 3 ? Math.ceil(beat / 1.5) : 1; // câmera lenta: o olho não acompanha > ~3 giros/s
+  const phi = 2 * Math.PI * delta * (now / 1000) / slow;
+  const loops = 2 * Math.PI * qN; // u ∈ [0, 2πq] fecha a figura para qualquer φ
   ctx.clearRect(0, 0, W, W);
   ctx.strokeStyle = themeColor('#ebebe5'); ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(C - R, C); ctx.lineTo(C + R, C); ctx.moveTo(C, C - R); ctx.lineTo(C, C + R); ctx.stroke();
@@ -4434,21 +4716,31 @@ function ljDraw(now){
   if(isDark()){ ctx.shadowColor = specColor(n.b % 12); ctx.shadowBlur = 14; }
   ctx.lineWidth = 2.2; ctx.lineJoin = 'round';
   ctx.beginPath();
-  const steps = 2600;
+  const steps = Math.max(2600, qN * 90);
   for(let i = 0; i <= steps; i++){
-    const th = (i / steps) * loops;
-    const x = C + R * Math.sin(th + tau);
-    const y = C - R * Math.sin(r * (th + tau));
+    const u = (i / steps) * loops;
+    const x = C + R * Math.sin(u);
+    const y = C - R * Math.sin(u * pN / qN + phi);
     if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   }
   ctx.stroke();
   ctx.shadowBlur = 0;
   const info = document.getElementById('lj-info');
   if(info){
-    const exact = Math.abs(r - fr[0] / fr[1]) < 1e-9;
-    info.innerHTML = '<span class="k">' + (n.live ? 'tocando' : 'intervalo') + '</span>' + rpNoteName(n.a) + ' + ' + rpNoteName(n.b) +
-      ' · razão ' + r.toFixed(4) + ' · justa <b>' + fr[0] + ':' + fr[1] + '</b> = ' + (fr[0] / fr[1]).toFixed(4) + '<br>' +
-      (exact ? '<span class="k">batimento</span>nenhum — figura parada' : '<span class="k">batimento</span>' + beat.toFixed(2) + ' Hz · a figura completa um giro a cada ' + (1 / cycle).toFixed(1) + ' s');
+    const canon = ljJustFraction(n.b - n.a);
+    let html = '<span class="k">' + (n.live ? 'tocando' : 'intervalo') + '</span>' + rpNoteName(n.a) + ' + ' + rpNoteName(n.b) +
+      ' · razão ' + r.toFixed(4) + ' · ' + (res.exact ? 'exata' : 'mais próxima') + ' <b>' + pN + ':' + qN + '</b> = ' + (pN / qN).toFixed(4) + '<br>';
+    if(beat < 1e-6) html += '<span class="k">batimento</span>nenhum — figura parada';
+    else html += '<span class="k">batimento</span>' + beat.toFixed(2) + ' Hz · a forma se repete a cada ' + (1 / beat < 1 ? (1000 / beat).toFixed(0) + ' ms' : (1 / beat).toFixed(1) + ' s') + ' (1 batimento)' +
+      (slow > 1 ? ' · <b>câmera lenta ×1/' + slow + '</b>' : '');
+    if(res.exact && (canon[0] !== pN || canon[1] !== qN)){
+      const dc = 1200 * Math.log2((pN / qN) / (canon[0] / canon[1]));
+      const semis = ((n.b - n.a) % 12 + 12) % 12;
+      html += '<br><span class="k">justa</span>a afinação justa conta tudo a partir da tônica (' + tonicName() + '), então ' + pcName(n.a) + '–' + pcName(n.b) +
+        ' sai ' + pN + ':' + qN + ', não ' + canon[0] + ':' + canon[1] + ' (' + (dc > 0 ? '+' : '') + dc.toFixed(1) + '¢)' +
+        (semis === 7 ? ' — é a <b>quinta do lobo</b>: o preço de afinar puro em relação a uma nota só.' : ' — intervalo desigual, a diferença é uma coma.');
+    }
+    info.innerHTML = html;
   }
 }
 
@@ -4544,10 +4836,7 @@ function syncCrossSectionHighlights(){
     const n = idx + 1;
     const fund = tonicFreq() / 2;
     const info = harmonicInfo(n, fund);
-    // extrair pc da string (ex: "C3", "G#4", "A#5≈")
-    const noteName = info.note.replace(/[≈\d]/g, '');
-    const pc = NOTES.indexOf(noteName);
-    if(pc >= 0 && activePcs.indexOf(pc) >= 0){
+    if(activePcs.indexOf(info.pc) >= 0){
       tr.classList.add('kb-on');
     }
   });
@@ -4690,7 +4979,9 @@ function logTonalNote(chrom, name, midi){
       if(absDiff === 0){
         el.innerHTML = '<em>' + lastTonalNote.name + ' → ' + name + '</em> · uníssono (mesma altura exata)';
       } else {
-        const info = compoundIntervalDescription(absDiff);
+        // pela grafia: F→B = 4ª aumentada, B→F = 5ª diminuta; C→E♭ + 8ª = 10ª menor (não 9ª aumentada)
+        const lo = realDiff > 0 ? lastTonalNote.name : name, hi = realDiff > 0 ? name : lastTonalNote.name;
+        const info = (letterOfName(lo) >= 0 && letterOfName(hi) >= 0 && spelledInterval(letterOfName(lo), letterOfName(hi), absDiff)) || compoundIntervalDescription(absDiff);
         el.innerHTML = '<em>' + lastTonalNote.name + ' → ' + name + '</em> · <b>' + info.short + '</b> ' + info.name + ' · ' + absDiff + ' semitons ' + dir;
       }
     } else {
@@ -4699,7 +4990,8 @@ function logTonalNote(chrom, name, midi){
       const ascSemis = diff;
       const descSemis = (12 - diff) % 12;
       const useSemis = (ascSemis === 0) ? 0 : ascSemis;
-      const info = intervalDescription(useSemis);
+      const sp = (letterOfName(lastTonalNote.name) >= 0 && letterOfName(name) >= 0) ? spelledInterval(letterOfName(lastTonalNote.name), letterOfName(name), useSemis) : null;
+      const info = sp || intervalDescription(useSemis);
       if(useSemis === 0){
         el.innerHTML = '<em>' + lastTonalNote.name + ' → ' + name + '</em> · mesma fundamental';
       } else {
@@ -5098,11 +5390,10 @@ function flashNotationNote(idx, ms){
   }, ms);
 }
 
-function spellNoteForVF(chrom){
-  const useFlats = [5,10,3,8,1].indexOf(tonic) >= 0;
-  const SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-  const FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
-  return (useFlats ? FLAT : SHARP)[chrom];
+// nota grafada → código do EasyScore (letra + #/##/b/bb + oitava pela letra)
+function vfNote(n, midi){
+  const acc = {'-2':'bb','-1':'b','0':'','1':'#','2':'##'}[n.acc];
+  return LETTERS[n.letter] + acc + (Math.floor((midi - n.acc) / 12) - 1);
 }
 
 function renderScaleNotation(){
@@ -5132,20 +5423,15 @@ function renderScaleNotation(){
     // gerar string EasyScore pras notas + lista de metadados pra colorir/anotar
     const noteStrs = [];
     const meta = []; // {chrom, label, isTonic, isChar}
-    intervals.forEach(function(iv){
-      const abs = tonic + iv;
-      const chrom = abs % 12;
-      const oct = 4 + Math.floor(abs / 12);
-      const sp = spellNoteForVF(chrom);
-      noteStrs.push(sp + oct + '/q');
-      meta.push({ chrom: chrom, label: sp, isTonic: chrom === tonic, isChar: charChrom !== null && chrom === charChrom });
+    const spelled = currentSpelling();
+    intervals.forEach(function(iv, i){
+      const n = spelled[i];
+      noteStrs.push(vfNote(n, 60 + tonic + iv) + '/q');
+      meta.push({ chrom: n.pc, label: n.name, isTonic: n.pc === tonic, isChar: charChrom !== null && n.pc === charChrom });
     });
     // oitava acima da tônica
-    const octAbs = tonic + 12;
-    const octOct = 4 + Math.floor(octAbs / 12);
-    const octSp = spellNoteForVF(tonic);
-    noteStrs.push(octSp + octOct + '/q');
-    meta.push({ chrom: tonic, label: octSp, isTonic: true, isChar: false });
+    noteStrs.push(vfNote(spelled[0], 72 + tonic) + '/q');
+    meta.push({ chrom: tonic, label: spelled[0].name, isTonic: true, isChar: false });
 
     const noteString = noteStrs.join(', ');
     const tsig = noteCount + '/4';
@@ -5218,7 +5504,7 @@ function renderDailyBanner(){
   const cad = CADENCES[c.cadence];
   const promptEl = document.getElementById('daily-prompt');
   if(promptEl){
-    promptEl.innerHTML = '<b>' + NOTES[c.tonic] + ' ' + m.pt + '</b> · cadência ' + cad.label + ' <b>' + cad.rom + '</b>';
+    promptEl.innerHTML = '<b>' + tonicNameFor(c.tonic, m) + ' ' + m.pt + '</b> · cadência ' + cad.label + ' <b>' + cadenceRoman(cad, m) + '</b>';
   }
   banner.style.display = '';
 }

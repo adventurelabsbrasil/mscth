@@ -10,12 +10,12 @@
 
 ## escopo
 
-10 seções interativas em **ordem pedagógica** (do concreto ao abstrato), com piano sticky no rodapé:
+12 seções interativas em **ordem pedagógica** (do concreto ao abstrato), com piano sticky no rodapé:
 
 1. **tônica** — 12 notas cromáticas, transposição completa
 2. **série harmônica · timbre** — 16 parciais com cents off, presets (senoide, quadrada, serra, órgão), síntese aditiva clicável e ativável parcial-a-parcial
 3. **escala** — visual + áudio, toggle 12-TET ↔ justa entonação 5-limit com cents off, opção de exibir frequências em Hz
-4. **modo** — 16 escalas em 5 categorias (gregos, harmônicas, exóticas, simétricas, pentatônicas)
+4. **modo** — 17 escalas em 5 categorias (gregos, harmônicas, exóticas, simétricas, pentatônicas)
 5. **caráter do modo** — nota característica, mood, flavor histórico-cultural
 6. **padrões melódicos** — ascendente, descendente, ida-e-volta, terças, quartas, tetracordes, com BPM ajustável (60-160) e visualização da nota atual sincronizada com a escala
 7. **campo harmônico** — três tabs:
@@ -23,9 +23,13 @@
    - **emprestados** — modal interchange (acordes do modo paralelo)
    - **dominantes 2ª** — acordes de preparação (V7/V, V7/vi, etc.)
    - sub-seção **intervalos compostos** — comparativo audível de 2ª↔9ª, 4ª↔11ª, 6ª↔13ª
-8. **cadências** — 13 progressões canônicas (V-I, IV-I, ii-V-I, doo-wop, axis, andaluza, rock min...) aplicadas ao modo atual
+8. **cadências** — 16 cadências por função (perfeita, imperfeita, plagal, de engano, suspensiva, ii-V-I, turnaround, doo-wop, axis, andaluza, dórica, mixolídia...), com qualidade fixa, versão maior/menor conforme o modo, empréstimos sinalizados e condução de vozes
 9. **círculo das quintas** — anel externo (maiores) + anel interno (relativos menores), 2 níveis interativos
 10. **tonnetz** — rede tonal de Euler/Riemann, triângulos clicáveis, modo **tríades** ou **tétrades** (com overlay tracejado da 7ª), nome do acorde flutuando ao tocar
+11. **piano circular** — as 88 teclas enroladas em espiral (croma no ângulo, oitava no raio), vista 3D, espiral de quintas, rastro, cor da nota pela luz
+12. **lissajous** — a forma de um intervalo: razão simples fecha a figura, o batimento a faz girar (a forma se repete a cada batimento), quinta do lobo na afinação justa
+
+**Grafia:** uma letra por grau nos modos de 7 notas (dó menor = C D E♭ F G A♭ B♭), em escala, acordes, campo, cadências e pentagrama. Escalas de 5, 6 e 8 notas seguem a letra do grau da escala-mãe (regra no código, em `GRAFIA`).
 
 Cada seção tem botão `?` que abre modal explicativo com profundidade teórica em pt-br — incluindo referências históricas (Bach, Fourier, Helmholtz, Euler, Riemann, Tymoczko, Wagner, Coltrane, Beatles, Bacharach, Jobim, Stevie Wonder).
 

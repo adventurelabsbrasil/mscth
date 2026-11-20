@@ -2,6 +2,34 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.26.0] — 2026-11-20
+
+### added
+- **Grafia por grau** — nos modos de 7 notas cada grau ganha a letra seguinte (dó menor = C D E♭ F G A♭ B♭, nunca D♯), em escala, campo harmônico, emprestados, dominantes secundárias, cadências, cifra detectada, círculo, tonnetz, piano circular e pentagrama. Tônica em tecla preta escolhe ♯/♭ pela grafia com menos acidentes (D♭ maior, C♯ menor); os botões de tônica mostram essa grafia. Pentatônicas, tom inteiro e diminuta seguem a letra do grau da escala-mãe; nelas, 𝄪/♭♭ e E♯/C♭ viram a nota simples. Fora da escala: grafia cromática relativa à tônica (♭2 ♭3 ♯4 ♭6 ♭7).
+- **Cadências por função** — 16 cadências com qualidade fixa por acorde e versão maior/menor conforme a 3ª do modo: perfeita, imperfeita (V⁶), plagal, de engano, suspensiva, completa, ii-V-I, turnaround (I-vi-ii-V), doo-wop, axis, pop-alt, menor modal, dórica, mixolídia, andaluza (V maior), rock menor. Acorde fora do modo aparece como empréstimo no card. Tétrade usa a 7ª da função (V7, iim7, Imaj7, iiø7).
+- **Condução de vozes** nas cadências: baixo perto de C3 e vozes de cima na inversão mais próxima do acorde anterior.
+- **Detecção de acordes**: 6, m6, 7sus4, 6/9, 11, m11, 13, maj13.
+- **Lissajous · quinta do lobo** — na afinação justa a razão vem das frequências reais (fração contínua até q ≤ 64): D–A em dó justo aparece como 40:27 (−21,5¢), com a explicação.
+- **Bus master com limitador** (DynamicsCompressor, −6 dB, 20:1): acordes grandes no piano não clipam.
+
+### changed
+- **Piano de cauda é o timbre padrão**: pré-carrega ao ativar o áudio (sem rede, fica no sintetizado). Escolha manual no menu vence.
+- Caudas naturais: piano solta com abafador de ~1,5 s em vez de cortar; synth do teclado decai (não sustenta como órgão); soltar nota usa `cancelAndHoldAtTime` (sem clique).
+- `chordToRoman` compara raiz + conjunto de intervalos: Cm/C7/C+ não viram mais "I"; ø7 e m7♭5 são o mesmo acorde (cifra unificada em ø7). Desempate da detecção pelo baixo, raiz no modo e padrão mais comum (não favorece mais C).
+- Intervalos pela grafia: 4ª aumentada ≠ 5ª diminuta, 10ª menor ≠ 9ª aumentada; torre de inversão mostra ♯5 no aumentado e ♭♭7 no dim7.
+- Dominantes secundárias na caixa do alvo: V7/ii, V7/iv, V7/♭VI.
+- **Numeração única**: chave e título de cada `?` = número da seção; jornada do welcome, `progresso`, modal do piano e README com as 12 seções na mesma ordem.
+- Versão exibida no header: `v0.25.0` → `v0.26.0`.
+
+### fixed
+- **Lissajous**: a forma se repete a cada **1** batimento (o texto dizia q). Desenho `x = sin u`, `y = sin((p/q)u + φ(t))`, que sempre fecha; câmera lenta ×1/N acima de ~3 Hz. Temperado não "acha" mais razão falsa (2^(1/3) ≠ 63:50).
+- Numerais romanos do campo apareciam em caixa-alta por CSS (iv virava IV).
+- Aba "emprestados" listava também os acordes que já são do modo; V7/ii° aparecia nas dominantes secundárias.
+- Textos de ajuda: L leva C à 5ª do Em; C→A♭ = PL; octatônico = PR; eixo da harmonia negativa entre 3m e 3M; parcial 13 ≈ +41¢ de A♭; 7º harmônico abaixo da 7m; nem toda fonte gera série harmônica (sinos, membranas, piano inarmônicos); Plomp-Levelt é sobre senoides; notas neutras do maqam; barbershop 4:5:6:7; Creep = iv menor; quíntade = 4 terças; sus2 ≠ add2; v° no frígio; lídio dominante e menor melódica na família certa; frígia dominante tem uma 2ª aumentada; 17 escalas; diminuta semitom-tom serve ao 7♭9; numerais romanos de Vogler/Weber; McCoy Tyner nas quartas; luz ≈ 2,05 (380–780 nm); piano de baixo tem 3 oitavas; saiu a piada Sklodowska.
+
+### rationale
+Fase 1 do plano `docs/plano-v0.26-percepcao-de-valor.md` (credibilidade): corrigir o que faria uma musicista profissional desconfiar do app no primeiro clique — grafia, harmonia, textos, som, a matemática do lissajous e a numeração.
+
 ## [0.25.0] — 2026-11-20
 
 ### added
