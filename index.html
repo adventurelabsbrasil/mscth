@@ -406,6 +406,12 @@
   .kb-mode-row button{flex:1;font-family:inherit;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;background:var(--bg);color:var(--mute);border:none;border-right:1px solid var(--soft);padding:7px 4px;cursor:pointer}
   .kb-mode-row button:last-child{border-right:none}
   .kb-mode-row button.active{background:var(--softer);color:var(--ink)}
+  .kb-transp-row{display:flex;align-items:stretch;border-bottom:1px solid var(--soft);font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase}
+  .kb-transp-row .kb-tr-label{display:flex;align-items:center;padding:0 10px;color:var(--mute)}
+  .kb-transp-row .kb-tr-val{display:flex;align-items:center;justify-content:center;min-width:64px;color:var(--ink)}
+  .kb-transp-row button{font-family:inherit;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;background:var(--bg);color:var(--mute);border:none;border-left:1px solid var(--soft);padding:7px 10px;cursor:pointer}
+  .kb-transp-row button:hover{background:var(--softer);color:var(--ink)}
+  .kb-transp-row .kb-tr-gap{flex:1}
   .kb-body{position:relative;height:120px;background:var(--bg);overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none}
   .kb-keys{position:relative;height:100%;width:100%;display:flex}
   .kb-key-white{flex:1;height:100%;background:var(--bg);border-right:1px solid var(--soft);position:relative;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:5px;box-sizing:border-box;transition:background 0.05s}
@@ -897,7 +903,7 @@
     <button class="kb-toggle" id="kb-toggle" aria-label="abrir/fechar teclado">▾ piano</button>
     <div class="kb-detected">
       <div class="kb-name empty" id="kb-name">toque para identificar acorde</div>
-      <div class="kb-meta" id="kb-meta">qwerty: ZXCV (oitava grave) · QWER (aguda) · shift = sustain</div>
+      <div class="kb-meta" id="kb-meta">teclado: 1 → M = brancas · shift + tecla = preta · espaço = sustain</div>
       <div class="kb-interval" id="kb-interval"></div>
     </div>
     <button class="kb-clear" id="kb-clear" aria-label="limpar">clear</button>
@@ -907,6 +913,19 @@
     <button data-kbmode="free" class="active">livre</button>
     <button data-kbmode="sustain">sustain (mantém notas)</button>
     <button data-kbmode="snap">snap ao modo</button>
+  </div>
+  <div class="kb-transp-row" id="kb-transp-row">
+    <span class="kb-tr-label">transpor</span>
+    <button data-tr="-1" title="meio tom abaixo (←)">−</button>
+    <span class="kb-tr-val" id="kb-tr-val">0</span>
+    <button data-tr="1" title="meio tom acima (→)">+</button>
+    <button data-tr="tonic" title="tecla T (C4) passa a tocar a tônica: as brancas viram a escala maior da tônica">= tônica</button>
+    <button data-tr="0" title="volta ao tom original">zerar</button>
+    <span class="kb-tr-gap"></span>
+    <span class="kb-tr-label">oitava</span>
+    <button data-oc="-1" title="oitava abaixo (↓)">−</button>
+    <span class="kb-tr-val" id="kb-oc-val">0</span>
+    <button data-oc="1" title="oitava acima (↑)">+</button>
   </div>
   <div class="kb-body" id="kb-body">
     <div class="kb-keys" id="kb-keys"></div>
@@ -1254,17 +1273,13 @@ const MODAL_DOCS = {
 <p><b>livre</b> — notas tocam e desligam ao soltar. modo padrão, ideal para dedilhado e melodias.<br>
 <b>sustain</b> — notas permanecem ativas até serem clicadas novamente ou até apertar <em>clear</em>. permite construir acordes complexos uma nota por vez.<br>
 <b>snap ao modo</b> — só permite tocar notas dentro do modo atual. útil para improvisar dentro de um modo específico sem se preocupar com acertar as notas certas.</p>
-<p><b>atalhos do teclado QWERTY</b> — duas oitavas mapeadas no teclado físico do computador:</p>
-<p><b>oitava 4</b> (C4-B4) — fileira inferior:<br>
-<code>Z X C V B N M ,</code> = C D E F G A B C (brancas)<br>
-<code>S D _ G H J _</code> = C# D# _ F# G# A# (pretas)</p>
-<p><b>oitava 5</b> (C5-C6) — fileira superior (acima de ASDF):<br>
-<code>Q W E R T Y U I</code> = C D E F G A B C (brancas)<br>
-<code>2 3 _ 5 6 7 _</code> = C# D# _ F# G# A# (pretas)</p>
-<p>o teclado físico vira um piano de 2 oitavas em paralelo — oitava grave na fileira ZXCV, oitava aguda na fileira QWER. as teclas pretas ficam entre as brancas seguindo o layout natural do piano físico.</p>
-<p><b>shift</b> = sustain temporário enquanto pressionado.<br>
+<p><b>teclado do computador</b> — mesmo padrão dos pianos virtuais: as 36 teclas de <code>1</code> até <code>M</code>, lidas em sequência (<code>1 2 3 … 0</code>, <code>Q … P</code>, <code>A … L</code>, <code>Z … M</code>), são as teclas <b>brancas</b> do grave pro agudo — de C2 (tecla <code>1</code>) até C7 (tecla <code>M</code>). a tecla <code>T</code> é o dó central (C4).</p>
+<p><b>shift + tecla</b> = a tecla <b>preta</b> logo à direita (sustenido). ex.: <code>T</code> = C4, <code>shift+T</code> = C#4. em E e B não há preta, então shift não toca nada.</p>
+<p><b>espaço</b> = pedal de sustain enquanto pressionado.<br>
 <b>esc</b> = clear (libera todas as notas).<br>
-<b>↑/↓</b> = transpor uma oitava acima/abaixo (todo o teclado se move).</p>
+<b>← / →</b> = transpor meio tom (o mesmo que os botões <em>transpor − / +</em>).<br>
+<b>↑ / ↓</b> = mudar a oitava.</p>
+<p><b>transpor</b> — muda o tom do que você toca no teclado do computador sem mudar o dedilhado. <em>= tônica</em> faz a tecla <code>T</code> tocar a tônica do modo: aí as teclas brancas tocam a escala maior daquela tônica. os rótulos nas teclas da tela acompanham a transposição. o clique com mouse/toque na tela não é transposto — toca a tecla que você vê.</p>
 <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
 <p><b>cores semânticas</b> — no menu lateral (<em>≡ menu</em>) você encontra um toggle de cores que aplica paleta semântica em toda a página. três modos:</p>
 <p><b>off</b> — paleta minimalista padrão (preto/branco/laranja).</p>
@@ -3038,49 +3053,36 @@ const KB_MIDI_START = 60;
 const KB_MIDI_END = 96; // 3 oitavas: C4-B6 (60-95, terminando antes de C7)
 const KB_OCTAVES = 3;
 
-// QWERTY mapping (key code → MIDI offset from KB_MIDI_START)
-// Layout QWERTY → MIDI offset a partir de KB_MIDI_START (60 = C4).
-// Duas oitavas mapeadas: oitava 4 (fileira ZXCV) e oitava 5 (fileira QWER).
-// Pretas da oitava 4 ficam na fileira ASDF, pretas da oitava 5 na fileira de números.
-const KB_QWERTY = {
-  // FILEIRA INFERIOR — oitava 4 (C4 = 60). brancas: Z X C V B N M ,
-  'z': 0,   // C4
-  'x': 2,   // D4
-  'c': 4,   // E4
-  'v': 5,   // F4
-  'b': 7,   // G4
-  'n': 9,   // A4
-  'm': 11,  // B4
-  ',': 12,  // C5 (transição)
-  // pretas da oitava 4 — fileira ASDF
-  's': 1,   // C#4
-  'd': 3,   // D#4
-  'g': 6,   // F#4
-  'h': 8,   // G#4
-  'j': 10,  // A#4
-  // FILEIRA SUPERIOR — oitava 5 (C5 = 72). brancas: Q W E R T Y U I
-  'q': 12,  // C5
-  'w': 14,  // D5
-  'e': 16,  // E5
-  'r': 17,  // F5
-  't': 19,  // G5
-  'y': 21,  // A5
-  'u': 23,  // B5
-  'i': 24,  // C6
-  // pretas da oitava 5 — fileira de números
-  '2': 13,  // C#5
-  '3': 15,  // D#5
-  '5': 18,  // F#5
-  '6': 20,  // G#5
-  '7': 22,  // A#5
-};
+// Teclado do computador → piano (padrão dos pianos virtuais):
+// 36 teclas brancas em sequência, do 1 (C2) ao M (C7), usando a posição física (e.code),
+// então funciona igual em QWERTY e ABNT2. shift + tecla = sustenido (a preta à direita).
+// a tecla T cai no C4 (dó central).
+const KB_WHITE_CODES = ['Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0',
+  'KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP',
+  'KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL',
+  'KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM'];
+const KB_WHITE_BASE = 36; // C2
+const KB_WHITE_STEPS = [0,2,4,5,7,9,11];
+function kbWhiteMidi(i){ return KB_WHITE_BASE + Math.floor(i/7)*12 + KB_WHITE_STEPS[i % 7]; }
+// midi (sem transposição) → rótulo da tecla do computador
+function kbQwertyHint(midi){
+  for(let i = 0; i < KB_WHITE_CODES.length; i++){
+    const w = kbWhiteMidi(i);
+    const label = KB_WHITE_CODES[i].replace(/^(Digit|Key)/, '');
+    if(w === midi) return label;
+    if(w + 1 === midi && [4,11].indexOf(w % 12) < 0) return '⇧' + label;
+  }
+  return null;
+}
 
 let kbActiveNotes = new Map(); // midi -> { osc, gain }
 let kbHeldNotes = new Set();   // pcs sustained
 let kbMode = 'free'; // 'free' | 'sustain' | 'snap'
 let kbOctaveShift = 0;
+let kbTranspose = 0;   // semitons, só no teclado do computador
 let kbCollapsed = false;
-let kbShiftHeld = false;
+let kbPedalHeld = false; // barra de espaço = sustain
+const kbCodeMidi = new Map(); // e.code → midi que ela disparou (pra soltar certo mesmo se shift/transposição mudarem)
 
 // Padrões de identificação de acordes (intervalos a partir do root, ordenados)
 const KB_CHORD_PATTERNS = {
@@ -3252,7 +3254,7 @@ function kbStartNote(midi){
 function kbStopNote(midi, force){
   const note = kbActiveNotes.get(midi);
   if(!note) return;
-  if(!force && (kbMode === 'sustain' || kbShiftHeld)) return; // mantém
+  if(!force && (kbMode === 'sustain' || kbPedalHeld)) return; // mantém
 
   const t0 = audioCtx.currentTime;
   try{
@@ -3305,7 +3307,7 @@ function updateChordDetection(){
   if(kbHeldNotes.size === 0){
     nameEl.textContent = 'toque para identificar acorde';
     nameEl.classList.add('empty');
-    metaEl.textContent = 'qwerty: ZXCV (oitava grave) · QWER (aguda) · shift = sustain';
+    metaEl.textContent = 'teclado: 1 → M = brancas · shift + tecla = preta · espaço = sustain';
     // limpar destaques no Tonnetz e círculo
     document.querySelectorAll('.t-tri.kb-detected').forEach(function(t){ t.classList.remove('kb-detected'); });
     document.querySelectorAll('.node-circle.kb-detected circle').forEach(function(c){
@@ -3377,21 +3379,8 @@ function buildKeyboard(){
   const whitePattern = [0,2,4,5,7,9,11];
   const totalWhites = 7 * KB_OCTAVES;
 
-  // Keyboard QWERTY hints — sincronizados com KB_QWERTY
-  // oitava 4 (Z-pattern, brancas e pretas em ASDFGHJ)
-  // oitava 5 (Q-pattern, brancas e pretas em 23 567)
-  const QWERTY_HINTS = {
-    // oitava 4 brancas
-    0:'Z', 2:'X', 4:'C', 5:'V', 7:'B', 9:'N', 11:'M', 12:',',
-    // oitava 4 pretas
-    1:'S', 3:'D', 6:'G', 8:'H', 10:'J',
-    // oitava 5 brancas (Q-row)
-    14:'W', 16:'E', 17:'R', 19:'T', 21:'Y', 23:'U', 24:'I',
-    // oitava 5 pretas (números)
-    13:'2', 15:'3', 18:'5', 20:'6', 22:'7',
-  };
-  // C5 fica em ',', mas Q também = 12. Q tem prioridade visual (mais ergonômico)
-  QWERTY_HINTS[12] = 'Q';
+  // rótulos das teclas do computador — acompanham transposição e oitava
+  const kbShift = kbTranspose + kbOctaveShift*12;
 
   // brancas
   for(let i = 0; i < totalWhites; i++){
@@ -3406,7 +3395,7 @@ function buildKeyboard(){
     if(modeContainsChrom(pc) >= 0) key.classList.add('in-mode');
     const noteName = NOTES[pc];
     const octaveLabel = Math.floor(midi / 12) - 1; // C4 = MIDI 60 → oct 4
-    const hintKey = QWERTY_HINTS[midi - KB_MIDI_START];
+    const hintKey = kbQwertyHint(midi - kbShift);
     key.innerHTML = '<div class="kb-label">'+noteName+(pcInOct===0 ? '<span class="kb-oct">'+octaveLabel+'</span>' : '')+'</div>' + (hintKey ? '<div class="kb-shortcut">'+hintKey.toUpperCase()+'</div>' : '');
     attachKeyHandlers(key, midi);
     keysEl.appendChild(key);
@@ -3437,7 +3426,7 @@ function buildKeyboard(){
     if(pc === tonic) key.classList.add('tonic-key');
     if(modeContainsChrom(pc) >= 0) key.classList.add('in-mode');
     const noteName = NOTES[pc];
-    const hintKey = QWERTY_HINTS[b.midi - KB_MIDI_START];
+    const hintKey = kbQwertyHint(b.midi - kbShift);
     key.innerHTML = '<div class="kb-label">'+noteName+'</div>' + (hintKey ? '<div class="kb-shortcut">'+hintKey.toUpperCase()+'</div>' : '');
     attachKeyHandlers(key, b.midi);
     keysEl.appendChild(key);
@@ -3476,40 +3465,66 @@ function attachKeyHandlers(key, midi){
   });
 }
 
-// Keyboard QWERTY → MIDI
+// Teclado do computador → piano
+function kbTypingInField(){
+  return document.activeElement && ['INPUT','TEXTAREA','SELECT'].indexOf(document.activeElement.tagName) >= 0;
+}
+function kbSetShift(tr, oc){
+  kbTranspose = Math.max(-12, Math.min(12, tr));
+  kbOctaveShift = Math.max(-2, Math.min(2, oc));
+  const tv = document.getElementById('kb-tr-val');
+  if(tv) tv.textContent = (kbTranspose > 0 ? '+' : '') + kbTranspose + ' · T=' + NOTES[((kbTranspose % 12) + 12) % 12];
+  const ov = document.getElementById('kb-oc-val');
+  if(ov) ov.textContent = (kbOctaveShift > 0 ? '+' : '') + kbOctaveShift;
+  buildKeyboard();
+  kbActiveNotes.forEach(function(_, m){ highlightKey(m, true); });
+}
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape'){ kbClearAll(); return; }
-  if(e.key === 'Shift'){ kbShiftHeld = true; return; }
-  if(e.key === 'ArrowUp'){ kbOctaveShift = Math.min(2, kbOctaveShift + 1); return; }
-  if(e.key === 'ArrowDown'){ kbOctaveShift = Math.max(-2, kbOctaveShift - 1); return; }
-  // ignora se foco está em algum input
-  if(document.activeElement && ['INPUT','TEXTAREA','SELECT'].indexOf(document.activeElement.tagName) >= 0) return;
-  const k = e.key.toLowerCase();
-  if(KB_QWERTY[k] !== undefined && !e.repeat){
-    const midi = KB_MIDI_START + KB_QWERTY[k] + kbOctaveShift*12;
-    if(midi >= 0 && midi <= 127){
-      if(kbMode === 'sustain' && kbActiveNotes.has(midi)){
-        kbStopNote(midi, true);
-      } else {
-        kbStartNote(midi);
-      }
-    }
+  if(kbTypingInField()) return;
+  if(e.metaKey || e.ctrlKey || e.altKey) return;
+  if(e.code === 'Space'){ e.preventDefault(); kbPedalHeld = true; return; }
+  if(e.key === 'ArrowUp'){ e.preventDefault(); kbSetShift(kbTranspose, kbOctaveShift + 1); return; }
+  if(e.key === 'ArrowDown'){ e.preventDefault(); kbSetShift(kbTranspose, kbOctaveShift - 1); return; }
+  if(e.key === 'ArrowRight'){ kbSetShift(kbTranspose + 1, kbOctaveShift); return; }
+  if(e.key === 'ArrowLeft'){ kbSetShift(kbTranspose - 1, kbOctaveShift); return; }
+  const i = KB_WHITE_CODES.indexOf(e.code);
+  if(i < 0 || e.repeat || kbCodeMidi.has(e.code)) return;
+  let base = kbWhiteMidi(i);
+  if(e.shiftKey){
+    if([4,11].indexOf(base % 12) >= 0) return; // E e B não têm preta à direita
+    base += 1;
   }
+  const midi = base + kbTranspose + kbOctaveShift*12;
+  if(midi < 21 || midi > 108) return;
+  e.preventDefault();
+  kbCodeMidi.set(e.code, midi);
+  if(kbMode === 'sustain' && kbActiveNotes.has(midi)) kbStopNote(midi, true);
+  else kbStartNote(midi);
 });
 document.addEventListener('keyup', function(e){
-  if(e.key === 'Shift'){
-    kbShiftHeld = false;
-    // se sair do shift e modo é livre, soltar todas
+  if(e.code === 'Space'){
+    kbPedalHeld = false;
+    // soltou o pedal no modo livre: libera o que não está mais com a tecla apertada
     if(kbMode === 'free'){
-      Array.from(kbActiveNotes.keys()).forEach(function(midi){ kbStopNote(midi, true); });
+      const pressed = new Set(kbCodeMidi.values());
+      Array.from(kbActiveNotes.keys()).forEach(function(midi){ if(!pressed.has(midi)) kbStopNote(midi, true); });
     }
     return;
   }
-  const k = e.key.toLowerCase();
-  if(KB_QWERTY[k] !== undefined){
-    const midi = KB_MIDI_START + KB_QWERTY[k] + kbOctaveShift*12;
-    if(kbMode !== 'sustain' && !kbShiftHeld) kbStopNote(midi, false);
-  }
+  const midi = kbCodeMidi.get(e.code);
+  if(midi === undefined) return;
+  kbCodeMidi.delete(e.code);
+  if(kbMode !== 'sustain' && !kbPedalHeld) kbStopNote(midi, false);
+});
+document.querySelectorAll('#kb-transp-row button').forEach(function(b){
+  b.addEventListener('click', function(){
+    if(b.dataset.oc) return kbSetShift(kbTranspose, kbOctaveShift + parseInt(b.dataset.oc));
+    const t = b.dataset.tr;
+    if(t === 'tonic') return kbSetShift(tonic > 6 ? tonic - 12 : tonic, kbOctaveShift);
+    if(t === '0') return kbSetShift(0, 0);
+    kbSetShift(kbTranspose + parseInt(t), kbOctaveShift);
+  });
 });
 
 // ============ COLOR SYSTEM ============
