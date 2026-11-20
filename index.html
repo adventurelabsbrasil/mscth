@@ -853,6 +853,10 @@
     <button data-rp="12" class="active">cromático · 12 por anel</button>
     <button data-rp="7">modo · notas do modo por anel</button>
   </div>
+  <div class="cat-tabs" id="rp-dir">
+    <button data-rpdir="out" class="active">grave na borda · agudo no centro</button>
+    <button data-rpdir="in">grave no centro · agudo na borda</button>
+  </div>
   <div class="cat-tabs" id="rp-timbre">
     <button data-timbre="synth" class="active">som · sintetizado</button>
     <button data-timbre="piano">som · piano de cauda</button>
@@ -867,8 +871,8 @@
       <span><i style="background:#ebebe5;opacity:0.5"></i>fora do modo</span>
     </div>
     <div class="circle-meta">
-      <div><span class="k">borda</span><span class="v">A0 · 27,5 Hz</span></div>
-      <div><span class="k">centro</span><span class="v">C8 · 4186 Hz</span></div>
+      <div><span class="k">borda</span><span class="v" id="rp-edge">A0 · 27,5 Hz</span></div>
+      <div><span class="k">centro</span><span class="v" id="rp-core">C8 · 4186 Hz</span></div>
     </div>
   </div>
 </section>
@@ -917,7 +921,7 @@
   <div class="kb-transp-row" id="kb-transp-row">
     <span class="kb-tr-label">transpor</span>
     <button data-tr="-1" title="meio tom abaixo (←)">−</button>
-    <span class="kb-tr-val" id="kb-tr-val">0</span>
+    <span class="kb-tr-val" id="kb-tr-val">0 · T=C</span>
     <button data-tr="1" title="meio tom acima (→)">+</button>
     <button data-tr="tonic" title="tecla T (C4) passa a tocar a tônica: as brancas viram a escala maior da tônica">= tônica</button>
     <button data-tr="0" title="volta ao tom original">zerar</button>
@@ -1291,6 +1295,7 @@ const MODAL_DOCS = {
   '11': { title:'11 · piano circular', body:`
 <p>o piano comum é uma <b>linha</b>: do grave (esquerda) ao agudo (direita). aqui a mesma linha é <b>enrolada em espiral</b> — cada volta é uma oitava, e cada volta fica dentro da anterior. por isso o grave fica na borda e o agudo no centro.</p>
 <p><b>por que funciona</b> — a oitava (razão 2:1) é a equivalência mais forte da música: dó grave e dó agudo "são a mesma nota". no círculo, isso vira geometria: a nota define o <em>ângulo</em> e a oitava define o <em>raio</em>. todas as oitavas de uma nota ficam alinhadas no mesmo raio (a linha tracejada laranja marca o raio da tônica).</p>
+<p><b>inverter</b> — <em>grave no centro · agudo na borda</em> vira a espiral do avesso: o grave fica no meio e o agudo se abre pra fora, como uma onda que se espalha. aí as fatias apertadas do centro passam a ser as graves, e o registro agudo ganha espaço.</p>
 <p><b>cromático · 12 por anel</b> — cada anel tem as 12 notas, 30° cada. os 88 teclas (A0 a C8) dão 7 oitavas cheias e mais duas pontas incompletas, por isso o anel de fora e o do centro ficam com fatias faltando. as notas fora do modo ficam pálidas.</p>
 <p><b>modo · notas do modo por anel</b> — cada anel mostra só as notas do modo escolhido (7 num modo diatônico, 5 numa pentatônica…), em fatias iguais. é o piano "sem notas erradas": qualquer gesto soa dentro do modo.</p>
 <p><b>gestos</b> — girar no mesmo anel = escala dentro da oitava. ir em linha reta para o centro = a mesma nota subindo de oitava em oitava. arrastar na diagonal = espiral ascendente.</p>
@@ -3619,6 +3624,7 @@ function applyColorTintsAndRerenderSvgs(){
 const RP_LOW = 21, RP_HIGH = 108, RP_CX = 200, RP_CY = 200, RP_R_OUT = 192, RP_R_IN = 26;
 const RP_WHITE_PCS = [0,2,4,5,7,9,11];
 let rpLayout = '12'; // '12' cromático | '7' notas do modo
+let rpGraveOut = true; // true = grave na borda; false = grave no centro
 let rpLastMidi = null;
 
 function rpArc(r0, r1, a0, a1){
@@ -3747,7 +3753,7 @@ function renderRadialPiano(){
     if(rpLayout === '12') slot = rel;
     else { if(!inMode) continue; slot = rels.indexOf(rel); }
     const ring = Math.floor((m - base) / 12);
-    const r1 = RP_R_OUT - ring*w, r0 = r1 - w + 0.8;
+    const r1 = rpGraveOut ? RP_R_OUT - ring*w : RP_R_IN + (ring + 1)*w, r0 = r1 - w + 0.8;
     const a0 = -Math.PI/2 - span/2 + slot*span + gap, a1 = a0 + span - 2*gap;
     const pc = m % 12;
     const isWhite = RP_WHITE_PCS.indexOf(pc) >= 0;
@@ -3780,6 +3786,11 @@ function renderRadialPiano(){
   const c = svgEl('text', {x: RP_CX, y: RP_CY, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#555555',
     'font-family':"'JetBrains Mono', monospace", 'font-size':'9', 'font-weight':'600', 'pointer-events':'none'});
   c.setAttribute('id', 'rp-center');
+  const edge = document.getElementById('rp-edge'), core = document.getElementById('rp-core');
+  if(edge && core){
+    edge.textContent = rpGraveOut ? 'A0 · 27,5 Hz' : 'C8 · 4186 Hz';
+    core.textContent = rpGraveOut ? 'C8 · 4186 Hz' : 'A0 · 27,5 Hz';
+  }
   c.textContent = NOTES[tonic];
   svg.appendChild(c);
   rpDrawLinks();
@@ -3833,6 +3844,13 @@ function rpPlay(path){
       document.querySelectorAll('#rp-tabs button').forEach(function(x){ x.classList.remove('active'); });
       b.classList.add('active');
       rpLayout = b.dataset.rp;
+      renderRadialPiano();
+    });
+  });
+  document.querySelectorAll('#rp-dir button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#rp-dir button').forEach(function(x){ x.classList.toggle('active', x === b); });
+      rpGraveOut = b.dataset.rpdir === 'out';
       renderRadialPiano();
     });
   });
