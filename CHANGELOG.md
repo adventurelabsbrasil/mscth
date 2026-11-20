@@ -2,6 +2,29 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.24.0] — 2026-11-19
+
+### added
+- **Seção 11 · piano circular** — as 88 teclas (A0 → C8) em anéis concêntricos: cada anel é uma oitava, cada fatia uma nota no mesmo ângulo (tônica no topo), então todas as oitavas de uma nota ficam alinhadas no mesmo raio. Click ou arraste (glissando) toca.
+- **Cromático (12 por anel) ou notas do modo** (7 num diatônico, 5 numa pentatônica…) por anel.
+- **Inverter** — grave na borda/agudo no centro ou grave no centro/agudo na borda.
+- **Ligação do acorde** — notas soando juntas são ligadas (grave → agudo) num polígono, como os acordes do Tonnetz, e o nome do acorde aparece no centro. Cada tipo de acorde tem sempre a mesma forma, só girada.
+- **Modo rastro** — teclas ocultas, cada ataque deixa um clique, um ponto que apaga devagar (15 s / 60 s / ∞) e uma linha até a nota anterior: a melodia desenha o próprio caminho.
+- **Timbre global · piano de cauda** — no menu (`≡ → som · timbre`) e na seção 11: gravações do Salamander Grand Piano (Alexander Holm, CC-BY 3.0), uma a cada 3 semitons, carregadas sob demanda (~2 MB) e reafinadas respeitando afinação igual/justa. Vale pra notas, escalas, acordes, cadências, padrões, piano de baixo e círculo; série harmônica segue em senoides de propósito.
+- **Transpositor** no piano de baixo — ±12 semitons (botões ou ←/→), `= tônica` põe a tônica na tecla T, oitava ±2 (botões ou ↑/↓).
+
+### changed
+- **Teclado do computador** — padrão dos pianos virtuais: `1 2 3 … 0 Q … P A … L Z … M` = as 36 teclas brancas do grave ao agudo (C2 → C7, T = C4), por posição física (QWERTY e ABNT2). `shift + tecla` = a preta à direita.
+- **Sustain** saiu do shift e foi pra **barra de espaço** (pedal).
+- O que é tocado no piano de baixo e nas outras seções também acende no piano circular.
+- Versão exibida no header: `v0.23.2` → `v0.24.0`.
+
+### fixed
+- `highlightKey` restrito às teclas do piano de baixo (o seletor `[data-midi]` passaria a pegar a fatia do círculo).
+
+### rationale
+O piano linear esconde a equivalência de oitava; enrolado em anéis, ela vira geometria — a nota é o ângulo, a oitava é o raio. A partir daí o mesmo desenho serve pra ver acordes (formas que só giram entre tons) e melodias (o rastro). O timbre de piano e o teclado 1 → M aproximam o app de um instrumento de verdade.
+
 ## [0.23.2] — 2026-05-03
 
 ### added
