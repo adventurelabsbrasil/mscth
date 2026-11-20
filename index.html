@@ -173,6 +173,13 @@
   .actions button.ghost:hover{background:var(--softer)}
 
   /* CIRCLE */
+  /* piano circular */
+  .rp-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
+  .rp-svg{width:100%;max-width:420px;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+  .rp-svg .rp-key{cursor:pointer;transition:fill 0.06s}
+  .rp-svg .rp-key.out{opacity:0.32}
+  .rp-now{margin-top:10px;width:100%;min-height:18px;text-align:center;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:0.02em}
+  .rp-now .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
   .circle-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
   .circle-svg{width:100%;max-width:360px;height:auto}
   .circle-meta{margin-top:10px;width:100%;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--soft);font-size:10px;letter-spacing:0.06em}
@@ -825,6 +832,36 @@
   </div>
 </section>
 
+<section data-section-id="radial-piano">
+  <div class="sec-head">
+    <span class="sec-label"><span class="num">11</span>piano circular · oitavas em anéis</span>
+    <div class="sec-actions">
+      <span class="sec-hint">click ou arraste → play</span>
+      <button class="level-btn" data-level="0" data-section="radial-piano" title="seu nível de entendimento">○</button>
+      <button class="help-btn" data-help="11" aria-label="ajuda">?</button>
+    </div>
+  </div>
+  <p class="sec-desc">as 88 teclas do piano (A0 → C8) enroladas em anéis concêntricos: <em>grave na borda, agudo no centro</em>. cada anel é uma oitava a partir da tônica e cada fatia é uma nota, sempre no mesmo ângulo — todas as oitavas de uma nota ficam alinhadas no mesmo raio. arraste o dedo de fora pra dentro e você sobe de oitava em oitava na mesma nota.</p>
+  <div class="cat-tabs" id="rp-tabs">
+    <button data-rp="12" class="active">cromático · 12 por anel</button>
+    <button data-rp="7">modo · notas do modo por anel</button>
+  </div>
+  <div class="rp-wrap">
+    <svg class="rp-svg" id="radial-piano" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="Piano circular"></svg>
+    <div class="rp-now" id="rp-now"><span class="k">toque</span>—</div>
+    <div class="circle-legend">
+      <span><i style="background:#fafaf7;border:1px solid #0a0a0a"></i>tecla branca</span>
+      <span><i style="background:#0a0a0a"></i>tecla preta</span>
+      <span><i style="background:#fafaf7;border:2px solid #e8451e"></i>tônica</span>
+      <span><i style="background:#ebebe5;opacity:0.5"></i>fora do modo</span>
+    </div>
+    <div class="circle-meta">
+      <div><span class="k">borda</span><span class="v">A0 · 27,5 Hz</span></div>
+      <div><span class="k">centro</span><span class="v">C8 · 4186 Hz</span></div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="foot-block">
     <div class="foot-label">categorias</div>
@@ -1230,6 +1267,14 @@ const MODAL_DOCS = {
 <p><b>dissonância</b> — colore cada intervalo pela <em>dissonância sensorial</em> baseada em Plomp-Levelt (1965): quanto rugosa é a interferência das duas senoides na cóclea humana. uníssono e oitava → consonância máxima. quinta justa → próxima da consonância. trítono e segunda menor → dissonância máxima. é a paleta <em>psicoacústica</em> — independe de modo, descreve a fisiologia da audição.</p>
 <p>os dois modos revelam coisas diferentes. distância tonal é o mapa de Bach. dissonância é o mapa de Helmholtz. ative o piano e troque entre os dois para ouvir e ver simultaneamente.</p>
 <p><b>caso de uso</b> — toque um <code>C-E-G</code> e veja: o sistema identifica "C", o triângulo do C maior acende no Tonnetz, e se você estiver em jônio aparece "I". Toque <code>C-E♭-G-B♭</code> e identifica "Cm7". Toque <code>F-A-C-E</code> e o sistema mostra "Fmaj7" e o numeral "IV" se estiver em C jônio. Toque <code>C-F#</code> em modo de cores "dissonância" e veja o trítono ardendo em magenta — Maria Sklodowska sentiria orgulho da clareza pedagógica.</p>
+` },
+  '11': { title:'11 · piano circular', body:`
+<p>o piano comum é uma <b>linha</b>: do grave (esquerda) ao agudo (direita). aqui a mesma linha é <b>enrolada em espiral</b> — cada volta é uma oitava, e cada volta fica dentro da anterior. por isso o grave fica na borda e o agudo no centro.</p>
+<p><b>por que funciona</b> — a oitava (razão 2:1) é a equivalência mais forte da música: dó grave e dó agudo "são a mesma nota". no círculo, isso vira geometria: a nota define o <em>ângulo</em> e a oitava define o <em>raio</em>. todas as oitavas de uma nota ficam alinhadas no mesmo raio (a linha tracejada laranja marca o raio da tônica).</p>
+<p><b>cromático · 12 por anel</b> — cada anel tem as 12 notas, 30° cada. os 88 teclas (A0 a C8) dão 7 oitavas cheias e mais duas pontas incompletas, por isso o anel de fora e o do centro ficam com fatias faltando. as notas fora do modo ficam pálidas.</p>
+<p><b>modo · notas do modo por anel</b> — cada anel mostra só as notas do modo escolhido (7 num modo diatônico, 5 numa pentatônica…), em fatias iguais. é o piano "sem notas erradas": qualquer gesto soa dentro do modo.</p>
+<p><b>gestos</b> — girar no mesmo anel = escala dentro da oitava. ir em linha reta para o centro = a mesma nota subindo de oitava em oitava. arrastar na diagonal = espiral ascendente.</p>
+<p><b>a geometria</b> — os anéis têm a mesma espessura, então os de dentro são mais curtos: cada fatia do centro tem cerca de 1/8 do arco das fatias da borda. é o preço de pôr o agudo no meio. por isso os nomes só aparecem quando a fatia tem espaço.</p>
 ` },
   'progress': { title:'progresso · ordem de aprendizado', body:`
 <p>a página está organizada em <b>ordem pedagógica</b> — do concreto ao abstrato, do isolado ao integrado. cada seção depende cognitivamente das anteriores:</p>
@@ -3535,7 +3580,124 @@ function applyColorTintsAndRerenderSvgs(){
   applyColorTints();
   renderCircle();
   renderTonnetz();
+  renderRadialPiano();
 }
+
+// ============ PIANO CIRCULAR ============
+// 88 teclas (MIDI 21 A0 → 108 C8) em anéis concêntricos: grave na borda, agudo no centro.
+// ângulo = nota (tônica no topo), raio = oitava contada a partir da tônica.
+const RP_LOW = 21, RP_HIGH = 108, RP_CX = 200, RP_CY = 200, RP_R_OUT = 192, RP_R_IN = 26;
+const RP_WHITE_PCS = [0,2,4,5,7,9,11];
+let rpLayout = '12'; // '12' cromático | '7' notas do modo
+let rpLastMidi = null;
+
+function rpArc(r0, r1, a0, a1){
+  const p = function(r, a){ return (RP_CX + r*Math.cos(a)).toFixed(2) + ' ' + (RP_CY + r*Math.sin(a)).toFixed(2); };
+  const large = (a1 - a0) > Math.PI ? 1 : 0;
+  return 'M' + p(r1, a0) + ' A' + r1 + ' ' + r1 + ' 0 ' + large + ' 1 ' + p(r1, a1) +
+         ' L' + p(r0, a1) + ' A' + r0 + ' ' + r0 + ' 0 ' + large + ' 0 ' + p(r0, a0) + ' Z';
+}
+
+function rpNoteName(midi){ return NOTES[midi % 12] + (Math.floor(midi/12) - 1); }
+
+function renderRadialPiano(){
+  const svg = document.getElementById('radial-piano');
+  if(!svg) return;
+  svg.innerHTML = '';
+  const mode = currentMode();
+  const rels = mode.intervals.map(function(iv){ return ((iv % 12) + 12) % 12; });
+  const N = rpLayout === '12' ? 12 : rels.length;
+  // tônica mais grave ≤ A0: base do anel 0
+  const base = RP_LOW - (((RP_LOW % 12) - tonic + 12) % 12);
+  const nRings = Math.floor((RP_HIGH - base) / 12) + 1;
+  const w = (RP_R_OUT - RP_R_IN) / nRings;
+  const span = 2*Math.PI / N;
+  const gap = 0.012;
+
+  for(let m = RP_LOW; m <= RP_HIGH; m++){
+    const rel = (m - base) % 12;
+    const inMode = rels.indexOf(rel) >= 0;
+    let slot;
+    if(rpLayout === '12') slot = rel;
+    else { if(!inMode) continue; slot = rels.indexOf(rel); }
+    const ring = Math.floor((m - base) / 12);
+    const r1 = RP_R_OUT - ring*w, r0 = r1 - w + 0.8;
+    const a0 = -Math.PI/2 - span/2 + slot*span + gap, a1 = a0 + span - 2*gap;
+    const pc = m % 12;
+    const isWhite = RP_WHITE_PCS.indexOf(pc) >= 0;
+    const isTonic = pc === tonic;
+    let fill = isWhite ? '#fafaf7' : '#0a0a0a';
+    let text = isWhite ? '#0a0a0a' : '#fafaf7';
+    const tint = colorForPc(pc);
+    if(tint && !isTonic){ fill = tint; text = '#0a0a0a'; }
+    const path = svgEl('path', {d: rpArc(r0, r1, a0, a1), fill: fill,
+      stroke: isTonic ? '#e8451e' : '#0a0a0a', 'stroke-width': isTonic ? 1.8 : 0.6});
+    path.setAttribute('class', 'rp-key' + (rpLayout === '12' && !inMode ? ' out' : ''));
+    path.dataset.midi = m;
+    path.dataset.fill = fill;
+    svg.appendChild(path);
+    // rótulo só se a fatia tem arco suficiente
+    const rm = (r0 + r1) / 2, am = (a0 + a1) / 2;
+    if(rm * (a1 - a0) >= 15 && w >= 11){
+      const t = svgEl('text', {x: RP_CX + rm*Math.cos(am), y: RP_CY + rm*Math.sin(am), 'text-anchor':'middle',
+        'dominant-baseline':'middle', fill: text, 'font-family':"'JetBrains Mono', monospace",
+        'font-size': Math.min(9, w*0.6).toFixed(1), 'font-weight': isTonic ? '700' : '500', 'pointer-events':'none'});
+      t.textContent = (isTonic || pc === 0) ? rpNoteName(m) : NOTES[pc];
+      svg.appendChild(t);
+    }
+  }
+  // raio da tônica: todas as oitavas dela alinhadas
+  svg.appendChild(svgEl('line', {x1: RP_CX, y1: RP_CY - RP_R_IN + 2, x2: RP_CX, y2: RP_CY - RP_R_OUT - 4,
+    stroke:'#e8451e', 'stroke-width':1, 'stroke-dasharray':'2 3', 'pointer-events':'none'}));
+  const c = svgEl('text', {x: RP_CX, y: RP_CY, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#555555',
+    'font-family':"'JetBrains Mono', monospace", 'font-size':'9', 'font-weight':'600', 'pointer-events':'none'});
+  c.textContent = NOTES[tonic];
+  svg.appendChild(c);
+}
+
+function rpPlay(path){
+  const m = +path.dataset.midi;
+  if(m === rpLastMidi) return;
+  rpLastMidi = m;
+  const rel = m - (60 + tonic);
+  playPitch(((rel % 12) + 12) % 12, Math.floor(rel / 12), 0.02, 0.6, 0.16);
+  path.setAttribute('fill', '#e8451e');
+  setTimeout(function(){ path.setAttribute('fill', path.dataset.fill); }, 350);
+  if(typeof pianoEchoMidiList === 'function') pianoEchoMidiList([m], 600);
+  logTonalNote(m % 12, NOTES[m % 12], m);
+  const hz = pitchHz(((rel % 12) + 12) % 12, Math.floor(rel / 12));
+  const now = document.getElementById('rp-now');
+  if(now) now.innerHTML = '<span class="k">toque</span>' + rpNoteName(m) + ' · ' + hz.toFixed(1) + ' Hz';
+}
+
+(function initRadialPiano(){
+  const svg = document.getElementById('radial-piano');
+  if(!svg) return;
+  let down = false;
+  const keyAt = function(e){
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    return el && el.classList && el.classList.contains('rp-key') ? el : null;
+  };
+  svg.addEventListener('pointerdown', function(e){
+    down = true; rpLastMidi = null;
+    const k = keyAt(e); if(k) rpPlay(k);
+    e.preventDefault();
+  });
+  svg.addEventListener('pointermove', function(e){
+    if(!down) return;
+    const k = keyAt(e); if(k) rpPlay(k);
+  });
+  window.addEventListener('pointerup', function(){ down = false; rpLastMidi = null; });
+  window.addEventListener('pointercancel', function(){ down = false; rpLastMidi = null; });
+  document.querySelectorAll('#rp-tabs button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#rp-tabs button').forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      rpLayout = b.dataset.rp;
+      renderRadialPiano();
+    });
+  });
+})();
 
 // ============ CROSS-SECTION KB-ON ============
 // Marca elementos que representam pitch classes ativas no piano
@@ -3902,6 +4064,7 @@ function renderAll(){
   renderCircle();
   renderTonnetz();
   renderPatternDisplay();
+  renderRadialPiano();
   renderPatternTabs();
   renderCadences();
   renderHarmonicTable();
