@@ -186,6 +186,10 @@
   @keyframes rp-ripple{from{transform:scale(0.6);opacity:0.9}to{transform:scale(4.5);opacity:0}}
   .rp-trail-mark{animation-name:rp-fade;animation-timing-function:linear;animation-fill-mode:forwards}
   .rp-ripple{transform-box:fill-box;transform-origin:center;animation:rp-ripple 0.7s ease-out forwards}
+  .rp3d-ctrl{display:none;flex-wrap:wrap;gap:8px 18px;justify-content:center;width:100%;margin-top:10px;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--mute)}
+  .rp3d-ctrl label{display:flex;align-items:center;gap:8px}
+  .rp3d-ctrl input{accent-color:#e8451e;width:130px}
+  .rp3d-ctrl .v{min-width:44px;color:var(--ink)}
   .rp-now{margin-top:10px;width:100%;min-height:18px;text-align:center;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:0.02em}
   .rp-now .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
   /* lissajous */
@@ -867,6 +871,10 @@
     <button data-rp="12" class="active">cromático · 12 por anel</button>
     <button data-rp="7">modo · notas do modo por anel</button>
   </div>
+  <div class="cat-tabs" id="rp-view">
+    <button data-rpview="2d" class="active">vista · 2D</button>
+    <button data-rpview="3d">vista · 3D (espiral girando)</button>
+  </div>
   <div class="cat-tabs" id="rp-order">
     <button data-rporder="chrom" class="active">ordem · cromática (C C# D…)</button>
     <button data-rporder="fifths">ordem · quintas (C G D…)</button>
@@ -888,6 +896,11 @@
   </div>
   <div class="rp-wrap">
     <svg class="rp-svg" id="radial-piano" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="Piano circular"></svg>
+    <canvas class="rp-svg" id="rp3d" width="800" height="800" style="display:none" aria-label="Piano circular em 3D"></canvas>
+    <div class="rp3d-ctrl" id="rp3d-ctrl">
+      <label>velocidade <input type="range" id="rp3d-speed" min="-120" max="120" step="1" value="20"><span class="v" id="rp3d-speed-v">20°/s</span></label>
+      <label>inclinação <input type="range" id="rp3d-tilt" min="0" max="88" step="1" value="58"><span class="v" id="rp3d-tilt-v">58°</span></label>
+    </div>
     <div class="rp-now" id="rp-now"><span class="k">toque</span>—</div>
     <div class="circle-legend">
       <span><i style="background:#fafaf7;border:1px solid #0a0a0a"></i>tecla branca</span>
@@ -1350,6 +1363,7 @@ const MODAL_DOCS = {
   '11': { title:'11 · piano circular', body:`
 <p>o piano comum é uma <b>linha</b>: do grave (esquerda) ao agudo (direita). aqui a mesma linha é <b>enrolada em espiral</b> — cada volta é uma oitava, e cada volta fica dentro da anterior. por isso o grave fica na borda e o agudo no centro.</p>
 <p><b>por que funciona</b> — a oitava (razão 2:1) é a equivalência mais forte da música: dó grave e dó agudo "são a mesma nota". no círculo, isso vira geometria: a nota define o <em>ângulo</em> e a oitava define o <em>raio</em>. todas as oitavas de uma nota ficam alinhadas no mesmo raio (a linha tracejada laranja marca o raio da tônica).</p>
+<p><b>vista · 3D</b> — o mesmo piano, mas cada tecla <em>sobe</em> conforme a nota fica mais aguda: o círculo vira uma <b>escada em espiral</b> (a "hélice de altura" da psicoacústica — Drobisch, 1855; Shepard, 1964). girar em volta é andar pela nota (o <em>croma</em>), subir é andar pela oitava (a <em>altura</em>). com inclinação 0° você vê de cima e é idêntico ao 2D; inclinando, aparece a espiral. <em>velocidade</em> ajusta o giro (0 para; negativo inverte o sentido), arrastar gira com a mão e clicar toca a tecla da frente. acordes ligados, rastro, quintas e inversão funcionam igual.</p>
 <p><b>ordem · quintas</b> — em vez de C C# D D#…, as notas ficam em volta na ordem do <em>círculo das quintas</em> (C G D A E B F#…). é a <b>espiral de quintas</b>: cada anel continua sendo uma oitava, mas agora vizinho = consonante. toda escala maior vira um <em>arco contínuo</em> de 7 fatias (as teclas brancas ficam todas juntas: F C G D A E B), mudar de tom é girar o arco uma casa, o trítono fica do lado oposto e os acordes viram formas compactas. com o rastro ligado, melodias tonais ficam num setor do círculo; música cromática se espalha.</p>
 <p><b>inverter</b> — <em>grave no centro · agudo na borda</em> vira a espiral do avesso: o grave fica no meio e o agudo se abre pra fora, como uma onda que se espalha. aí as fatias apertadas do centro passam a ser as graves, e o registro agudo ganha espaço.</p>
 <p><b>rastro</b> — esconde as teclas (fica só um guia fraco dos anéis) e cada nota tocada deixa uma marca: um clique no ataque, um ponto que apaga devagar e uma linha até a nota anterior, se ela veio logo antes (até 2,5 s). a melodia vai desenhando o próprio caminho no círculo — a memória da música. escolha quanto tempo a memória dura (3 s, 5 s ou ∞ pra guardar o desenho inteiro) e use <em>limpar rastro</em> pra começar outro desenho. as teclas continuam tocáveis mesmo invisíveis.</p>
@@ -3691,6 +3705,7 @@ const RP_LOW = 21, RP_HIGH = 108, RP_CX = 200, RP_CY = 200, RP_R_OUT = 192, RP_R
 const RP_WHITE_PCS = [0,2,4,5,7,9,11];
 let rpLayout = '12'; // '12' cromático | '7' notas do modo
 let rpGraveOut = true; // true = grave na borda; false = grave no centro
+let rpView = '2d';      // '2d' | '3d' (espiral de altura girando)
 let rpFifths = false;   // true = notas em volta na ordem das quintas (espiral de quintas)
 let rpVisual = 'keys';  // 'keys' | 'trail' (teclas ocultas, fica o rastro dos ataques)
 let rpMemory = 3000;    // ms que cada marca do rastro leva pra sumir (Infinity = não some)
@@ -3918,6 +3933,7 @@ function renderRadialPiano(){
     path.setAttribute('class', 'rp-key' + (rpLayout === '12' && !inMode ? ' out' : ''));
     path.dataset.midi = m;
     path.dataset.fill = fill;
+    path.dataset.r0 = r0; path.dataset.r1 = r1; path.dataset.a0 = a0; path.dataset.a1 = a1;
     path.dataset.cx = (RP_CX + (r0 + r1)/2 * Math.cos((a0 + a1)/2)).toFixed(2);
     path.dataset.cy = (RP_CY + (r0 + r1)/2 * Math.sin((a0 + a1)/2)).toFixed(2);
     svg.appendChild(path);
@@ -3932,6 +3948,10 @@ function renderRadialPiano(){
     }
   }
   svg.classList.toggle('trail', rpVisual === 'trail');
+  const cv3 = document.getElementById('rp3d'), ctl3 = document.getElementById('rp3d-ctrl');
+  svg.style.display = rpView === '3d' ? 'none' : '';
+  if(cv3) cv3.style.display = rpView === '3d' ? 'block' : 'none';
+  if(ctl3) ctl3.style.display = rpView === '3d' ? 'flex' : 'none';
   if(rpVisual === 'trail'){
     // guia bem fraco dos anéis: o círculo fica meio oculto
     for(let i = 0; i <= nRings; i++){
@@ -4032,6 +4052,148 @@ function rpPlay(path){
   document.querySelectorAll('[data-timbre]').forEach(function(b){
     b.addEventListener('click', function(){ setTimbre(b.dataset.timbre); });
   });
+})();
+
+// ---- piano circular em 3D: o mesmo layout, com a altura subindo nota a nota (espiral de altura) ----
+// visto de cima (inclinação 0°) é idêntico ao 2D; inclinando, aparece a escada em espiral grave → agudo.
+let rp3dSpeed = 20, rp3dTilt = 58, rp3dAngle = 0, rp3dLast = null, rp3dVisible = false, rp3dDrag = false;
+let rp3dTiles = [];
+const RP3D_H = 230; // altura total (unidades do viewBox)
+
+function rp3dDraw(){
+  const cv = document.getElementById('rp3d');
+  const svg = document.getElementById('radial-piano');
+  if(!cv || !svg) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, C = W / 2, S = W / 400 * 0.92;
+  const cA = Math.cos(rp3dAngle), sA = Math.sin(rp3dAngle);
+  const t = rp3dTilt * Math.PI / 180, cT = Math.cos(t), sT = Math.sin(t);
+  const zOf = function(m){ return ((m - RP_LOW) / (RP_HIGH - RP_LOW) - 0.5) * RP3D_H; };
+  const proj = function(x, y, z){
+    const xr = x*cA - y*sA, yr = x*sA + y*cA;
+    const sy = yr*cT - z*sT, depth = yr*sT + z*cT;
+    const k = 1400 / (1400 - depth); // perspectiva leve
+    return [C + xr*k*S, C + sy*k*S, depth];
+  };
+  const trail = rpVisual === 'trail';
+  const tiles = [];
+  const centers = {};
+  svg.querySelectorAll('.rp-key').forEach(function(key){
+    const m = +key.dataset.midi, r0 = +key.dataset.r0, r1 = +key.dataset.r1, a0 = +key.dataset.a0, a1 = +key.dataset.a1;
+    const z = zOf(m);
+    const pts = [];
+    for(let i = 0; i <= 4; i++){ const a = a0 + (a1 - a0) * i/4; pts.push(proj(r1*Math.cos(a), r1*Math.sin(a), z)); }
+    for(let i = 4; i >= 0; i--){ const a = a0 + (a1 - a0) * i/4; pts.push(proj(r0*Math.cos(a), r0*Math.sin(a), z)); }
+    const depth = pts.reduce(function(sum, q){ return sum + q[2]; }, 0) / pts.length;
+    centers[m] = proj(+key.dataset.cx - RP_CX, +key.dataset.cy - RP_CY, z);
+    tiles.push({ key: key, m: m, pts: pts, depth: depth });
+  });
+  tiles.sort(function(a, b){ return a.depth - b.depth; });
+  ctx.clearRect(0, 0, W, W);
+  // eixo central
+  const top = proj(0, 0, RP3D_H/2), bot = proj(0, 0, -RP3D_H/2);
+  ctx.strokeStyle = '#ebebe5'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(bot[0], bot[1]); ctx.lineTo(top[0], top[1]); ctx.stroke();
+  tiles.forEach(function(tl){
+    const path = new Path2D();
+    tl.pts.forEach(function(q, i){ if(i) path.lineTo(q[0], q[1]); else path.moveTo(q[0], q[1]); });
+    path.closePath();
+    tl.path = path;
+    const on = rpActive.has(tl.m);
+    const isTonic = tl.m % 12 === tonic;
+    ctx.globalAlpha = on ? 1 : (trail ? 0.07 : (tl.key.classList.contains('out') ? 0.35 : 1));
+    ctx.fillStyle = on ? '#e8451e' : tl.key.dataset.fill;
+    ctx.fill(path);
+    ctx.globalAlpha = on ? 1 : (trail ? 0.12 : 1);
+    ctx.strokeStyle = isTonic ? '#e8451e' : '#0a0a0a';
+    ctx.lineWidth = isTonic ? 2.2 : 0.8;
+    ctx.stroke(path);
+  });
+  ctx.globalAlpha = 1;
+  rp3dTiles = tiles;
+  // rastro: pontos que apagam + linha até a nota anterior
+  if(trail){
+    const now = Date.now();
+    rpTrail.forEach(function(e){
+      const age = now - e.t;
+      if(rpMemory !== Infinity && age > rpMemory) return;
+      const p = centers[e.m]; if(!p) return;
+      ctx.globalAlpha = rpMemory === Infinity ? 0.85 : 0.85 * (1 - age / rpMemory);
+      const q = e.link !== null ? centers[e.link] : null;
+      if(q){ ctx.strokeStyle = '#e8451e'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.lineTo(p[0], p[1]); ctx.stroke(); }
+      ctx.fillStyle = '#e8451e'; ctx.beginPath(); ctx.arc(p[0], p[1], 5, 0, 2*Math.PI); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+  // ligação das notas ativas (grave → agudo) + nome do acorde
+  const act = Array.from(rpActive.keys()).filter(function(m){ return centers[m]; }).sort(function(a, b){ return a - b; });
+  if(act.length >= 2){
+    ctx.strokeStyle = '#e8451e'; ctx.lineWidth = 2.6; ctx.lineJoin = 'round';
+    ctx.fillStyle = 'rgba(232,69,30,0.14)';
+    ctx.beginPath();
+    act.forEach(function(m, i){ const p = centers[m]; if(i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+    if(act.length >= 3){ ctx.closePath(); ctx.fill(); }
+    ctx.stroke();
+  }
+  const name = document.getElementById('rp-center');
+  if(name && act.length >= 2){
+    ctx.fillStyle = '#e8451e'; ctx.font = "600 26px 'JetBrains Mono', monospace"; ctx.textAlign = 'center';
+    ctx.fillText(name.textContent, C, 40);
+  }
+}
+
+function rp3dFrame(now){
+  requestAnimationFrame(rp3dFrame);
+  if(rpView !== '3d' || !rp3dVisible){ rp3dLast = null; return; }
+  const dt = rp3dLast === null ? 0 : Math.min(0.1, (now - rp3dLast) / 1000);
+  rp3dLast = now;
+  if(!rp3dDrag) rp3dAngle += rp3dSpeed * Math.PI / 180 * dt;
+  rp3dDraw();
+}
+
+(function initRadialPiano3D(){
+  const cv = document.getElementById('rp3d');
+  if(!cv) return;
+  const sec = document.querySelector('section[data-section-id="radial-piano"]');
+  if(sec && 'IntersectionObserver' in window){
+    new IntersectionObserver(function(es){ rp3dVisible = es[0].isIntersecting; }).observe(sec);
+  } else rp3dVisible = true;
+  // arrastar gira; clicar (sem arrastar) toca a tecla da frente
+  let down = false, lastX = 0, moved = 0;
+  cv.addEventListener('pointerdown', function(e){ down = true; lastX = e.clientX; moved = 0; e.preventDefault(); });
+  window.addEventListener('pointermove', function(e){
+    if(!down) return;
+    const dx = e.clientX - lastX; lastX = e.clientX; moved += Math.abs(dx);
+    if(moved > 4){ rp3dDrag = true; rp3dAngle += dx * 0.012; }
+  });
+  window.addEventListener('pointerup', function(e){
+    if(!down) return;
+    down = false;
+    if(!rp3dDrag){
+      const r = cv.getBoundingClientRect();
+      const x = (e.clientX - r.left) * cv.width / r.width, y = (e.clientY - r.top) * cv.height / r.height;
+      const ctx = cv.getContext('2d');
+      for(let i = rp3dTiles.length - 1; i >= 0; i--){
+        if(rp3dTiles[i].path && ctx.isPointInPath(rp3dTiles[i].path, x, y)){ rpLastMidi = null; rpPlay(rp3dTiles[i].key); break; }
+      }
+    }
+    rp3dDrag = false;
+  });
+  const bind = function(id, vid, unit, set){
+    const el = document.getElementById(id), v = document.getElementById(vid);
+    el.addEventListener('input', function(){ set(+el.value); v.textContent = el.value + unit; });
+    el.addEventListener('change', function(){ el.blur(); }); // devolve o foco: o teclado do computador volta a tocar
+  };
+  bind('rp3d-speed', 'rp3d-speed-v', '°/s', function(x){ rp3dSpeed = x; });
+  bind('rp3d-tilt', 'rp3d-tilt-v', '°', function(x){ rp3dTilt = x; });
+  document.querySelectorAll('#rp-view button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#rp-view button').forEach(function(x){ x.classList.toggle('active', x === b); });
+      rpView = b.dataset.rpview;
+      renderRadialPiano();
+    });
+  });
+  requestAnimationFrame(rp3dFrame);
 })();
 
 // ============ LISSAJOUS ============
