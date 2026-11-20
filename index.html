@@ -178,6 +178,7 @@
   .rp-svg{width:100%;max-width:420px;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
   .rp-svg .rp-key{cursor:pointer;transition:fill 0.06s}
   .rp-svg .rp-key.out{opacity:0.32}
+  .rp-svg .rp-key.held,.rp-svg .rp-key.flash{fill:var(--accent);opacity:1}
   .rp-now{margin-top:10px;width:100%;min-height:18px;text-align:center;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:0.02em}
   .rp-now .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
   .circle-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
@@ -846,6 +847,10 @@
     <button data-rp="12" class="active">cromático · 12 por anel</button>
     <button data-rp="7">modo · notas do modo por anel</button>
   </div>
+  <div class="cat-tabs" id="rp-timbre">
+    <button data-timbre="synth" class="active">som · sintetizado</button>
+    <button data-timbre="piano">som · piano de cauda</button>
+  </div>
   <div class="rp-wrap">
     <svg class="rp-svg" id="radial-piano" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="Piano circular"></svg>
     <div class="rp-now" id="rp-now"><span class="k">toque</span>—</div>
@@ -1274,6 +1279,8 @@ const MODAL_DOCS = {
 <p><b>cromático · 12 por anel</b> — cada anel tem as 12 notas, 30° cada. os 88 teclas (A0 a C8) dão 7 oitavas cheias e mais duas pontas incompletas, por isso o anel de fora e o do centro ficam com fatias faltando. as notas fora do modo ficam pálidas.</p>
 <p><b>modo · notas do modo por anel</b> — cada anel mostra só as notas do modo escolhido (7 num modo diatônico, 5 numa pentatônica…), em fatias iguais. é o piano "sem notas erradas": qualquer gesto soa dentro do modo.</p>
 <p><b>gestos</b> — girar no mesmo anel = escala dentro da oitava. ir em linha reta para o centro = a mesma nota subindo de oitava em oitava. arrastar na diagonal = espiral ascendente.</p>
+<p><b>teclado de baixo</b> — o que você toca no piano de baixo (mouse ou teclado do computador) também acende aqui, e fica aceso enquanto a nota soa. os acordes tocados nas outras seções piscam no círculo.</p>
+<p><b>som · piano de cauda</b> — troca o timbre deste piano e do piano de baixo por gravações reais de um piano de cauda (<em>Salamander Grand Piano</em>, de Alexander Holm, licença CC-BY 3.0). há uma gravação a cada 3 semitons; as notas do meio são reafinadas a partir da vizinha mais próxima, respeitando a afinação escolhida (igual ou justa). o carregamento (~2 MB) só acontece na primeira vez que você escolhe esse som.</p>
 <p><b>a geometria</b> — os anéis têm a mesma espessura, então os de dentro são mais curtos: cada fatia do centro tem cerca de 1/8 do arco das fatias da borda. é o preço de pôr o agudo no meio. por isso os nomes só aparecem quando a fatia tem espaço.</p>
 ` },
   'progress': { title:'progresso · ordem de aprendizado', body:`
@@ -3215,15 +3222,21 @@ function kbStartNote(midi){
   }
 
   const t0 = audioCtx.currentTime;
-  const osc = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.value = midiToFreq(midi);
-  g.gain.setValueAtTime(0, t0);
-  g.gain.linearRampToValueAtTime(0.16, t0 + 0.012);
-  osc.connect(g).connect(audioCtx.destination);
-  osc.start(t0);
-  kbActiveNotes.set(midi, { osc: osc, gain: g, started: t0 });
+  const pv = pianoVoice(midi, midiToFreq(midi), t0, 0.5);
+  if(pv){
+    kbActiveNotes.set(midi, { osc: pv.osc, gain: pv.gain, started: t0 });
+  } else {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = midiToFreq(midi);
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.16, t0 + 0.012);
+    osc.connect(g).connect(audioCtx.destination);
+    osc.start(t0);
+    kbActiveNotes.set(midi, { osc: osc, gain: g, started: t0 });
+  }
+  rpSetHeld(midi, true);
 
   kbHeldNotes.add(midi % 12);
   highlightKey(midi, true);
@@ -3248,6 +3261,7 @@ function kbStopNote(midi, force){
     note.osc.stop(t0 + 0.45);
   }catch(e){}
   kbActiveNotes.delete(midi);
+  rpSetHeld(midi, false);
 
   // remove pc se nenhuma outra oitava da mesma pc estiver ativa
   const pc = midi % 12;
@@ -3598,6 +3612,56 @@ function rpArc(r0, r1, a0, a1){
          ' L' + p(r0, a1) + ' A' + r0 + ' ' + r0 + ' 0 ' + large + ' 0 ' + p(r0, a0) + ' Z';
 }
 
+// ---- timbre piano de cauda (Salamander Grand Piano · Alexander Holm · CC-BY 3.0) ----
+// amostras a cada 3 semitons (A0, C1, D#1, F#1, A1 … C8), carregadas sob demanda
+const PIANO_URL = 'https://tonejs.github.io/audio/salamander/';
+const PIANO_PC_NAME = {0:'C', 3:'Ds', 6:'Fs', 9:'A'};
+const PIANO_BUFS = {};
+let pianoTimbre = 'synth'; // 'synth' | 'piano'
+let pianoLoading = null;
+
+function loadPiano(onProgress){
+  if(pianoLoading) return pianoLoading;
+  if(!ensureAudio()) return Promise.reject(new Error('áudio indisponível'));
+  const list = [];
+  for(let m = RP_LOW; m <= RP_HIGH; m += 3) list.push(m);
+  let done = 0;
+  pianoLoading = Promise.all(list.map(function(m){
+    const url = PIANO_URL + PIANO_PC_NAME[m % 12] + (Math.floor(m/12) - 1) + '.mp3';
+    return fetch(url).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.arrayBuffer();
+    }).then(function(b){ return audioCtx.decodeAudioData(b); })
+      .then(function(buf){ PIANO_BUFS[m] = buf; done++; if(onProgress) onProgress(done, list.length); });
+  })).catch(function(e){ pianoLoading = null; throw e; });
+  return pianoLoading;
+}
+
+// toca uma nota com a amostra mais próxima reafinada; devolve {osc, gain} (mesma forma do kb) ou null
+function pianoVoice(midi, freq, t0, vol){
+  if(pianoTimbre !== 'piano' || !audioCtx) return null;
+  const s = Math.max(RP_LOW, Math.min(RP_HIGH, RP_LOW + Math.round((midi - RP_LOW) / 3) * 3));
+  const buf = PIANO_BUFS[s];
+  if(!buf) return null;
+  const src = audioCtx.createBufferSource();
+  const g = audioCtx.createGain();
+  src.buffer = buf;
+  src.playbackRate.value = freq / (440 * Math.pow(2, (s - 69) / 12));
+  g.gain.setValueAtTime(vol, t0);
+  src.connect(g).connect(audioCtx.destination);
+  src.start(t0);
+  return { osc: src, gain: g };
+}
+
+function rpKey(midi){ return document.querySelector('#radial-piano .rp-key[data-midi="' + midi + '"]'); }
+function rpSetHeld(midi, on){ const k = rpKey(midi); if(k) k.classList.toggle('held', on); }
+function rpFlash(midi, ms){
+  const k = rpKey(midi);
+  if(!k) return;
+  k.classList.add('flash');
+  setTimeout(function(){ k.classList.remove('flash'); }, ms || 350);
+}
+
 function rpNoteName(midi){ return NOTES[midi % 12] + (Math.floor(midi/12) - 1); }
 
 function renderRadialPiano(){
@@ -3653,6 +3717,7 @@ function renderRadialPiano(){
     'font-family':"'JetBrains Mono', monospace", 'font-size':'9', 'font-weight':'600', 'pointer-events':'none'});
   c.textContent = NOTES[tonic];
   svg.appendChild(c);
+  if(typeof kbActiveNotes !== 'undefined') kbActiveNotes.forEach(function(_, m){ rpSetHeld(m, true); });
 }
 
 function rpPlay(path){
@@ -3660,12 +3725,21 @@ function rpPlay(path){
   if(m === rpLastMidi) return;
   rpLastMidi = m;
   const rel = m - (60 + tonic);
-  playPitch(((rel % 12) + 12) % 12, Math.floor(rel / 12), 0.02, 0.6, 0.16);
-  path.setAttribute('fill', '#e8451e');
-  setTimeout(function(){ path.setAttribute('fill', path.dataset.fill); }, 350);
-  if(typeof pianoEchoMidiList === 'function') pianoEchoMidiList([m], 600);
-  logTonalNote(m % 12, NOTES[m % 12], m);
   const hz = pitchHz(((rel % 12) + 12) % 12, Math.floor(rel / 12));
+  let v = null;
+  if(ensureAudio()){
+    const t0 = audioCtx.currentTime + 0.01;
+    v = pianoVoice(m, hz, t0, 0.5);
+    if(v){
+      v.gain.gain.setValueAtTime(0.5, t0 + 2.2);
+      v.gain.gain.exponentialRampToValueAtTime(0.001, t0 + 3);
+      v.osc.stop(t0 + 3.05);
+    }
+  }
+  if(!v) playPitch(((rel % 12) + 12) % 12, Math.floor(rel / 12), 0.02, 0.6, 0.16);
+  if(typeof pianoEchoMidiList === 'function') pianoEchoMidiList([m], 600);
+  rpFlash(m, 350);
+  logTonalNote(m % 12, NOTES[m % 12], m);
   const now = document.getElementById('rp-now');
   if(now) now.innerHTML = '<span class="k">toque</span>' + rpNoteName(m) + ' · ' + hz.toFixed(1) + ' Hz';
 }
@@ -3695,6 +3769,20 @@ function rpPlay(path){
       b.classList.add('active');
       rpLayout = b.dataset.rp;
       renderRadialPiano();
+    });
+  });
+  document.querySelectorAll('#rp-timbre button').forEach(function(b){
+    b.addEventListener('click', function(){
+      const setActive = function(t){
+        pianoTimbre = t;
+        document.querySelectorAll('#rp-timbre button').forEach(function(x){ x.classList.toggle('active', x.dataset.timbre === t); });
+      };
+      const now = document.getElementById('rp-now');
+      if(b.dataset.timbre === 'synth'){ setActive('synth'); return; }
+      if(now) now.innerHTML = '<span class="k">piano</span>carregando…';
+      loadPiano(function(d, n){ if(now) now.innerHTML = '<span class="k">piano</span>carregando ' + d + '/' + n; })
+        .then(function(){ setActive('piano'); if(now) now.innerHTML = '<span class="k">piano</span>pronto · toque uma tecla'; })
+        .catch(function(){ setActive('synth'); if(now) now.innerHTML = '<span class="k">piano</span>não carregou (sem rede?) · seguindo no sintetizado'; });
     });
   });
 })();
@@ -3945,6 +4033,7 @@ function pianoEcho(pcs, durationMs){
 function pianoEchoMidiList(midiList, durationMs){
   durationMs = durationMs || 700;
   if(!midiList || !midiList.length) return;
+  midiList.forEach(function(m){ rpFlash(m, durationMs); });
   const bar = document.getElementById('keyboard-bar');
   if(bar && bar.classList.contains('collapsed')){
     bar.classList.remove('collapsed');
