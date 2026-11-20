@@ -189,6 +189,7 @@
   .rp-now{margin-top:10px;width:100%;min-height:18px;text-align:center;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:0.02em}
   .rp-now .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
   /* lissajous */
+  #lj-tabs button{text-transform:none;letter-spacing:0.04em}
   .lj-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
   .lj-canvas{width:100%;max-width:360px;aspect-ratio:1;display:block}
   .lj-info{margin-top:10px;width:100%;text-align:center;font-size:12px;font-weight:600;color:var(--ink);line-height:1.5}
@@ -876,8 +877,8 @@
   </div>
   <div class="cat-tabs" id="rp-visual">
     <button data-rpvis="keys" class="active">teclas</button>
-    <button data-rpvis="trail" data-mem="15000">rastro · 15 s</button>
-    <button data-rpvis="trail" data-mem="60000">rastro · 60 s</button>
+    <button data-rpvis="trail" data-mem="3000">rastro · 3 s</button>
+    <button data-rpvis="trail" data-mem="5000">rastro · 5 s</button>
     <button data-rpvis="trail" data-mem="inf">rastro · ∞</button>
     <button data-rpvis="clear">limpar rastro</button>
   </div>
@@ -1350,7 +1351,7 @@ const MODAL_DOCS = {
 <p><b>por que funciona</b> — a oitava (razão 2:1) é a equivalência mais forte da música: dó grave e dó agudo "são a mesma nota". no círculo, isso vira geometria: a nota define o <em>ângulo</em> e a oitava define o <em>raio</em>. todas as oitavas de uma nota ficam alinhadas no mesmo raio (a linha tracejada laranja marca o raio da tônica).</p>
 <p><b>ordem · quintas</b> — em vez de C C# D D#…, as notas ficam em volta na ordem do <em>círculo das quintas</em> (C G D A E B F#…). é a <b>espiral de quintas</b>: cada anel continua sendo uma oitava, mas agora vizinho = consonante. toda escala maior vira um <em>arco contínuo</em> de 7 fatias (as teclas brancas ficam todas juntas: F C G D A E B), mudar de tom é girar o arco uma casa, o trítono fica do lado oposto e os acordes viram formas compactas. com o rastro ligado, melodias tonais ficam num setor do círculo; música cromática se espalha.</p>
 <p><b>inverter</b> — <em>grave no centro · agudo na borda</em> vira a espiral do avesso: o grave fica no meio e o agudo se abre pra fora, como uma onda que se espalha. aí as fatias apertadas do centro passam a ser as graves, e o registro agudo ganha espaço.</p>
-<p><b>rastro</b> — esconde as teclas (fica só um guia fraco dos anéis) e cada nota tocada deixa uma marca: um clique no ataque, um ponto que apaga devagar e uma linha até a nota anterior, se ela veio logo antes (até 2,5 s). a melodia vai desenhando o próprio caminho no círculo — a memória da música. escolha quanto tempo a memória dura (15 s, 60 s ou ∞) e use <em>limpar rastro</em> pra começar outro desenho. as teclas continuam tocáveis mesmo invisíveis.</p>
+<p><b>rastro</b> — esconde as teclas (fica só um guia fraco dos anéis) e cada nota tocada deixa uma marca: um clique no ataque, um ponto que apaga devagar e uma linha até a nota anterior, se ela veio logo antes (até 2,5 s). a melodia vai desenhando o próprio caminho no círculo — a memória da música. escolha quanto tempo a memória dura (3 s, 5 s ou ∞ pra guardar o desenho inteiro) e use <em>limpar rastro</em> pra começar outro desenho. as teclas continuam tocáveis mesmo invisíveis.</p>
 <p><b>cromático · 12 por anel</b> — cada anel tem as 12 notas, 30° cada. os 88 teclas (A0 a C8) dão 7 oitavas cheias e mais duas pontas incompletas, por isso o anel de fora e o do centro ficam com fatias faltando. as notas fora do modo ficam pálidas.</p>
 <p><b>modo · notas do modo por anel</b> — cada anel mostra só as notas do modo escolhido (7 num modo diatônico, 5 numa pentatônica…), em fatias iguais. é o piano "sem notas erradas": qualquer gesto soa dentro do modo.</p>
 <p><b>gestos</b> — girar no mesmo anel = escala dentro da oitava. ir em linha reta para o centro = a mesma nota subindo de oitava em oitava. arrastar na diagonal = espiral ascendente.</p>
@@ -3690,7 +3691,7 @@ let rpLayout = '12'; // '12' cromático | '7' notas do modo
 let rpGraveOut = true; // true = grave na borda; false = grave no centro
 let rpFifths = false;   // true = notas em volta na ordem das quintas (espiral de quintas)
 let rpVisual = 'keys';  // 'keys' | 'trail' (teclas ocultas, fica o rastro dos ataques)
-let rpMemory = 15000;   // ms que cada marca do rastro leva pra sumir (Infinity = não some)
+let rpMemory = 3000;    // ms que cada marca do rastro leva pra sumir (Infinity = não some)
 const rpTrail = [];     // {m, t, link}: ataques recentes; link = nota anterior, se veio logo antes
 let rpLastMidi = null;
 
