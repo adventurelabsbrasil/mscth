@@ -983,6 +983,13 @@
       <div class="tuning-row" id="drawer-inversions"></div>
     </div>
     <div class="drawer-block">
+      <div class="drawer-label">som · timbre</div>
+      <div class="color-row" id="drawer-timbre">
+        <button data-timbre="synth" class="active">sintetizado</button>
+        <button data-timbre="piano">piano de cauda</button>
+      </div>
+    </div>
+    <div class="drawer-block">
       <div class="drawer-label">cores · paleta semântica</div>
       <div class="color-row" id="drawer-colors">
         <button data-color="off" class="active">off</button>
@@ -1316,7 +1323,7 @@ const MODAL_DOCS = {
 <p><b>gestos</b> — girar no mesmo anel = escala dentro da oitava. ir em linha reta para o centro = a mesma nota subindo de oitava em oitava. arrastar na diagonal = espiral ascendente.</p>
 <p><b>teclado de baixo</b> — o que você toca no piano de baixo (mouse ou teclado do computador) também acende aqui, e fica aceso enquanto a nota soa. os acordes tocados nas outras seções piscam no círculo.</p>
 <p><b>a forma do acorde</b> — as notas que soam juntas são ligadas (do grave pro agudo) num polígono, e o nome do acorde aparece no centro. como o ângulo é a nota, cada tipo de acorde tem sempre a mesma forma: todo acorde maior é o mesmo triângulo, só girado. toque notas em sequência rápida no círculo (até 1,2 s entre elas) e elas também se ligam.</p>
-<p><b>som · piano de cauda</b> — troca o timbre deste piano e do piano de baixo por gravações reais de um piano de cauda (<em>Salamander Grand Piano</em>, de Alexander Holm, licença CC-BY 3.0). há uma gravação a cada 3 semitons; as notas do meio são reafinadas a partir da vizinha mais próxima, respeitando a afinação escolhida (igual ou justa). o carregamento (~2 MB) só acontece na primeira vez que você escolhe esse som.</p>
+<p><b>som · piano de cauda</b> — escolha global (também no menu <em>≡ → som · timbre</em>): troca o timbre do app inteiro — escalas, acordes, cadências, padrões, piano de baixo e este círculo — por gravações reais de um piano de cauda (<em>Salamander Grand Piano</em>, de Alexander Holm, licença CC-BY 3.0). há uma gravação a cada 3 semitons; as notas do meio são reafinadas a partir da vizinha mais próxima, respeitando a afinação escolhida (igual ou justa). o carregamento (~2 MB) só acontece na primeira vez que você escolhe esse som. a seção <em>série harmônica · timbre</em> continua com senoides de propósito: ali o assunto é montar o timbre parcial por parcial.</p>
 <p><b>a geometria</b> — os anéis têm a mesma espessura, então os de dentro são mais curtos: cada fatia do centro tem cerca de 1/8 do arco das fatias da borda. é o preço de pôr o agudo no meio. por isso os nomes só aparecem quando a fatia tem espaço.</p>
 ` },
   'progress': { title:'progresso · ordem de aprendizado', body:`
@@ -1424,6 +1431,7 @@ function centsOff(interval){
 function playPitchAt(intervalFromTonic, octaveOffset, absTime, dur, vol){
   if(!audioCtx) return;
   dur = dur || 0.55; vol = vol || 0.18;
+  if(pianoNote(60 + tonic + intervalFromTonic + octaveOffset*12, pitchHz(intervalFromTonic, octaveOffset), absTime, dur, vol)) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = 'triangle';
@@ -2718,6 +2726,7 @@ function playPattern(){
 
   pattern.forEach(function(note, i){
     const when = t0 + i * noteIntv;
+    if(pianoNote(60 + tonic + note.interval + note.oct*12, pitchHz(note.interval, note.oct), when, dur, vol, patternMasterGain)) return;
     const osc = audioCtx.createOscillator();
     const g = audioCtx.createGain();
     osc.type = 'triangle';
@@ -3678,7 +3687,7 @@ function loadPiano(onProgress){
 }
 
 // toca uma nota com a amostra mais próxima reafinada; devolve {osc, gain} (mesma forma do kb) ou null
-function pianoVoice(midi, freq, t0, vol){
+function pianoVoice(midi, freq, t0, vol, dest){
   if(pianoTimbre !== 'piano' || !audioCtx) return null;
   const s = Math.max(RP_LOW, Math.min(RP_HIGH, RP_LOW + Math.round((midi - RP_LOW) / 3) * 3));
   const buf = PIANO_BUFS[s];
@@ -3688,9 +3697,42 @@ function pianoVoice(midi, freq, t0, vol){
   src.buffer = buf;
   src.playbackRate.value = freq / (440 * Math.pow(2, (s - 69) / 12));
   g.gain.setValueAtTime(vol, t0);
-  src.connect(g).connect(audioCtx.destination);
+  src.connect(g).connect(dest || audioCtx.destination);
   src.start(t0);
   return { osc: src, gain: g };
+}
+
+// nota com duração fixa no piano (escalas, acordes, padrões, cadências).
+// vol vem na escala do sintetizado (~0.15); o piano gravado precisa de ganho maior.
+function pianoNote(midi, freq, t0, dur, vol, dest){
+  const v = pianoVoice(midi, freq, t0, Math.min(0.6, vol * 3), dest);
+  if(!v) return false;
+  const rel = Math.max(dur, 0.25);
+  v.gain.gain.setValueAtTime(Math.min(0.6, vol * 3), t0 + rel);
+  v.gain.gain.exponentialRampToValueAtTime(0.001, t0 + rel + 0.45);
+  v.osc.stop(t0 + rel + 0.5);
+  return true;
+}
+
+// seletor global de timbre: todos os botões [data-timbre] (menu e seção 11) ficam em sincronia
+function setTimbre(t){
+  const btns = document.querySelectorAll('[data-timbre]');
+  const mark = function(x){
+    pianoTimbre = x;
+    btns.forEach(function(b){ b.classList.toggle('active', b.dataset.timbre === x); });
+  };
+  const label = function(txt){
+    btns.forEach(function(b){
+      if(b.dataset.timbre !== 'piano') return;
+      if(!b.dataset.base) b.dataset.base = b.textContent;
+      b.textContent = txt ? b.dataset.base + ' · ' + txt : b.dataset.base;
+    });
+  };
+  if(t === 'synth'){ mark('synth'); label(''); return; }
+  label('carregando…');
+  loadPiano(function(d, n){ label(d + '/' + n); })
+    .then(function(){ mark('piano'); label(''); })
+    .catch(function(){ mark('synth'); label('sem rede'); setTimeout(function(){ label(''); }, 3000); });
 }
 
 // notas acesas no círculo: midi → expira em (ms epoch); Infinity = segurada no piano de baixo
@@ -3934,19 +3976,8 @@ function rpPlay(path){
       renderRadialPiano();
     });
   });
-  document.querySelectorAll('#rp-timbre button').forEach(function(b){
-    b.addEventListener('click', function(){
-      const setActive = function(t){
-        pianoTimbre = t;
-        document.querySelectorAll('#rp-timbre button').forEach(function(x){ x.classList.toggle('active', x.dataset.timbre === t); });
-      };
-      const now = document.getElementById('rp-now');
-      if(b.dataset.timbre === 'synth'){ setActive('synth'); return; }
-      if(now) now.innerHTML = '<span class="k">piano</span>carregando…';
-      loadPiano(function(d, n){ if(now) now.innerHTML = '<span class="k">piano</span>carregando ' + d + '/' + n; })
-        .then(function(){ setActive('piano'); if(now) now.innerHTML = '<span class="k">piano</span>pronto · toque uma tecla'; })
-        .catch(function(){ setActive('synth'); if(now) now.innerHTML = '<span class="k">piano</span>não carregou (sem rede?) · seguindo no sintetizado'; });
-    });
+  document.querySelectorAll('[data-timbre]').forEach(function(b){
+    b.addEventListener('click', function(){ setTimbre(b.dataset.timbre); });
   });
 })();
 
