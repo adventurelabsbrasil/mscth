@@ -2,6 +2,26 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.25.0] — 2026-11-20
+
+### added
+- **Seção 11 · vista 3D** — o piano circular vira a *hélice de altura* (Drobisch/Shepard): cada tecla sobe conforme a nota fica mais aguda, uma volta por oitava. Velocidade de giro ajustável (−120…120 °/s; 0 para, negativo inverte), inclinação 0…88° (0° = idêntico ao 2D), arrastar gira, clique toca a tecla visível. Acordes, rastro, quintas e inversão funcionam igual.
+- **Seção 11 · ordem · quintas (espiral de quintas)** — notas em volta pelo círculo das quintas: escala maior vira um arco contínuo, trítono no lado oposto, acordes compactos.
+- **Seção 12 · lissajous · a forma de um intervalo** — duas notas como oscilações x/y: razão justa fecha a figura, temperamento faz girar no ritmo do batimento (|q·f₂ − p·f₁|). Intervalos simples e compostos (9ª, 10ª, 11ª, ♯11, 12ª, 13ª, 15ª); 2 notas seguradas no piano viram o intervalo exibido.
+- **Tema escuro geral** — botão ◐ no topo e "tema" no menu; segue o sistema na 1ª visita e lembra a escolha.
+- **Luz · espectro** — cada nota com a cor da sua luz (frequência dobrada até 400–800 THz: A4 × 2⁴⁰ ≈ 484 THz ≈ 620 nm; oitavas = mesma cor). No escuro, brilho e soma aditiva da luz (visual de espectrograma) no 2D, 3D, rastro e lissajous. Faixa "da nota à luz" + teoria (Newton, Castel, Scriabin, cromestesia — e a ressalva de que é analogia matemática).
+
+### changed
+- Rastro: memória 15 s / 60 s → **3 s / 5 s** (∞ mantido).
+- Versão exibida no header: `v0.24.0` → `v0.25.0`.
+
+### fixed
+- Botões de intervalo sem caixa-alta forçada: `3m` (menor) ≠ `3M` (maior).
+- Razões justas dos compostos simplificadas (9:4, não 18:8).
+
+### rationale
+A seção 11 provou que geometria ensina: a nota é o ângulo, a oitava é o raio. Esta versão empurra a ideia em três direções — a altura como terceira dimensão (3D), a consonância como vizinhança (quintas) e o intervalo como forma (lissajous) — e liga o som à luz pela mesma operação que define a oitava.
+
 ## [0.24.0] — 2026-11-19
 
 ### added
