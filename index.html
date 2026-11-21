@@ -81,12 +81,12 @@
   html,body{
     background:var(--bg);color:var(--ink);
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:14px;line-height:1.6;
+    font-size:15px;line-height:1.6;
     font-feature-settings:'liga' 0,'calt' 0;
     font-variant-numeric:tabular-nums;
     -webkit-font-smoothing:antialiased;
   }
-  body{padding:0;max-width:840px;margin:0 auto;border-left:1px solid var(--soft);border-right:1px solid var(--soft);min-height:100vh}
+  body{padding:0;max-width:1120px;margin:0 auto;border-left:1px solid var(--soft);border-right:1px solid var(--soft);min-height:100vh}
 
   /* AUDIO STATUS */
   .audio-status{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:0.05em;font-weight:500}
@@ -111,17 +111,17 @@
   h1 .slash{color:var(--accent);font-weight:600;margin:0 6px}
   .subtitle{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:lowercase;color:var(--ink);margin-top:12px}
   .subtitle .slash{color:var(--accent);margin:0 6px}
-  .lede{font-size:13.5px;color:var(--mute);margin-top:14px;max-width:580px;line-height:1.65}
+  .lede{font-size:15px;color:var(--mute);margin-top:14px;max-width:680px;line-height:1.65}
   .lede em{font-style:italic;color:var(--ink)}
 
   /* SECTIONS */
   section{padding:22px 22px 26px;border-bottom:1px solid var(--soft)}
   .sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-  .sec-label{font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink);flex:1;min-width:0}
+  .sec-label{font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink);flex:1;min-width:0}
   .sec-label .num{color:var(--mute);margin-right:8px;font-weight:500}
   .sec-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
   .sec-hint{font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--mute);font-weight:500}
-  .sec-desc{font-size:12.5px;color:var(--mute);line-height:1.6;margin-bottom:14px;max-width:680px}
+  .sec-desc{font-size:14px;color:var(--mute);line-height:1.6;margin-bottom:14px;max-width:820px}
   .sec-desc em{font-style:italic;color:var(--ink);font-weight:500}
   .sec-desc code{font-family:inherit;background:var(--softer);padding:1px 5px;font-size:11.5px;font-weight:500}
   .help-btn{font-family:inherit;font-size:12px;font-weight:600;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--mute);border:1px solid var(--soft);border-radius:50%;cursor:pointer;padding:0;flex-shrink:0;line-height:1}
@@ -136,7 +136,7 @@
 
   /* CATEGORY TABS */
   .cat-tabs{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-bottom:none}
-  .cat-tabs button{font-family:inherit;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:10px 4px;background:var(--softer);border:none;border-right:1px solid var(--line);color:var(--mute);cursor:pointer}
+  .cat-tabs button{font-family:inherit;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:10px 4px;background:var(--softer);border:none;border-right:1px solid var(--line);color:var(--mute);cursor:pointer}
   .cat-tabs button:last-child{border-right:none}
   .cat-tabs button.active{background:var(--bg);color:var(--ink)}
   .cat-tabs button:hover:not(.active){color:var(--ink)}
@@ -199,8 +199,13 @@
 
   /* CIRCLE */
   /* piano circular */
-  .rp-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
-  .rp-svg{width:100%;max-width:420px;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+  .rp-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center;position:relative}
+  .cat-tabs.rp-row{grid-template-columns:repeat(var(--cols),1fr)}
+  .rp-icons{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;z-index:2}
+  .rp-icons button{font-family:inherit;font-size:10px;font-weight:600;letter-spacing:0.04em;background:var(--bg);color:var(--mute);border:1px solid var(--soft);padding:4px 7px;cursor:pointer;border-radius:0;min-width:64px;text-align:center}
+  .rp-icons button:hover{color:var(--ink);border-color:var(--ink)}
+  .rp-icons button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+  .rp-svg{width:100%;max-width:560px;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
   .rp-svg .rp-key{cursor:pointer;transition:fill 0.06s}
   .rp-svg .rp-key.out{opacity:0.32}
   .rp-svg .rp-key.on{fill:var(--accent);opacity:1}
@@ -220,12 +225,13 @@
   /* lissajous */
   #lj-tabs button,#lj-tabs2 button{text-transform:none;letter-spacing:0.04em}
   .lj-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
-  .lj-canvas{width:100%;max-width:360px;aspect-ratio:1;display:block}
+  .cat-tabs#lj-actions{grid-template-columns:repeat(3,1fr)}
+  .lj-canvas{width:100%;max-width:480px;aspect-ratio:1;display:block}
   .lj-info{margin-top:10px;width:100%;text-align:center;font-size:12px;font-weight:600;color:var(--ink);line-height:1.5}
   .lj-info .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
   .lj-info b{color:var(--accent)}
   .circle-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
-  .circle-svg{width:100%;max-width:360px;height:auto}
+  .circle-svg{width:100%;max-width:480px;height:auto}
   .circle-meta{margin-top:10px;width:100%;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--soft);font-size:10px;letter-spacing:0.06em}
   .circle-meta div{padding:10px 12px}
   .circle-meta div + div{border-left:1px solid var(--soft)}
@@ -242,7 +248,7 @@
 
   /* TONNETZ */
   .tonnetz-wrap{border:1px solid var(--line);padding:0;display:flex;flex-direction:column}
-  .tonnetz-svg{width:100%;height:auto;display:block;background:var(--bg);border-bottom:1px solid var(--soft)}
+  .tonnetz-svg{width:100%;max-width:760px;margin:0 auto;height:auto;display:block;background:var(--bg);border-bottom:1px solid var(--soft)}
   .tonnetz-legend{display:grid;grid-template-columns:repeat(3,1fr);font-size:10px;color:var(--mute);font-weight:500;letter-spacing:0.05em;text-transform:uppercase}
   .tonnetz-legend > div{padding:10px 12px;border-right:1px solid var(--soft);display:flex;align-items:center;gap:8px}
   .tonnetz-legend > div:last-child{border-right:none}
@@ -489,7 +495,7 @@
   /* COMPOUND INTERVALS — comparação 2ª vs 9ª, 4ª vs 11ª, 6ª vs 13ª */
   .compound-intervals{margin-top:18px;border-top:1px solid var(--soft);padding-top:18px}
   .compound-intervals .ci-title{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
-  .compound-intervals .ci-desc{font-size:12.5px;color:var(--mute);line-height:1.55;margin-bottom:14px;max-width:680px}
+  .compound-intervals .ci-desc{font-size:14px;color:var(--mute);line-height:1.55;margin-bottom:14px;max-width:820px}
   .compound-intervals .ci-desc em{font-style:italic;color:var(--ink);font-weight:500}
   .compound-intervals .ci-desc code{font-family:inherit;background:var(--softer);padding:1px 5px;font-size:11.5px;font-weight:500}
   .compound-intervals .ci-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -604,6 +610,12 @@
     .cat-tabs button{border-bottom:1px solid var(--line)}
     .cat-tabs button:nth-child(n+4){border-bottom:none}
     .cat-tabs button:nth-child(3n){border-right:none}
+    .cat-tabs.rp-row{grid-template-columns:repeat(var(--cols-m),1fr)}
+    #rp-row1 button:nth-child(3){border-right:1px solid var(--line)}
+    #rp-row1 button:nth-child(2n){border-right:none}
+    #rp-row1 button:nth-child(n+3){border-bottom:none}
+    .rp-icons{top:6px;right:6px}
+    .rp-icons button{min-width:0;padding:3px 5px;font-size:9px}
     .row-cells > div{padding:10px 2px 9px}
     .row-cells .nt,.row-cells .name{font-size:13px}
     .row-cells .deg,.row-cells .roman{font-size:9px}
@@ -686,6 +698,10 @@
   .kb-console input[type="range"]{width:46px;margin:0 9px 0 0;accent-color:var(--ink);cursor:pointer}
   .cs-v{display:inline-flex;align-items:center;justify-content:center;min-width:24px;color:var(--ink)}
   .kb-console .cs-v{font-weight:600}
+  .kb-console #cs-metro-beats{width:4.2em}
+  .kb-console #cs-metro[aria-pressed="true"]{background:var(--softer);color:var(--ink);box-shadow:inset 0 -2px 0 var(--accent)}
+  .kb-console .cs-beat{display:inline-flex;align-items:center;min-width:1.4em;margin-right:6px;color:var(--mute);font-weight:700}
+  .kb-console .cs-beat.acc{color:var(--accent)}
   .cs-tr{min-width:52px}
   .cs-u{color:var(--mute);padding-right:8px;font-weight:500}
   #cs-tap.tapped{background:var(--ink);color:var(--bg)}
@@ -756,7 +772,7 @@
   <div class="hero-text">
     <div class="hero-top">
       <h1>mscth</h1>
-      <span class="hero-ver">v0.27.0<button class="meta-intro-btn" id="intro-btn" aria-label="como funciona" title="como funciona">?</button></span>
+      <span class="hero-ver">v0.28.0<button class="meta-intro-btn" id="intro-btn" aria-label="como funciona" title="como funciona">?</button></span>
     </div>
     <p class="hero-prop">teoria musical para ouvir e tocar. cada escala, acorde e cadência soa num piano e aparece desenhada enquanto soa.</p>
     <div class="hero-cta">
@@ -996,34 +1012,26 @@
     </div>
   </div>
   <p class="sec-desc">as 88 teclas do piano (A0 → C8) enroladas em anéis concêntricos: <em>grave na borda, agudo no centro</em>. cada anel é uma oitava a partir da tônica e cada fatia é uma nota, sempre no mesmo ângulo — todas as oitavas de uma nota ficam alinhadas no mesmo raio. arraste o dedo de fora pra dentro e você sobe de oitava em oitava na mesma nota.</p>
-  <div class="cat-tabs" id="rp-tabs">
-    <button data-rp="12" class="active">cromático · 12 por anel</button>
-    <button data-rp="7">modo · notas do modo por anel</button>
+  <div class="cat-tabs rp-row" id="rp-row1" style="--cols:4;--cols-m:2">
+    <button data-rpview="2d" class="active" title="piano circular plano">vista 2D</button>
+    <button data-rpview="3d" title="espiral de altura girando">vista 3D</button>
+    <button data-rp="12" class="active" title="as 12 notas cromáticas em cada anel">12 por anel</button>
+    <button data-rp="7" title="só as notas do modo em cada anel">notas do modo</button>
   </div>
-  <div class="cat-tabs" id="rp-view">
-    <button data-rpview="2d" class="active">vista · 2D</button>
-    <button data-rpview="3d">vista · 3D (espiral girando)</button>
-  </div>
-  <div class="cat-tabs" id="rp-order">
-    <button data-rporder="chrom" class="active">ordem · cromática (C C# D…)</button>
-    <button data-rporder="fifths">ordem · quintas (C G D…)</button>
-  </div>
-  <div class="cat-tabs" id="rp-dir">
-    <button data-rpdir="out" class="active">grave na borda · agudo no centro</button>
-    <button data-rpdir="in">grave no centro · agudo na borda</button>
-  </div>
-  <div class="cat-tabs" id="rp-visual">
-    <button data-rpvis="keys" class="active">teclas</button>
-    <button data-rpvis="trail" data-mem="3000">rastro · 3 s</button>
-    <button data-rpvis="trail" data-mem="5000">rastro · 5 s</button>
-    <button data-rpvis="trail" data-mem="inf">rastro · ∞</button>
-    <button data-rpvis="clear">limpar rastro</button>
-  </div>
-  <div class="cat-tabs" id="rp-light">
-    <button data-rplight="spectrum" class="active">luz · espectro (cor da nota)</button>
-    <button data-rplight="accent">luz · laranja</button>
+  <div class="cat-tabs rp-row" id="rp-row2" style="--cols:6;--cols-m:3">
+    <button data-rpvis="keys" class="active" title="teclas acendem enquanto soam">teclas</button>
+    <button data-rpvis="trail" data-mem="3000" title="teclas ocultas, cada ataque deixa uma marca que some em 3 s">rastro 3 s</button>
+    <button data-rpvis="trail" data-mem="5000" title="o rastro some em 5 s">rastro 5 s</button>
+    <button data-rpvis="trail" data-mem="inf" title="o rastro fica até limpar">rastro ∞</button>
+    <button data-rplight="spectrum" class="active" title="cada nota na cor da luz que ela vira subindo ~40 oitavas">luz espectro</button>
+    <button data-rplight="accent" title="todas as notas em laranja">luz laranja</button>
   </div>
   <div class="rp-wrap">
+    <div class="rp-icons" role="group" aria-label="opções do desenho">
+      <button id="rp-ic-order" aria-pressed="false" title="ordem das notas em volta: cromática (C C♯ D…) · clique para quintas (C G D…)">C·C♯</button>
+      <button id="rp-ic-dir" aria-pressed="false" title="grave na borda, agudo no centro · clique para inverter">⇣ borda</button>
+      <button id="rp-ic-clear" title="limpar rastro" hidden>⌫ rastro</button>
+    </div>
     <svg class="rp-svg" id="radial-piano" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="Piano circular"></svg>
     <canvas class="rp-svg" id="rp3d" width="800" height="800" style="display:none" aria-label="Piano circular em 3D"></canvas>
     <div class="rp3d-ctrl" id="rp3d-ctrl">
@@ -1056,14 +1064,16 @@
       <button class="help-btn" data-help="12" aria-label="ajuda">?</button>
     </div>
   </div>
-  <p class="sec-desc">duas notas soando juntas, uma no eixo horizontal e outra no vertical: o ponto desenha a <em>forma do intervalo</em>. razões simples (oitava 2:1, quinta 3:2) fecham figuras limpas; dissonâncias viram novelos. no temperamento igual a quinta não é exatamente 3:2 — a figura <em>gira</em>, e a velocidade do giro é o batimento que você ouve. troque para afinação justa e ela para. segure 2 notas no piano de baixo pra ver o intervalo que você está tocando.</p>
+  <p class="sec-desc">duas notas soando juntas, uma no eixo horizontal e outra no vertical: o ponto desenha a <em>forma do intervalo</em>. razões simples (oitava 2:1, quinta 3:2) fecham figuras limpas; dissonâncias viram novelos. no temperamento igual a quinta não é exatamente 3:2 — a figura <em>gira</em>, e a velocidade do giro é o batimento que você ouve. troque para afinação justa e ela para. ouça de três jeitos: <em>juntas</em> (harmônico), <em>subindo</em> e <em>descendo</em> (melódico) — a figura é a mesma, porque a razão é a mesma; muda o que o ouvido acompanha. segure 2 notas no piano de baixo pra ver o intervalo que você está tocando.</p>
   <div class="cat-tabs" id="lj-tabs"></div>
   <div class="cat-tabs" id="lj-tabs2" title="intervalos compostos: simples + oitava"></div>
   <div class="lj-wrap">
     <canvas class="lj-canvas" id="lj-canvas" width="720" height="720" aria-label="Figura de Lissajous do intervalo"></canvas>
     <div class="lj-info" id="lj-info"></div>
-    <div class="cat-tabs" id="lj-actions" style="margin-top:10px;width:100%">
-      <button id="lj-play">▶ ouvir o intervalo</button>
+    <div class="cat-tabs" id="lj-actions" style="margin-top:10px;width:100%;--cols:3;--cols-m:3" role="group" aria-label="como ouvir o intervalo">
+      <button data-ljdir="harm" class="active" title="intervalo harmônico: as duas notas juntas">▶ juntas</button>
+      <button data-ljdir="up" title="intervalo melódico ascendente: tônica, depois a nota de cima">▶ subindo ↑</button>
+      <button data-ljdir="down" title="intervalo melódico descendente: tônica, depois a nota de baixo">▶ descendo ↓</button>
     </div>
     <button class="cs-chip" data-cs-open="tune">afinação <b data-cs-show="tune">igual · 12-TET</b> · mudar no console do piano</button>
   </div>
@@ -1083,6 +1093,8 @@
     <p class="ascii">12-TET = 12 semitons iguais · 5-limit = razões inteiras 2/1 3/2 5/4 4/3 5/3</p>
     <p class="ascii">tonnetz · euler 1739, riemann séc. xix, tymoczko 2011</p>
     <p class="ascii">série harmônica · fourier 1822 · helmholtz 1863</p>
+    <p class="ascii">lissajous · bowditch 1815, lissajous 1857</p>
+    <p class="ascii">círculo das quintas · heinichen 1711 · cadências e campo harmônico · rameau 1722</p>
   </div>
   <div class="foot-block creds">
     <div class="foot-label">créditos</div>
@@ -1090,6 +1102,9 @@
     <p><span class="ck">org</span><span class="cv">adventure labs · <a href="https://instagram.com/adventurelabsbrasil" target="_blank" rel="noopener">@adventurelabsbrasil ↗</a></span></p>
     <p><span class="ck">site</span><span class="cv"><a href="https://adventurelabs.com.br" target="_blank" rel="noopener">adventurelabs.com.br ↗</a></span></p>
     <p><span class="ck">contato</span><span class="cv"><a href="mailto:contato@adventurelabs.com.br">contato@adventurelabs.com.br</a></span></p>
+    <p><span class="ck">piano</span><span class="cv">salamander grand piano · alexander holm · <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC-BY 3.0 ↗</a></span></p>
+    <p><span class="ck">partitura</span><span class="cv"><a href="https://www.vexflow.com/" target="_blank" rel="noopener">vexflow ↗</a> · MIT</span></p>
+    <p><span class="ck">código</span><span class="cv"><a href="https://github.com/adventurelabsbrasil/mscth" target="_blank" rel="noopener">mscth ↗</a> · MIT</span></p>
   </div>
 </footer>
 
@@ -1109,6 +1124,7 @@
     <button class="cs-more" id="cs-more" aria-expanded="false" aria-controls="kb-console"><span>⋯ console de som</span><span class="cs-sum" id="cs-sum"></span></button>
     <div class="cs-grp" data-cs="timbre"><label class="cs-k" for="cs-timbre">som</label><select id="cs-timbre" name="timbre"><option value="piano">piano</option><option value="synth">sintético</option></select></div>
     <div class="cs-grp" data-cs="bpm"><label class="cs-k" for="cs-bpm" title="tempo de padrões, escalas e cadências">♩</label><input id="cs-bpm" name="bpm" autocomplete="off" type="number" inputmode="numeric" min="40" max="220" step="1" value="90" aria-label="tempo em batidas por minuto"><button id="cs-tap" title="toque no ritmo (3 toques ou mais) para medir o tempo">tap</button></div>
+    <div class="cs-grp" data-cs="metro"><button id="cs-metro" aria-pressed="false" title="metrônomo no tempo do console, com acento no 1º tempo">metrônomo</button><select id="cs-metro-beats" name="compasso" aria-label="compasso do metrônomo" title="compasso"><option value="2">2/4</option><option value="3">3/4</option><option value="4" selected>4/4</option></select><span class="cs-beat" id="cs-beat" aria-hidden="true"></span></div>
     <div class="cs-grp" data-cs="a4"><label class="cs-k" for="cs-a4">A4</label><input id="cs-a4" name="a4" autocomplete="off" type="number" inputmode="numeric" min="415" max="466" step="1" value="440" aria-label="frequência do lá 4 em hertz" title="lá 4 em Hz (415–466)"></div>
     <div class="cs-grp" data-cs="tune" aria-label="afinação"><button data-tune="equal" class="active" title="temperamento igual · 12-TET">igual</button><button data-tune="just" title="afinação justa · 5-limit, a partir da tônica">justa</button></div>
     <div class="cs-grp" data-cs="vol"><label class="cs-k" for="cs-vol">vol</label><input id="cs-vol" type="range" min="0" max="100" step="1" value="100"></div>
@@ -1642,9 +1658,9 @@ const MODAL_DOCS = {
 <p><b>luz · espectro · a cor de cada nota</b> — som e luz são ondas, e dá pra levar uma nota até a luz dobrando a frequência, oitava por oitava. o lá central (A4 = 440 Hz) subido 40 oitavas vira 440 × 2⁴⁰ ≈ 484 THz — luz de <b>≈ 620 nm</b>, um laranja-avermelhado. a luz que enxergamos vai de ~380 a ~780 nm, ou ~385 a ~790 THz: <em>quase exatamente uma oitava</em> (razão ≈ 2,05). por isso as 12 notas atravessam o arco-íris <b>uma vez</b>: C ≈ verde, D ≈ azul, E ≈ violeta, F no limite do ultravioleta, F# vermelho profundo, G vermelho, A laranja, A# amarelo, B verde-amarelado. e todas as oitavas de uma nota ganham a mesma cor — é a mesma dobra que faz C3 e C4 terem o mesmo nome.</p>
 <p><b>história</b> — Newton, no <em>Opticks</em> (1704), dividiu o arco-íris em 7 cores por analogia com as 7 notas da escala. o jesuíta Louis-Bertrand Castel projetou um <em>cravo ocular</em> (1725) que mostrava cores ao tocar. Scriabin escreveu uma parte para <em>teclado de luz</em> no <em>Prometeu</em> (1910). e há pessoas com <em>cromestesia</em> (sinestesia som-cor) que veem cores ao ouvir — cada uma com suas próprias cores.</p>
 <p><b>cuidado</b> — é uma <em>analogia matemática</em>, não física: luz é onda eletromagnética, som é onda mecânica no ar, e nenhuma nota "tem" cor de verdade. a mesma dobra por oitavas que conecta as duas é que é real. no tema escuro, as cores somam como luz (o centro de um acorde fica mais claro), num visual de espectrograma.</p>
-<p><b>ordem · quintas</b> — em vez de C C# D D#…, as notas ficam em volta na ordem do <em>círculo das quintas</em> (C G D A E B F#…). é a <b>espiral de quintas</b>: cada anel continua sendo uma oitava, mas agora vizinho = consonante. toda escala maior vira um <em>arco contínuo</em> de 7 fatias (as teclas brancas ficam todas juntas: F C G D A E B), mudar de tom é girar o arco uma casa, o trítono fica do lado oposto e os acordes viram formas compactas. com o rastro ligado, melodias tonais ficam num setor do círculo; música cromática se espalha.</p>
-<p><b>inverter</b> — <em>grave no centro · agudo na borda</em> vira a espiral do avesso: o grave fica no meio e o agudo se abre pra fora, como uma onda que se espalha. aí as fatias apertadas do centro passam a ser as graves, e o registro agudo ganha espaço.</p>
-<p><b>rastro</b> — esconde as teclas (fica só um guia fraco dos anéis) e cada nota tocada deixa uma marca: um clique no ataque, um ponto que apaga devagar e uma linha até a nota anterior, se ela veio logo antes (até 2,5 s). a melodia vai desenhando o próprio caminho no círculo — a memória da música. escolha quanto tempo a memória dura (3 s, 5 s ou ∞ pra guardar o desenho inteiro) e use <em>limpar rastro</em> pra começar outro desenho. as teclas continuam tocáveis mesmo invisíveis.</p>
+<p><b>ordem · quintas</b> (ícone <code>C·C♯</code> / <code>C·G·D</code> no canto do desenho) — em vez de C C# D D#…, as notas ficam em volta na ordem do <em>círculo das quintas</em> (C G D A E B F#…). é a <b>espiral de quintas</b>: cada anel continua sendo uma oitava, mas agora vizinho = consonante. toda escala maior vira um <em>arco contínuo</em> de 7 fatias (as teclas brancas ficam todas juntas: F C G D A E B), mudar de tom é girar o arco uma casa, o trítono fica do lado oposto e os acordes viram formas compactas. com o rastro ligado, melodias tonais ficam num setor do círculo; música cromática se espalha.</p>
+<p><b>inverter</b> (ícone <code>⇣ borda</code> / <code>⇣ centro</code> no canto do desenho) — <em>grave no centro · agudo na borda</em> vira a espiral do avesso: o grave fica no meio e o agudo se abre pra fora, como uma onda que se espalha. aí as fatias apertadas do centro passam a ser as graves, e o registro agudo ganha espaço.</p>
+<p><b>rastro</b> — esconde as teclas (fica só um guia fraco dos anéis) e cada nota tocada deixa uma marca: um clique no ataque, um ponto que apaga devagar e uma linha até a nota anterior, se ela veio logo antes (até 2,5 s). a melodia vai desenhando o próprio caminho no círculo — a memória da música. escolha quanto tempo a memória dura (3 s, 5 s ou ∞ pra guardar o desenho inteiro) e use <code>⌫ rastro</code> (no canto do desenho, só aparece com o rastro ligado) pra começar outro desenho. as teclas continuam tocáveis mesmo invisíveis.</p>
 <p><b>cromático · 12 por anel</b> — cada anel tem as 12 notas, 30° cada. os 88 teclas (A0 a C8) dão 7 oitavas cheias e mais duas pontas incompletas, por isso o anel de fora e o do centro ficam com fatias faltando. as notas fora do modo ficam pálidas.</p>
 <p><b>modo · notas do modo por anel</b> — cada anel mostra só as notas do modo escolhido (7 num modo diatônico, 5 numa pentatônica…), em fatias iguais. é o piano "sem notas erradas": qualquer gesto soa dentro do modo.</p>
 <p><b>gestos</b> — girar no mesmo anel = escala dentro da oitava. ir em linha reta para o centro = a mesma nota subindo de oitava em oitava. arrastar na diagonal = espiral ascendente.</p>
@@ -2235,6 +2251,7 @@ function renderTonics(){
         tonic = i;
         renderAll();
         playPitch(0, 0, 0.02, 0.4, 0.16);
+        pianoEchoMidiList([60 + i], 500);
         logTonalNote(i, tonicName());
       };
       el.appendChild(b);
@@ -3438,8 +3455,12 @@ function renderHarmonicTable(){
   document.getElementById('harmonic-hint').textContent = 'fundamental: ' + tonicName() + '3 · ' + fund.toFixed(1) + ' Hz';
 }
 
+// tecla do piano mais próxima do parcial n (fundamental = tônica uma oitava abaixo)
+function harmonicMidi(n){ return 48 + tonic + Math.round(12 * Math.log2(n)); }
+
 function playSingleParcial(n){
   if(!ensureAudio()) return;
+  pianoEchoMidiList([harmonicMidi(n)], 700);
   const fund = tonicFreq() / 2;
   const freq = fund * n;
   const t0 = audioCtx.currentTime + 0.04;
@@ -3485,6 +3506,7 @@ function playCompositeTimbre(){
     oscs.push(osc);
   });
   harmonicPlayState = { masterGain: masterGain, oscs: oscs };
+  pianoEchoMidiList(activeNs.map(harmonicMidi), dur * 1000 * 0.9);
   // destaca linhas ativas
   const rows = document.querySelectorAll('#harmonic-rows tr');
   rows.forEach(function(tr, i){
@@ -3522,6 +3544,7 @@ function playHarmonicArpeggio(){
     setTimeout(function(){
       rows.forEach(function(r){ r.classList.remove('playing'); });
       if(rows[n-1]) rows[n-1].classList.add('playing');
+      pianoEchoMidiList([harmonicMidi(n)], noteIntv * 1000 * 0.9);
     }, (n-1)*noteIntv*1000);
   }
   setTimeout(function(){
@@ -4481,37 +4504,39 @@ function rpPlay(path){
   });
   window.addEventListener('pointerup', function(){ down = false; rpLastMidi = null; });
   window.addEventListener('pointercancel', function(){ down = false; rpLastMidi = null; });
-  document.querySelectorAll('#rp-tabs button').forEach(function(b){
+  // fileira 1: notas por anel · fileira 2: rastro (cada grupo alterna só dentro de si)
+  const group = function(sel){ return document.querySelectorAll('.rp-row ' + sel); };
+  group('[data-rp]').forEach(function(b){
     b.addEventListener('click', function(){
-      document.querySelectorAll('#rp-tabs button').forEach(function(x){ x.classList.remove('active'); });
-      b.classList.add('active');
+      group('[data-rp]').forEach(function(x){ x.classList.toggle('active', x === b); });
       rpLayout = b.dataset.rp;
       renderRadialPiano();
     });
   });
-  document.querySelectorAll('#rp-order button').forEach(function(b){
+  const clearBtn = document.getElementById('rp-ic-clear');
+  group('[data-rpvis]').forEach(function(b){
     b.addEventListener('click', function(){
-      document.querySelectorAll('#rp-order button').forEach(function(x){ x.classList.toggle('active', x === b); });
-      rpFifths = b.dataset.rporder === 'fifths';
-      renderRadialPiano();
-    });
-  });
-  document.querySelectorAll('#rp-dir button').forEach(function(b){
-    b.addEventListener('click', function(){
-      document.querySelectorAll('#rp-dir button').forEach(function(x){ x.classList.toggle('active', x === b); });
-      rpGraveOut = b.dataset.rpdir === 'out';
-      renderRadialPiano();
-    });
-  });
-  document.querySelectorAll('#rp-visual button').forEach(function(b){
-    b.addEventListener('click', function(){
-      if(b.dataset.rpvis === 'clear'){ rpTrail.length = 0; rpDrawTrail(false); return; }
-      document.querySelectorAll('#rp-visual button').forEach(function(x){ x.classList.toggle('active', x === b); });
+      group('[data-rpvis]').forEach(function(x){ x.classList.toggle('active', x === b); });
       rpVisual = b.dataset.rpvis;
       if(b.dataset.mem) rpMemory = b.dataset.mem === 'inf' ? Infinity : +b.dataset.mem;
+      clearBtn.hidden = rpVisual !== 'trail';
       renderRadialPiano();
     });
   });
+  clearBtn.addEventListener('click', function(){ rpTrail.length = 0; rpDrawTrail(false); });
+  // ícones no canto do desenho: ordem (cromática/quintas) e direção (grave fora/dentro)
+  const ord = document.getElementById('rp-ic-order'), dir = document.getElementById('rp-ic-dir');
+  const syncIcons = function(){
+    ord.textContent = rpFifths ? 'C·G·D' : 'C·C♯';
+    ord.setAttribute('aria-pressed', rpFifths ? 'true' : 'false');
+    ord.title = rpFifths ? 'ordem das notas em volta: quintas (C G D…) · clique para cromática' : 'ordem das notas em volta: cromática (C C♯ D…) · clique para quintas';
+    dir.textContent = rpGraveOut ? '⇣ borda' : '⇣ centro';
+    dir.setAttribute('aria-pressed', rpGraveOut ? 'false' : 'true');
+    dir.title = rpGraveOut ? 'grave na borda, agudo no centro · clique para inverter' : 'grave no centro, agudo na borda · clique para inverter';
+  };
+  ord.addEventListener('click', function(){ rpFifths = !rpFifths; syncIcons(); renderRadialPiano(); });
+  dir.addEventListener('click', function(){ rpGraveOut = !rpGraveOut; syncIcons(); renderRadialPiano(); });
+  syncIcons();
 })();
 
 // ---- piano circular em 3D: o mesmo layout, com a altura subindo nota a nota (espiral de altura) ----
@@ -4661,9 +4686,9 @@ function renderSpectrumStrip(){
   });
   const tb = document.getElementById('theme-btn');
   if(tb) tb.addEventListener('click', function(){ setTheme(isDark() ? 'light' : 'dark'); });
-  document.querySelectorAll('#rp-light button').forEach(function(b){
+  document.querySelectorAll('.rp-row [data-rplight]').forEach(function(b){
     b.addEventListener('click', function(){
-      document.querySelectorAll('#rp-light button').forEach(function(x){ x.classList.toggle('active', x === b); });
+      document.querySelectorAll('.rp-row [data-rplight]').forEach(function(x){ x.classList.toggle('active', x === b); });
       rpLight = b.dataset.rplight;
       renderSpectrumStrip();
       renderRadialPiano();
@@ -4707,9 +4732,9 @@ function renderSpectrumStrip(){
   };
   bind('rp3d-speed', 'rp3d-speed-v', '°/s', function(x){ rp3dSpeed = x; });
   bind('rp3d-tilt', 'rp3d-tilt-v', '°', function(x){ rp3dTilt = x; });
-  document.querySelectorAll('#rp-view button').forEach(function(b){
+  document.querySelectorAll('.rp-row [data-rpview]').forEach(function(b){
     b.addEventListener('click', function(){
-      document.querySelectorAll('#rp-view button').forEach(function(x){ x.classList.toggle('active', x === b); });
+      document.querySelectorAll('.rp-row [data-rpview]').forEach(function(x){ x.classList.toggle('active', x === b); });
       rpView = b.dataset.rpview;
       renderRadialPiano();
     });
@@ -4724,6 +4749,7 @@ const LJ_INTERVALS = [[0,'1'],[1,'2m'],[2,'2M'],[3,'3m'],[4,'3M'],[5,'4J'],[6,'t
 const LJ_COMPOUND = [[13,'9m'],[14,'9M'],[15,'10m'],[16,'10M'],[17,'11J'],[18,'♯11'],[19,'12J'],[20,'13m'],[21,'13M'],[24,'15ª']];
 let ljInterval = 7;
 let ljVisible = false;
+let ljDir = 'harm'; // 'harm' juntas · 'up' subindo · 'down' descendo (a nota de baixo fica abaixo da tônica)
 
 // razão justa (5-limit, mesma tabela de JUST_RATIOS) do intervalo em semitons, com as oitavas
 const LJ_JUST_PQ = [[1,1],[16,15],[9,8],[6,5],[5,4],[4,3],[45,32],[3,2],[8,5],[5,3],[9,5],[15,8]];
@@ -4736,14 +4762,40 @@ function ljJustFraction(semis){
   return [f[0] / d, f[1] / d]; // 9:8 × 2 = 9:4, não 18:8
 }
 
-function ljNotes(){
+function ljNotes(ignoreLive){
   // 2 notas mais graves seguradas no piano de baixo/círculo, senão o intervalo escolhido a partir da tônica
-  if(typeof kbActiveNotes !== 'undefined' && kbActiveNotes.size >= 2){
+  if(!ignoreLive && typeof kbActiveNotes !== 'undefined' && kbActiveNotes.size >= 2){
     const ms = Array.from(kbActiveNotes.keys()).sort(function(a, b){ return a - b; });
     return { a: ms[0], b: ms[1], fa: midiToFreq(ms[0]), fb: midiToFreq(ms[1]), live: true };
   }
+  if(ljDir === 'down'){
+    const ic = ((-ljInterval) % 12 + 12) % 12, oc = Math.floor(-ljInterval / 12);
+    return { a: 60 + tonic - ljInterval, b: 60 + tonic, fa: pitchHz(ic, oc), fb: pitchHz(0, 0), lo: [ic, oc], hi: [0, 0], live: false };
+  }
   const a = 60 + tonic, b = a + ljInterval;
-  return { a: a, b: b, fa: pitchHz(0, 0), fb: pitchHz(ljInterval % 12, Math.floor(ljInterval / 12)), live: false };
+  const hi = [ljInterval % 12, Math.floor(ljInterval / 12)];
+  return { a: a, b: b, fa: pitchHz(0, 0), fb: pitchHz(hi[0], hi[1]), lo: [0, 0], hi: hi, live: false };
+}
+
+// toca o intervalo escolhido no modo atual e acende as notas no piano (juntas ou uma depois da outra)
+let ljTimers = [];
+function ljPlay(){
+  if(!ensureAudio()) return;
+  ljTimers.forEach(clearTimeout); ljTimers = [];
+  const n = ljNotes(true);
+  if(ljDir === 'harm'){
+    playPitch(n.lo[0], n.lo[1], 0.02, 1.8, 0.12);
+    playPitch(n.hi[0], n.hi[1], 0.02, 1.8, 0.12);
+    pianoEchoMidiList([n.a, n.b], 1700);
+    return;
+  }
+  const gap = Math.max(0.3, Math.min(1, 60 / patternBpm));
+  const first = ljDir === 'up' ? [n.lo, n.a] : [n.hi, n.b];
+  const second = ljDir === 'up' ? [n.hi, n.b] : [n.lo, n.a];
+  playPitch(first[0][0], first[0][1], 0.02, gap * 1.1, 0.14);
+  playPitch(second[0][0], second[0][1], 0.02 + gap, 1.4, 0.14);
+  pianoEchoMidiList([first[1]], gap * 1000 * 0.95);
+  ljTimers.push(setTimeout(function(){ pianoEchoMidiList([second[1]], 1300); }, gap * 1000));
 }
 
 // razão p:q do que está soando, pelas frequências reais: fração contínua até q ≤ 64 que bata em < 0,05¢.
@@ -4805,7 +4857,9 @@ function ljDraw(now){
   const info = document.getElementById('lj-info');
   if(info){
     const canon = ljJustFraction(n.b - n.a);
-    let html = '<span class="k">' + (n.live ? 'tocando' : 'intervalo') + '</span>' + rpNoteName(n.a) + ' + ' + rpNoteName(n.b) +
+    const dirK = { harm: 'intervalo · juntas', up: 'intervalo · subindo', down: 'intervalo · descendo' }[ljDir];
+    const pair = n.live || ljDir === 'harm' ? rpNoteName(n.a) + ' + ' + rpNoteName(n.b) : ljDir === 'up' ? rpNoteName(n.a) + ' → ' + rpNoteName(n.b) : rpNoteName(n.b) + ' → ' + rpNoteName(n.a);
+    let html = '<span class="k">' + (n.live ? 'tocando' : dirK) + '</span>' + pair +
       ' · razão ' + r.toFixed(4) + ' · ' + (res.exact ? 'exata' : 'mais próxima') + ' <b>' + pN + ':' + qN + '</b> = ' + (pN / qN).toFixed(4) + '<br>';
     if(beat < 1e-6) html += '<span class="k">batimento</span>nenhum — figura parada';
     else html += '<span class="k">batimento</span>' + beat.toFixed(2) + ' Hz · a forma se repete a cada ' + (1 / beat < 1 ? (1000 / beat).toFixed(0) + ' ms' : (1 / beat).toFixed(1) + ' s') + ' (1 batimento)' +
@@ -4836,12 +4890,12 @@ function renderLissajousRow(id, list){
   el.innerHTML = '';
   list.forEach(function(iv){
     const b = document.createElement('button');
-    b.textContent = iv[1];
+    b.textContent = ({ harm: '', up: '↑', down: '↓' }[ljDir]) + iv[1];
     if(iv[0] === ljInterval) b.classList.add('active');
     b.addEventListener('click', function(){
       ljInterval = iv[0];
       renderLissajousTabs();
-      playChord([0, ljInterval], 0.02, 1.6, 0.12);
+      ljPlay();
     });
     el.appendChild(b);
   });
@@ -4853,7 +4907,14 @@ function renderLissajousRow(id, list){
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(es){ ljVisible = es[0].isIntersecting; }).observe(sec);
   } else ljVisible = true;
-  document.getElementById('lj-play').addEventListener('click', function(){ playChord([0, ljInterval], 0.02, 1.8, 0.12); });
+  document.querySelectorAll('#lj-actions [data-ljdir]').forEach(function(b){
+    b.addEventListener('click', function(){
+      ljDir = b.dataset.ljdir;
+      document.querySelectorAll('#lj-actions [data-ljdir]').forEach(function(x){ x.classList.toggle('active', x === b); });
+      renderLissajousTabs();
+      ljPlay();
+    });
+  });
   renderLissajousTabs();
   requestAnimationFrame(ljLoop);
 })();
@@ -5658,6 +5719,48 @@ function setConsoleA4(v){
   a4Hz = Math.max(415, Math.min(466, v));
   renderAll();
 }
+// ---- metrônomo: agenda os cliques no relógio do áudio (lookahead), lê o ♩ do console a cada tempo ----
+let metroOn = false, metroBeats = 4, metroTimer = null, metroNext = 0, metroCount = 0, metroVisTimers = [];
+function metroClick(t, accent){
+  const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+  osc.type = 'square';
+  osc.frequency.value = accent ? 1760 : 1175;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(accent ? 0.16 : 0.09, t + 0.002);
+  g.gain.exponentialRampToValueAtTime(0.0005, t + 0.045);
+  osc.connect(g).connect(masterOut());
+  osc.start(t); osc.stop(t + 0.06);
+}
+function metroTick(){
+  const beatEl = document.getElementById('cs-beat');
+  while(metroNext < audioCtx.currentTime + 0.12){
+    const beat = metroCount % metroBeats, acc = beat === 0;
+    metroClick(metroNext, acc);
+    metroVisTimers.push(setTimeout(function(){
+      if(!metroOn || !beatEl) return;
+      beatEl.textContent = beat + 1;
+      beatEl.classList.toggle('acc', acc);
+    }, Math.max(0, (metroNext - audioCtx.currentTime) * 1000)));
+    metroNext += 60 / patternBpm;
+    metroCount++;
+  }
+  if(metroVisTimers.length > 32) metroVisTimers = metroVisTimers.slice(-8);
+}
+function setMetronome(on){
+  const btn = document.getElementById('cs-metro'), beatEl = document.getElementById('cs-beat');
+  if(on && !ensureAudio()) on = false;
+  metroOn = on;
+  clearInterval(metroTimer); metroTimer = null;
+  metroVisTimers.forEach(clearTimeout); metroVisTimers = [];
+  if(on){
+    metroCount = 0;
+    metroNext = audioCtx.currentTime + 0.06;
+    metroTick();
+    metroTimer = setInterval(metroTick, 25);
+  } else if(beatEl){ beatEl.textContent = ''; beatEl.classList.remove('acc'); }
+  if(btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+}
+
 function openConsole(key){
   const bar = document.getElementById('keyboard-bar');
   if(kbCollapsed) document.getElementById('kb-toggle').click();
@@ -5695,6 +5798,13 @@ function openConsole(key){
     tap.classList.add('tapped'); setTimeout(function(){ tap.classList.remove('tapped'); }, 90);
     if(taps.length >= 3) setConsoleBpm(60000 / ((taps[taps.length - 1] - taps[0]) / (taps.length - 1)));
   });
+  document.getElementById('cs-metro').addEventListener('click', function(){
+    if(audioState !== 'active') initAudio(true);
+    setMetronome(!metroOn);
+  });
+  const beats = document.getElementById('cs-metro-beats');
+  beats.addEventListener('change', function(){ metroBeats = +beats.value; metroCount = 0; });
+  done(beats);
   document.querySelectorAll('#kb-console [data-tune]').forEach(function(b){
     b.addEventListener('click', function(){ tuningMode = b.dataset.tune; renderAll(); });
   });

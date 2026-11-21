@@ -10,7 +10,7 @@
 
 ## escopo
 
-12 seções interativas em **ordem pedagógica** (do concreto ao abstrato), com piano sticky no rodapé. O **console de som** acima das teclas vale para a página inteira: timbre (piano · sintético), tempo com tap, diapasão A4 (415–466 Hz), afinação igual/justa, volume, modo do teclado, transpor e oitava. `?pro` no endereço abre o **modo músico** (sem níveis, progresso nem desafio).
+12 seções interativas em **ordem pedagógica** (do concreto ao abstrato), com piano sticky no rodapé. O **console de som** acima das teclas vale para a página inteira: timbre (piano · sintético), tempo com tap, metrônomo (2/4 · 3/4 · 4/4), diapasão A4 (415–466 Hz), afinação igual/justa, volume, modo do teclado, transpor e oitava. `?pro` no endereço abre o **modo músico** (sem níveis, progresso nem desafio).
 
 1. **tônica** — 12 notas cromáticas, transposição completa
 2. **série harmônica · timbre** — 16 parciais com cents off, presets (senoide, quadrada, serra, órgão), síntese aditiva clicável e ativável parcial-a-parcial
@@ -27,7 +27,7 @@
 9. **círculo das quintas** — anel externo (maiores) + anel interno (relativos menores), 2 níveis interativos
 10. **tonnetz** — rede tonal de Euler/Riemann, triângulos clicáveis, modo **tríades** ou **tétrades** (com overlay tracejado da 7ª), nome do acorde flutuando ao tocar
 11. **piano circular** — as 88 teclas enroladas em espiral (croma no ângulo, oitava no raio), vista 3D, espiral de quintas, rastro, cor da nota pela luz
-12. **lissajous** — a forma de um intervalo: razão simples fecha a figura, o batimento a faz girar (a forma se repete a cada batimento), quinta do lobo na afinação justa
+12. **lissajous** — a forma de um intervalo, ouvido junto, subindo ou descendo: razão simples fecha a figura, o batimento a faz girar (a forma se repete a cada batimento), quinta do lobo na afinação justa
 
 **Grafia:** uma letra por grau nos modos de 7 notas (dó menor = C D E♭ F G A♭ B♭), em escala, acordes, campo, cadências e pentagrama. Escalas de 5, 6 e 8 notas seguem a letra do grau da escala-mãe (regra no código, em `GRAFIA`).
 

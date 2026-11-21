@@ -2,6 +2,22 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.28.0] — 2026-11-21
+
+### added
+- **Intervalos melódicos e descendentes** (seção 12): três modos de ouvir, `▶ juntas` (harmônico), `▶ subindo ↑` e `▶ descendo ↓` (melódico, no tempo do console). Vale para as abas simples e compostas; no modo descendente a nota de baixo fica abaixo da tônica (C4 → F3) e as abas ganham `↑`/`↓`. A figura não muda (a razão é a mesma); mudam o rótulo, o som e o piano.
+- **Metrônomo** no console de som: clique no tempo do `♩`, acento no 1º tempo, compasso 2/4 · 3/4 · 4/4, contador de tempo ao lado. Agendado no relógio do áudio (não atrasa com a página ocupada).
+- **Créditos**: amostras do piano (Salamander Grand Piano · Alexander Holm · CC-BY 3.0), VexFlow (MIT) e o código (MIT). Referências ganham Lissajous/Bowditch, Heinichen e Rameau.
+
+### changed
+- **Seção 11 enxuta**: de 6 fileiras de botões para 2 (vista · notas por anel / teclas · rastro · luz). Ordem (cromática/quintas) e direção (grave na borda/no centro) viram ícones no canto do desenho; `⌫ rastro` só aparece com o rastro ligado. A fileira de 2 botões não ocupa mais 2/5 da largura.
+- **O piano mostra tudo o que soa**: entram a tônica (seção 01), a série harmônica (parcial isolado, timbre e arpejo, na tecla mais próxima) e o lissajous (juntas ou nota a nota).
+- **Escala da página**: largura máxima 840 → 1120 px, fonte-base 14 → 15 px, descrições 12,5 → 14 px, rótulos e abas maiores. Círculo e lissajous até 480 px, piano circular até 560 px; Tonnetz limitado a 760 px.
+- Versão exibida: `v0.27.0` → `v0.28.0`.
+
+### adiado
+- **28.6 partículas e modo palco** passa para a v0.29.
+
 ## [0.27.0] — 2026-11-20
 
 ### added
