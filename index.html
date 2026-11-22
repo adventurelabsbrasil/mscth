@@ -230,6 +230,10 @@
   .lj-info{margin-top:10px;width:100%;text-align:center;font-size:12px;font-weight:600;color:var(--ink);line-height:1.5}
   .lj-info .k{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-right:6px}
   .lj-info b{color:var(--accent)}
+  /* órbitas */
+  #or-tabs button,#or-sky button{text-transform:none;letter-spacing:0.04em}
+  .or-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
+  .or-canvas{width:100%;max-width:480px;aspect-ratio:1;display:block}
   .circle-wrap{border:1px solid var(--line);padding:14px 12px 14px;display:flex;flex-direction:column;align-items:center}
   .circle-svg{width:100%;max-width:480px;height:auto}
   .circle-meta{margin-top:10px;width:100%;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--soft);font-size:10px;letter-spacing:0.06em}
@@ -1079,6 +1083,25 @@
   </div>
 </section>
 
+<section data-section-id="orbits">
+  <div class="sec-head">
+    <span class="sec-label"><span class="num">13</span>órbitas · o intervalo como sistema solar</span>
+    <div class="sec-actions">
+      <span class="sine-badge" title="o desenho usa as frequências ideais; o som do intervalo segue o console">órbita ideal · didático</span>
+      <button class="level-btn" data-level="0" data-section="orbits" title="seu nível de entendimento">○</button>
+      <button class="help-btn" data-help="13" aria-label="ajuda">?</button>
+    </div>
+  </div>
+  <p class="sec-desc">frequência é <em>velocidade de giro</em>. cada nota vira um planeta em volta da tônica: a nota grave anda na órbita de fora, a aguda na de dentro, mais rápida (a distância segue a lei de Kepler). a cada instante uma linha liga os dois; o rastro dessas linhas é a <em>rosa do intervalo</em>. os pontos na órbita de fora marcam as <em>conjunções</em>, quando os dois planetas se alinham com o sol. numa razão exata elas caem sempre no mesmo lugar e a rosa fica parada; no temperamento igual elas andam, e a rosa <em>gira</em> no ritmo do batimento. a segunda linha traz ressonâncias reais do céu: Netuno e Plutão estão numa quinta. segure 2 notas no piano de baixo pra ver o seu intervalo.</p>
+  <div class="cat-tabs" id="or-tabs"></div>
+  <div class="cat-tabs rp-row" id="or-sky" style="--cols:4" title="ressonâncias orbitais reais, com a razão medida dos períodos"></div>
+  <div class="or-wrap">
+    <canvas class="or-canvas" id="or-canvas" width="720" height="720" aria-label="Órbitas do intervalo: dois planetas e a rosa das linhas entre eles"></canvas>
+    <div class="lj-info" id="or-info"></div>
+    <button class="cs-chip" data-cs-open="tune">afinação <b data-cs-show="tune">igual · 12-TET</b> · mudar no console do piano</button>
+  </div>
+</section>
+
 <footer>
   <div class="foot-block">
     <div class="foot-label">categorias</div>
@@ -1094,6 +1117,7 @@
     <p class="ascii">tonnetz · euler 1739, riemann séc. xix, tymoczko 2011</p>
     <p class="ascii">série harmônica · fourier 1822 · helmholtz 1863</p>
     <p class="ascii">lissajous · bowditch 1815, lissajous 1857</p>
+    <p class="ascii">órbitas · kepler, harmonices mundi 1619</p>
     <p class="ascii">círculo das quintas · heinichen 1711 · cadências e campo harmônico · rameau 1722</p>
   </div>
   <div class="foot-block creds">
@@ -1453,7 +1477,7 @@ const MODAL_DOCS = {
 </div>
 
 <div class="welcome-journey">
-<b>a jornada — 12 seções em ordem pedagógica</b>
+<b>a jornada — 13 seções em ordem pedagógica</b>
 <ol>
   <li><b>tônica</b> — a "casa" da escala</li>
   <li><b>série harmônica · timbre</b> — de onde vem cada som</li>
@@ -1467,6 +1491,7 @@ const MODAL_DOCS = {
   <li><b>tonnetz</b> — geometria da harmonia</li>
   <li><b>piano circular</b> — oitavas em anéis, croma e altura</li>
   <li><b>lissajous</b> — a forma de um intervalo</li>
+  <li><b>órbitas</b> — o intervalo como sistema solar</li>
 </ol>
 </div>
 
@@ -1678,6 +1703,18 @@ const MODAL_DOCS = {
 <p><b>do teclado</b> — segure duas notas no piano de baixo (ou no círculo) e a figura mostra o intervalo real que você está tocando, oitava incluída.</p>
 <p><b>compostos</b> — a segunda linha traz os intervalos maiores que a oitava: 9ª, 10ª, 11ª, 12ª, 13ª, 15ª. são as <em>extensões</em> dos acordes (add9, m11, 13). a razão justa de um composto é a do intervalo simples vezes 2: a 9ª maior é 9:4, a 11ª justa 8:3, a 13ª maior 10:3. a figura fica mais rendada (mais voltas) mas, se a razão é exata, continua fechada.</p>
 ` },
+  '13': { title:'13 · órbitas · o intervalo como sistema solar', body:`
+<p><b>frequência = velocidade angular</b> — uma nota de 440 Hz é algo que dá 440 voltas por segundo. um planeta é algo que dá uma volta por ano. a matemática é a mesma; muda só a escala de tempo. aqui cada nota vira um planeta orbitando a tônica, e o giro é desacelerado até o olho acompanhar.</p>
+<p><b>a distância é de Kepler</b> — pela 3ª lei de Kepler (1619) o quadrado do período é proporcional ao cubo do raio da órbita: <em>r ∝ f<sup>−2/3</sup></em>. a nota grave, mais lenta, fica por fora; a aguda, mais rápida, por dentro. uma oitava acima fica 2<sup>2/3</sup> ≈ 1,59 vez mais perto do sol.</p>
+<p><b>razão p:q = ressonância</b> — se as frequências estão em p:q, depois de <em>q</em> voltas do planeta de fora e <em>p</em> do de dentro os dois voltam juntos ao ponto de partida: a figura fecha. no caminho eles se alinham com o sol <b>p − q</b> vezes, em pontos igualmente espaçados — as <em>conjunções</em>. quinta 3:2 = 1 conjunção por ciclo; 13:8 = 5, um pentágono.</p>
+<p><b>temperamento = precessão</b> — no temperamento igual a quinta não é 3:2 exato. as conjunções escorregam um pouco a cada ciclo e a rosa inteira gira; ela volta à mesma forma a cada <b>um batimento</b> |q·f₂ − p·f₁|, o mesmo batimento da seção 12. acima de ~3 Hz o painel mostra em câmera lenta (<em>×1/N</em>). em afinação justa, parada.</p>
+<p><b>o céu de verdade</b> — a segunda linha usa a razão <em>medida</em> dos períodos orbitais, que nunca é exata:</p>
+<p>· <b>Netuno · Plutão</b> — 3:2, uma <b>quinta justa</b>. Plutão dá 2 voltas enquanto Netuno dá 3, e por isso os dois nunca se aproximam, embora as órbitas se cruzem.<br>
+· <b>Io · Europa</b> — 2:1, uma <b>oitava</b>. com Ganimedes formam a cadeia 1:2:4 (ressonância de Laplace): duas oitavas empilhadas.<br>
+· <b>Júpiter · Saturno</b> — perto de 5:2, uma <b>décima maior</b>; a sobra causa a "grande desigualdade" nas órbitas dos dois, que Laplace explicou em 1785.<br>
+· <b>Vênus · Terra</b> — perto de 13:8, entre a 6ª menor e a 6ª maior (≈ 840¢). as 5 conjunções a cada 8 anos desenham o <b>pentagrama de Vênus</b>. 13 e 8 são números de Fibonacci, e 13/8 ≈ 1,625 é uma aproximação da proporção áurea φ ≈ 1,618 — mas como intervalo isso soa ambíguo, nem maior nem menor. φ é o número mais difícil de aproximar por frações: a figura de φ nunca fecharia.</p>
+<p><b>harmonia das esferas</b> — Kepler, em <em>Harmonices Mundi</em>, mediu a velocidade angular de cada planeta no ponto mais perto e no mais longe do sol e achou intervalos musicais: a Terra oscila um semitom, "mi-fá", que ele leu como <em>miseria</em> e <em>fames</em>. a ideia vem de Pitágoras; Kepler foi o primeiro a fazer a conta com dados reais.</p>
+` },
   'progress': { title:'progresso · ordem de aprendizado', body:`
 <p>a página está organizada em <b>ordem pedagógica</b> — do concreto ao abstrato, do isolado ao integrado. cada seção depende cognitivamente das anteriores:</p>
 <p><b>01 tônica</b> — o ponto de referência. uma nota apenas.<br>
@@ -1691,7 +1728,8 @@ const MODAL_DOCS = {
 <b>09 círculo das quintas</b> — relações entre tonalidades. modulação.<br>
 <b>10 tonnetz</b> — geometria das relações harmônicas.<br>
 <b>11 piano circular</b> — a mesma geometria aplicada ao teclado: croma no ângulo, oitava no raio.<br>
-<b>12 lissajous</b> — o intervalo como forma: razões simples, batimento, afinação.</p>
+<b>12 lissajous</b> — o intervalo como forma: razões simples, batimento, afinação.<br>
+<b>13 órbitas</b> — o intervalo como sistema solar: ressonância, conjunções, Kepler.</p>
 <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
 <p><b>marque seu nível de entendimento</b> em cada seção clicando no círculo ao lado do <em>?</em>. quatro níveis:</p>
 <p><b>○</b> · não vi ainda — seção sem progresso.<br>
@@ -4919,6 +4957,183 @@ function renderLissajousRow(id, list){
   requestAnimationFrame(ljLoop);
 })();
 
+// ============ ÓRBITAS ============
+// frequência = velocidade angular. Nota grave = planeta de fora (lento), aguda = de dentro (rápido), raio por Kepler r ∝ f^(−2/3).
+// Linha entre os planetas a cada instante → rosa do intervalo. Razão p:q fecha em q voltas do de fora, com p − q conjunções.
+// Desvio da razão (temperamento, céu real) faz as conjunções precessarem: a rosa gira no ritmo do batimento, como no lissajous.
+// razão = período do de fora / período do de dentro (medida); pq = ressonância nominal
+const OR_SKY = [
+  { name: 'netuno · plutão', ratio: 247.94 / 164.79, pq: [3, 2], iv: 'quinta' },
+  { name: 'io · europa', ratio: 3.5512 / 1.7691, pq: [2, 1], iv: 'oitava' },
+  { name: 'júpiter · saturno', ratio: 29.457 / 11.862, pq: [5, 2], iv: '≈ 10ª maior' },
+  { name: 'vênus · terra', ratio: 365.256 / 224.701, pq: [13, 8], iv: '≈ 840¢' }
+];
+let orSel = { kind: 'iv', v: 7 }; // { kind:'iv', v: semitons } | { kind:'sky', v: índice em OR_SKY }
+let orVisible = false;
+
+function orNotes(ignoreLive){
+  if(!ignoreLive && typeof kbActiveNotes !== 'undefined' && kbActiveNotes.size >= 2){
+    const ms = Array.from(kbActiveNotes.keys()).sort(function(a, b){ return a - b; });
+    const n = { a: ms[0], b: ms[1], fa: midiToFreq(ms[0]), fb: midiToFreq(ms[1]), live: true };
+    n.res = ljFraction(n);
+    return n;
+  }
+  if(orSel.kind === 'sky'){
+    const sk = OR_SKY[orSel.v];
+    const fa = tonicFreq();
+    return { sky: sk, fa: fa, fb: fa * sk.ratio, live: false, res: { pq: sk.pq, exact: false } };
+  }
+  const a = 60 + tonic, iv = orSel.v;
+  const n = { a: a, b: a + iv, fa: pitchHz(0, 0), fb: pitchHz(iv % 12, Math.floor(iv / 12)), live: false, hi: [iv % 12, Math.floor(iv / 12)] };
+  n.res = ljFraction(n);
+  return n;
+}
+
+function orPlay(){
+  if(!ensureAudio()) return;
+  const n = orNotes(true);
+  if(!n.sky){
+    playPitch(0, 0, 0.02, 2.2, 0.12);
+    playPitch(n.hi[0], n.hi[1], 0.02, 2.2, 0.12);
+    pianoEchoMidiList([n.a, n.b], 2000);
+    return;
+  }
+  // céu: razão real, não cai numa tecla → duas senoides
+  const t0 = audioCtx.currentTime + 0.04;
+  [n.fa, n.fb].forEach(function(f){
+    const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+    osc.type = 'sine'; osc.frequency.value = f;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.16, t0 + 0.03);
+    g.gain.setValueAtTime(0.16, t0 + 1.6);
+    g.gain.exponentialRampToValueAtTime(0.001, t0 + 2.6);
+    osc.connect(g).connect(masterOut());
+    osc.start(t0); osc.stop(t0 + 2.7);
+  });
+}
+
+function orDraw(now){
+  const cv = document.getElementById('or-canvas');
+  if(!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, C = W / 2;
+  const n = orNotes();
+  const pN = n.res.pq[0], qN = n.res.pq[1];
+  const rOut = W * 0.44, rIn = rOut * Math.pow(n.fa / n.fb, 2 / 3); // Kepler
+  // f_b = (p/q)·f_a + δ → ângulo de dentro = (p/q)·u + φ(t), φ = 2π·δ·t; a rosa repete a cada 1 batimento
+  const delta = n.fb - n.fa * pN / qN;
+  const beat = Math.abs(qN * n.fb - pN * n.fa);
+  const slow = beat > 3 ? Math.ceil(beat / 1.5) : 1;
+  const tSec = now / 1000;
+  const phi = REDUCED_MOTION ? 0 : 2 * Math.PI * delta * tSec / slow;
+  const dark = isDark();
+  const colA = n.sky ? '#4a7bd0' : specColor(n.a % 12), colB = n.sky ? '#e8451e' : specColor(n.b % 12);
+  const ink = dark ? '#e8e8e2' : '#0a0a0a';
+  const P = function(r, ang){ return [C + r * Math.cos(ang - Math.PI / 2), C + r * Math.sin(ang - Math.PI / 2)]; };
+  ctx.clearRect(0, 0, W, W);
+  // órbitas
+  ctx.strokeStyle = themeColor('#ebebe5'); ctx.lineWidth = 1;
+  [rOut, rIn].forEach(function(r){ ctx.beginPath(); ctx.arc(C, C, r, 0, 2 * Math.PI); ctx.stroke(); });
+  // rosa: linhas entre os planetas ao longo de q voltas do de fora
+  const turns = 2 * Math.PI * qN;
+  const lines = Math.min(1800, Math.max(240, qN * 110));
+  const lg = ctx.createLinearGradient(C - rOut, C + rOut, C + rOut, C - rOut);
+  lg.addColorStop(0, colA); lg.addColorStop(1, colB);
+  ctx.strokeStyle = dark ? lg : (n.live ? '#e8451e' : '#0a0a0a');
+  ctx.globalAlpha = dark ? 0.32 : 0.16; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for(let i = 0; i < lines; i++){
+    const u = (i / lines) * turns;
+    const A = P(rOut, u), B = P(rIn, u * pN / qN + phi);
+    ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]);
+  }
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  // conjunções: (p/q − 1)·u + φ = 2πk → p − q pontos na órbita de fora
+  const k1 = pN / qN - 1, nConj = pN - qN;
+  if(nConj > 0 && nConj <= 24){
+    ctx.fillStyle = '#e8451e';
+    for(let k = 0; k < nConj; k++){
+      const u = (2 * Math.PI * k - phi) / k1;
+      const A = P(rOut, u), I = P(rIn, u);
+      ctx.strokeStyle = '#e8451e'; ctx.globalAlpha = 0.5; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(C, C); ctx.lineTo(A[0], A[1]); ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.beginPath(); ctx.arc(A[0], A[1], 5, 0, 2 * Math.PI); ctx.fill();
+      ctx.beginPath(); ctx.arc(I[0], I[1], 3, 0, 2 * Math.PI); ctx.fill();
+    }
+  }
+  // sol = tônica
+  ctx.fillStyle = ink;
+  ctx.beginPath(); ctx.arc(C, C, 9, 0, 2 * Math.PI); ctx.fill();
+  // planetas, girando devagar: o de fora dá 1 volta a cada ~6 s
+  const uNow = REDUCED_MOTION ? 0 : (2 * Math.PI * tSec / 6) % turns;
+  const A = P(rOut, uNow), B = P(rIn, uNow * pN / qN + phi);
+  ctx.strokeStyle = ink; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]); ctx.stroke();
+  [[A, colA, 14], [B, colB, 10]].forEach(function(pl){
+    ctx.fillStyle = pl[1];
+    if(dark){ ctx.shadowColor = pl[1]; ctx.shadowBlur = 16; }
+    ctx.beginPath(); ctx.arc(pl[0][0], pl[0][1], pl[2], 0, 2 * Math.PI); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = ink; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+  // legenda
+  const info = document.getElementById('or-info');
+  if(!info) return;
+  const r = n.fb / n.fa;
+  let html;
+  if(n.sky){
+    const parts = n.sky.name.split(' · ');
+    html = '<span class="k">céu</span>' + parts[0] + ' (dentro) dá ' + r.toFixed(4) + ' voltas para cada 1 de ' + parts[1] + ' · ressonância <b>' + pN + ':' + qN + '</b> = ' + (pN / qN).toFixed(4) + ' · ' + n.sky.iv + '<br>';
+  } else {
+    const pair = rpNoteName(n.a) + ' + ' + rpNoteName(n.b);
+    html = '<span class="k">' + (n.live ? 'tocando' : 'intervalo') + '</span>' + pair + ' · razão ' + r.toFixed(4) + ' · ' + (n.res.exact ? 'exata' : 'mais próxima') + ' <b>' + pN + ':' + qN + '</b><br>';
+  }
+  html += '<span class="k">ciclo</span>' + (pN === qN ? 'uníssono: os dois andam juntos, sempre alinhados' :
+    qN + ' volta' + (qN > 1 ? 's' : '') + ' de fora = ' + pN + ' de dentro · <b>' + nConj + ' conjunç' + (nConj > 1 ? 'ões' : 'ão') + '</b> por ciclo') + '<br>';
+  if(beat < 1e-6) html += '<span class="k">precessão</span>nenhuma — razão exata, a rosa fica parada';
+  else html += '<span class="k">precessão</span>a rosa volta à mesma forma a cada ' + (1 / beat < 1 ? (1000 / beat).toFixed(0) + ' ms' : (1 / beat).toFixed(1) + ' s') + ' (1 batimento, ' + beat.toFixed(2) + ' Hz)' +
+    (slow > 1 ? ' · <b>câmera lenta ×1/' + slow + '</b>' : '');
+  if(info.innerHTML !== html) info.innerHTML = html;
+}
+
+function orLoop(now){
+  if(orVisible) orDraw(now);
+  requestAnimationFrame(orLoop);
+}
+
+function renderOrbitTabs(){
+  const row = document.getElementById('or-tabs'), sky = document.getElementById('or-sky');
+  if(!row || !sky) return;
+  row.innerHTML = ''; sky.innerHTML = '';
+  LJ_INTERVALS.forEach(function(iv){
+    const b = document.createElement('button');
+    b.textContent = iv[1];
+    if(orSel.kind === 'iv' && orSel.v === iv[0]) b.classList.add('active');
+    b.addEventListener('click', function(){ orSel = { kind: 'iv', v: iv[0] }; renderOrbitTabs(); orPlay(); });
+    row.appendChild(b);
+  });
+  OR_SKY.forEach(function(sk, i){
+    const b = document.createElement('button');
+    b.textContent = sk.name;
+    b.title = sk.iv + ' · razão medida ' + sk.ratio.toFixed(4);
+    if(orSel.kind === 'sky' && orSel.v === i) b.classList.add('active');
+    b.addEventListener('click', function(){ orSel = { kind: 'sky', v: i }; renderOrbitTabs(); orPlay(); });
+    sky.appendChild(b);
+  });
+}
+
+(function initOrbits(){
+  const sec = document.querySelector('section[data-section-id="orbits"]');
+  if(!sec) return;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){ orVisible = es[0].isIntersecting; }).observe(sec);
+  } else orVisible = true;
+  renderOrbitTabs();
+  requestAnimationFrame(orLoop);
+})();
+
 // ============ CROSS-SECTION KB-ON ============
 // Marca elementos que representam pitch classes ativas no piano
 function syncCrossSectionHighlights(){
@@ -4974,7 +5189,7 @@ function syncCrossSectionHighlights(){
 }
 
 // ============ PROGRESS / LEVEL SYSTEM ============
-const SECTION_IDS = ['tonic','harmonic','scale','mode','character','patterns','harmonic-field','cadences','circle','tonnetz','radial-piano','lissajous'];
+const SECTION_IDS = ['tonic','harmonic','scale','mode','character','patterns','harmonic-field','cadences','circle','tonnetz','radial-piano','lissajous','orbits'];
 const LEVEL_GLYPHS = ['○', '◔', '◕', '●'];
 const LEVEL_TIPS = ['não vi ainda', 'explorei', 'entendi', 'domino'];
 let levels = {}; // section_id -> level (0..3)
@@ -5290,6 +5505,7 @@ function renderAll(){
   renderPatternDisplay();
   renderRadialPiano();
   renderLissajousTabs();
+  renderOrbitTabs();
   renderPatternTabs();
   renderCadences();
   renderHarmonicTable();
