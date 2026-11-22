@@ -2,6 +2,11 @@
 
 Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [não lançado]
+
+### added
+- **Seção 13 · órbitas — o intervalo como sistema solar.** Cada nota vira um planeta em volta da tônica: frequência = velocidade angular, raio pela 3ª lei de Kepler (r ∝ f^−2/3, a grave por fora). A linha entre os planetas, desenhada ao longo de um ciclo inteiro, forma a *rosa do intervalo*; os pontos marcam as p − q conjunções por ciclo. Razão exata (afinação justa) → rosa parada; temperamento igual → a rosa gira e volta à forma a cada batimento (mesma conta da seção 12, com câmera lenta acima de ~3 Hz). Segunda linha com ressonâncias reais pela razão medida dos períodos: Netuno·Plutão (3:2, quinta), Io·Europa (2:1, oitava), Júpiter·Saturno (≈ 5:2), Vênus·Terra (≈ 13:8, o pentagrama de Vênus; Fibonacci e φ no modal). Modal `?` com Kepler (*Harmonices Mundi*, 1619) e "mi-fá". Segurar 2 notas no piano de baixo mostra o intervalo tocado.
+
 ## [0.28.0] — 2026-11-21
 
 ### added
