@@ -1096,7 +1096,7 @@
       <button class="help-btn" data-help="13" aria-label="ajuda">?</button>
     </div>
   </div>
-  <p class="sec-desc">frequência é <em>velocidade de giro</em>. cada nota vira um planeta em volta da tônica: a nota grave anda na órbita de fora, a aguda na de dentro, mais rápida (a distância segue a lei de Kepler). a cada instante uma linha liga os dois; o rastro dessas linhas é a <em>rosa do intervalo</em>. os pontos na órbita de fora marcam as <em>conjunções</em>, quando os dois planetas se alinham com o sol. numa razão exata elas caem sempre no mesmo lugar e a rosa fica parada; no temperamento igual elas andam, e a rosa <em>gira</em> no ritmo do batimento. a segunda linha traz ressonâncias reais do céu: Netuno e Plutão estão numa quinta. segure 2 notas no piano de baixo pra ver o seu intervalo.</p>
+  <p class="sec-desc">frequência é <em>velocidade de giro</em>. cada nota vira um planeta em volta da tônica: a nota grave anda na órbita de fora, a aguda na de dentro, mais rápida (a distância segue a lei de Kepler). a cada instante uma linha liga os dois; o rastro dessas linhas é a <em>rosa do intervalo</em>. os pontos na órbita de fora marcam as <em>conjunções</em>, quando os dois planetas se alinham com o sol. numa razão exata elas caem sempre no mesmo lugar e a rosa fica parada; no temperamento igual elas andam, e a rosa <em>gira</em> no ritmo do batimento. a segunda linha traz ressonâncias reais do céu: Netuno e Plutão estão numa quinta. toque 2 notas no piano, juntas ou uma depois da outra, pra ver o seu intervalo.</p>
   <div class="cat-tabs" id="or-tabs"></div>
   <div class="cat-tabs rp-row" id="or-sky" style="--cols:4" title="ressonâncias orbitais reais, com a razão medida dos períodos"></div>
   <div class="or-wrap">
@@ -1115,7 +1115,7 @@
       <button class="help-btn" data-help="14" aria-label="ajuda">?</button>
     </div>
   </div>
-  <p class="sec-desc">uma placa de metal coberta de areia, posta pra vibrar. ela não vibra igual em todo lugar: há linhas que ficam <em>paradas</em> (as linhas nodais). a areia é chutada de onde a placa treme e se junta onde ela não se mexe, desenhando a figura do <em>modo</em> de vibração. na aba <em>placa</em> cada modo tem a sua frequência — e elas <em>não</em> seguem a série harmônica, por isso sino e prato soam metálicos. toque uma nota no piano de baixo ou use <em>varrer</em>: a areia só se organiza quando a frequência bate num modo (ressonância). na aba <em>intervalo</em>, didática, a razão do intervalo escolhe a figura.</p>
+  <p class="sec-desc">uma placa de metal coberta de areia, posta pra vibrar. ela não vibra igual em todo lugar: há linhas que ficam <em>paradas</em> (as linhas nodais). a areia é chutada de onde a placa treme e se junta onde ela não se mexe, desenhando a figura do <em>modo</em> de vibração. na aba <em>placa</em> cada modo tem a sua frequência — e elas <em>não</em> seguem a série harmônica, por isso sino e prato soam metálicos. toque uma nota no piano (a última continua valendo) ou use <em>varrer</em>: a areia só se organiza quando a frequência bate num modo (ressonância). na aba <em>intervalo</em>, didática, a razão do intervalo escolhe a figura.</p>
   <div class="cat-tabs" id="ch-tabs" role="group" aria-label="tipo de placa">
     <button data-chtab="plate" class="active" title="modos de uma placa quadrada, com as frequências dela">placa · modos reais</button>
     <button data-chtab="iv" title="o intervalo p:q escolhe o modo (p,q) — didático">intervalo · didático</button>
@@ -1125,7 +1125,7 @@
     <canvas class="or-canvas" id="ch-canvas" width="720" height="720" aria-label="Placa de Chladni com areia formando as linhas nodais do modo"></canvas>
     <div class="lj-info" id="ch-info"></div>
     <div class="cat-tabs" id="ch-actions" style="margin-top:10px;width:100%">
-      <button data-chsweep title="uma senoide sobe devagar por quase 5 oitavas; a areia pula de figura em figura nas ressonâncias">▶ varrer frequência</button>
+      <button data-chsweep title="uma senoide sobe quase 5 oitavas e para em cada ressonância até a figura se formar · 46 s">▶ varrer frequência</button>
       <button data-chshake title="espalha a areia de novo">espalhar areia</button>
     </div>
   </div>
@@ -1751,7 +1751,7 @@ const MODAL_DOCS = {
 <p><b>linhas nodais</b> — a placa vibra como uma onda parada: em alguns lugares sobe e desce muito (ventres), em outros fica parada (nós). a areia é jogada para fora dos ventres e se acumula nos nós. o desenho é o <em>mapa do que não vibra</em>. aqui cada grão leva um chute aleatório proporcional à vibração no ponto onde está, e é só isso que forma a figura.</p>
 <p><b>modo (n,m)</b> — numa placa quadrada idealizada, cada modo é a soma de duas ondas paradas cruzadas: cos(nπx)·cos(mπy) ± cos(mπx)·cos(nπy). n e m contam as meias-ondas em cada direção; o sinal escolhe entre as duas combinações (por isso há (1,2)+ e (1,2)−, de mesma frequência e desenhos diferentes).</p>
 <p><b>a série da placa não é a série harmônica</b> — numa corda ou num tubo os modos vibram em 1, 2, 3, 4, 5… vezes a fundamental (seção 02): por isso a nota soa "afinada" e os harmônicos formam oitava, quinta e terça. numa placa a frequência cresce com <b>n² + m²</b>: 1, 2, 4, 5, 8, 9, 10, 13… o 3 não existe, então não existe a quinta; os modos caem entre as teclas. é por isso que sino, prato, gongo e a própria placa soam <em>metálicos</em> e de altura ambígua: os parciais são <em>inarmônicos</em>. a lei n² + m² é a de uma placa apoiada nas bordas; a placa livre de Chladni tem números um pouco diferentes, igualmente inarmônicos.</p>
-<p><b>ressonância</b> — a placa só desenha quando a frequência que a excita bate num modo. use <em>varrer frequência</em>: uma senoide sobe devagar e a areia fica parada, treme, e de repente pula para uma figura nova a cada modo. toque uma nota no piano de baixo: o painel mostra o modo mais próximo e a quantos cents ele está.</p>
+<p><b>ressonância</b> — a placa só desenha quando a frequência que a excita bate num modo. use <em>varrer frequência</em>: uma senoide sobe e para em cada modo até a areia formar a figura; entre um modo e outro a areia fica parada. toque uma nota no piano de baixo: o painel mostra o modo mais próximo e a quantos cents ele está.</p>
 <p><b>aba intervalo (didática)</b> — aqui a razão do intervalo p:q escolhe o modo (p,q). não é o que uma placa real faria com duas notas (com várias frequências ao mesmo tempo a areia não assenta), mas mostra a mesma hierarquia das seções 12 e 13: números pequenos, figuras simples.</p>
 <p><b>a história</b> — Chladni mostrou as figuras a Napoleão em 1808, que mandou a Academia de Paris oferecer um prêmio a quem explicasse a matemática. Sophie Germain ganhou em 1816, a primeira mulher premiada pela Academia; a teoria completa veio com Kirchhoff em 1850. hoje o mesmo método é usado para afinar o tampo de violões e violinos.</p>
 ` },
@@ -3686,6 +3686,25 @@ function kbQwertyHint(midi){
 }
 
 let kbActiveNotes = new Map(); // midi -> { osc, gain }
+// últimas 2 notas diferentes tocadas: com o mouse não dá pra segurar duas. seções 13 e 14 leem daqui.
+// seq ordena nota × botão da seção: quem veio por último manda.
+let kbRecent = [], kbSeq = 0;
+function kbRemember(midi){
+  kbRecent = kbRecent.filter(function(x){ return x.midi !== midi; }).concat({ midi: midi, seq: ++kbSeq }).slice(-2);
+}
+function kbRecentSince(seq){ return kbRecent.filter(function(x){ return x.seq > seq; }).map(function(x){ return x.midi; }); }
+// par para desenhar: as 2 mais graves seguradas, senão as 2 últimas tocadas depois do último botão
+function kbPairSince(seq){
+  const held = kbActiveNotes.size >= 2;
+  const ms = (held ? Array.from(kbActiveNotes.keys()) : kbRecentSince(seq)).sort(function(a, b){ return a - b; });
+  if(ms.length < 2) return null;
+  return { a: ms[0], b: ms[1], fa: midiToFreq(ms[0]), fb: midiToFreq(ms[1]), live: true, held: held };
+}
+function kbPairLabel(n, since){
+  if(n.live) return n.held ? 'tocando' : 'últimas 2 notas';
+  const one = kbRecentSince(since);
+  return one.length ? 'tocou ' + rpNoteName(one[0]) + ', falta 1 nota · por ora' : 'intervalo';
+}
 let kbHeldNotes = new Set();   // pcs sustained
 let kbMode = 'free'; // 'free' | 'sustain' | 'snap'
 let kbOctaveShift = 0;
@@ -3863,6 +3882,7 @@ function kbStartNote(midi){
     kbActiveNotes.set(midi, { osc: osc, gain: g, started: t0 });
   }
   rpSetHeld(midi, true);
+  kbRemember(midi);
 
   kbHeldNotes.add(midi % 12);
   highlightKey(midi, true);
@@ -3902,6 +3922,7 @@ function kbStopNote(midi, force){
 function kbClearAll(){
   Array.from(kbActiveNotes.keys()).forEach(function(midi){ kbStopNote(midi, true); });
   kbHeldNotes.clear();
+  kbRecent = [];
   document.querySelectorAll('.kb-key-white.active, .kb-key-black.active').forEach(function(k){ k.classList.remove('active'); });
   updateChordDetection();
   syncCrossSectionHighlights();
@@ -4560,6 +4581,7 @@ function rpPlay(path){
   if(typeof pianoEchoMidiList === 'function') pianoEchoMidiList([m], 600);
   rpFlash(m, 1200);
   logTonalNote(m % 12, midiName(m), m);
+  kbRemember(m);
   const now = document.getElementById('rp-now');
   if(now) now.innerHTML = '<span class="k">toque</span>' + rpNoteName(m) + ' · ' + hz.toFixed(1) + ' Hz';
 }
@@ -5011,13 +5033,13 @@ const OR_SKY = [
 ];
 let orSel = { kind: 'iv', v: 7 }; // { kind:'iv', v: semitons } | { kind:'sky', v: índice em OR_SKY }
 let orVisible = false;
+let orSince = 0; // kbSeq do último clique num botão da seção
 
 function orNotes(ignoreLive){
-  if(!ignoreLive && typeof kbActiveNotes !== 'undefined' && kbActiveNotes.size >= 2){
-    const ms = Array.from(kbActiveNotes.keys()).sort(function(a, b){ return a - b; });
-    const n = { a: ms[0], b: ms[1], fa: midiToFreq(ms[0]), fb: midiToFreq(ms[1]), live: true };
-    n.res = ljFraction(n);
-    return n;
+  const played = ignoreLive ? null : kbPairSince(orSince);
+  if(played){
+    played.res = ljFraction(played);
+    return played;
   }
   if(orSel.kind === 'sky'){
     const sk = OR_SKY[orSel.v];
@@ -5129,7 +5151,7 @@ function orDraw(now){
     html = '<span class="k">céu</span>' + parts[0] + ' (dentro) dá ' + r.toFixed(4) + ' voltas para cada 1 de ' + parts[1] + ' · ressonância <b>' + pN + ':' + qN + '</b> = ' + (pN / qN).toFixed(4) + ' · ' + n.sky.iv + '<br>';
   } else {
     const pair = rpNoteName(n.a) + ' + ' + rpNoteName(n.b);
-    html = '<span class="k">' + (n.live ? 'tocando' : 'intervalo') + '</span>' + pair + ' · razão ' + r.toFixed(4) + ' · ' + (n.res.exact ? 'exata' : 'mais próxima') + ' <b>' + pN + ':' + qN + '</b><br>';
+    html = '<span class="k">' + kbPairLabel(n, orSince) + '</span>' + pair + ' · razão ' + r.toFixed(4) + ' · ' + (n.res.exact ? 'exata' : 'mais próxima') + ' <b>' + pN + ':' + qN + '</b><br>';
   }
   html += '<span class="k">ciclo</span>' + (pN === qN ? 'uníssono: os dois andam juntos, sempre alinhados' :
     qN + ' volta' + (qN > 1 ? 's' : '') + ' de fora = ' + pN + ' de dentro · <b>' + nConj + ' conjunç' + (nConj > 1 ? 'ões' : 'ão') + '</b> por ciclo') + '<br>';
@@ -5152,7 +5174,7 @@ function renderOrbitTabs(){
     const b = document.createElement('button');
     b.textContent = iv[1];
     if(orSel.kind === 'iv' && orSel.v === iv[0]) b.classList.add('active');
-    b.addEventListener('click', function(){ orSel = { kind: 'iv', v: iv[0] }; renderOrbitTabs(); orPlay(); });
+    b.addEventListener('click', function(){ orSince = kbSeq; orSel = { kind: 'iv', v: iv[0] }; renderOrbitTabs(); orPlay(); });
     row.appendChild(b);
   });
   OR_SKY.forEach(function(sk, i){
@@ -5160,7 +5182,7 @@ function renderOrbitTabs(){
     b.textContent = sk.name;
     b.title = sk.iv + ' · razão medida ' + sk.ratio.toFixed(4);
     if(orSel.kind === 'sky' && orSel.v === i) b.classList.add('active');
-    b.addEventListener('click', function(){ orSel = { kind: 'sky', v: i }; renderOrbitTabs(); orPlay(); });
+    b.addEventListener('click', function(){ orSince = kbSeq; orSel = { kind: 'sky', v: i }; renderOrbitTabs(); orPlay(); });
     sky.appendChild(b);
   });
 }
@@ -5186,7 +5208,9 @@ let chTab = 'plate';
 let chVisible = false;
 let chModeIdx = 0;        // índice em CH_MODES (aba placa)
 let chIv = 7;             // semitons (aba intervalo)
-let chSweep = null;       // { t0, dur, f0, f1, osc, gain } durante a varredura
+let chSweep = null;       // { p0, seq, base, plan, osc, gain } durante a varredura
+let chIvSince = 0, chPlateSince = 0; // kbSeq do último botão de cada aba
+const CH_GLIDE = 0.8, CH_HOLD = 2.5; // varredura: segundos subindo até cada modo e parado nele
 let chGrains = null;
 let chLastKey = '';
 
@@ -5227,33 +5251,42 @@ function chClosestMode(f){
 
 // estado atual: qual modo e quanta energia (ressonância) a placa recebe
 function chState(){
-  const live = typeof kbActiveNotes !== 'undefined' && kbActiveNotes.size > 0;
   if(chTab === 'iv'){
-    let n;
-    if(live && kbActiveNotes.size >= 2){
-      const ms = Array.from(kbActiveNotes.keys()).sort(function(a, b){ return a - b; });
-      n = { a: ms[0], b: ms[1], fa: midiToFreq(ms[0]), fb: midiToFreq(ms[1]), live: true };
-    } else n = { a: 60 + tonic, b: 60 + tonic + chIv, fa: pitchHz(0, 0), fb: pitchHz(chIv % 12, Math.floor(chIv / 12)), live: false };
+    let n = kbPairSince(chIvSince);
+    if(!n) n = { a: 60 + tonic, b: 60 + tonic + chIv, fa: pitchHz(0, 0), fb: pitchHz(chIv % 12, Math.floor(chIv / 12)), live: false };
     const pq = ljFraction(n).pq;
     const md = pq[0] === pq[1] ? { n: 1, m: 1, s: 1, k: 2 } : { n: Math.min(pq[0], pq[1]), m: Math.max(pq[0], pq[1]), s: -1, k: pq[0] * pq[0] + pq[1] * pq[1] };
     return { md: md, energy: 1, iv: n, pq: pq };
   }
+  // nota nova ou troca de tônica (a placa muda de afinação) interrompe a varredura
+  if(chSweep && (kbSeq > chSweep.seq || chSweep.base !== chF0())) chStopSweep();
   if(chSweep){
     // relógio da página (não o do áudio): se o áudio estiver suspenso, o desenho anda mesmo assim
-    const u = (performance.now() - chSweep.p0) / 1000 / chSweep.dur;
-    if(u >= 1){ chStopSweep(); return chState(); }
-    const f = chSweep.f0 * Math.pow(chSweep.f1 / chSweep.f0, Math.max(0, u));
+    const t = Math.max(0, (performance.now() - chSweep.p0) / 1000);
+    const seg = chSweep.plan[Math.floor(t / (CH_GLIDE + CH_HOLD))];
+    if(!seg){ chStopSweep(); return chState(); }
+    const u = Math.min(1, (t % (CH_GLIDE + CH_HOLD)) / CH_GLIDE);
+    const f = seg.from * Math.pow(seg.to / seg.from, u);
     const c = chClosestMode(f);
     chModeIdx = c.idx;
-    return { md: CH_MODES[c.idx], energy: Math.exp(-Math.pow(c.cents / 60, 2)), f: f, cents: c.cents, sweep: true };
+    return { md: CH_MODES[c.idx], energy: Math.exp(-Math.pow(c.cents / 60, 2)), f: f, cents: c.cents, sweep: true, hold: u === 1 };
   }
-  if(live){
-    const ms = Array.from(kbActiveNotes.keys()).sort(function(a, b){ return a - b; });
-    const f = midiToFreq(ms[ms.length - 1]);
+  const held = Array.from(kbActiveNotes.keys()), last = kbRecentSince(chPlateSince).pop();
+  const midi = held.length ? Math.max.apply(null, held) : last;
+  if(midi !== undefined){
+    const f = midiToFreq(midi);
     const c = chClosestMode(f);
-    return { md: CH_MODES[c.idx], energy: Math.exp(-Math.pow(c.cents / 60, 2)), f: f, cents: c.cents, midi: ms[ms.length - 1], live: true };
+    return { md: CH_MODES[c.idx], energy: Math.exp(-Math.pow(c.cents / 60, 2)), f: f, cents: c.cents, midi: midi };
   }
   return { md: CH_MODES[chModeIdx], energy: 1 };
+}
+
+// teclas do piano de baixo que caem perto de um modo: as que desenham
+function chResonantKeys(){
+  const out = [];
+  for(let m = KB_MIDI_START; m < KB_MIDI_START + 12 * KB_OCTAVES; m++)
+    if(chClosestMode(midiToFreq(m)).cents < 50) out.push(rpNoteName(m));
+  return out.join(' ');
 }
 
 function chInitGrains(){
@@ -5296,18 +5329,30 @@ function chStopSweep(){
 function chStartSweep(){
   if(!ensureAudio()) return;
   chStopSweep();
-  const f0 = chF0() * 0.9, f1 = chF0() * 26, dur = 32, t0 = audioCtx.currentTime + 0.05;
+  const base = chF0(), plan = [], t0 = audioCtx.currentTime + 0.05;
+  let from = base * 0.9;
+  CH_MODES.forEach(function(md){
+    const to = chModeFreq(md);
+    if(md.k > 26 || to <= from) return; // modos de mesma frequência: uma parada só
+    plan.push({ from: from, to: to });
+    from = to;
+  });
+  const dur = plan.length * (CH_GLIDE + CH_HOLD);
   const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
   osc.type = 'sine';
-  osc.frequency.setValueAtTime(f0, t0);
-  osc.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+  plan.forEach(function(seg, i){
+    const at = t0 + i * (CH_GLIDE + CH_HOLD);
+    osc.frequency.setValueAtTime(seg.from, at);
+    osc.frequency.exponentialRampToValueAtTime(seg.to, at + CH_GLIDE);
+  });
   g.gain.setValueAtTime(0, t0);
   g.gain.linearRampToValueAtTime(0.1, t0 + 0.3);
   g.gain.setValueAtTime(0.1, t0 + dur - 0.4);
   g.gain.linearRampToValueAtTime(0, t0 + dur);
   osc.connect(g).connect(masterOut());
   osc.start(t0); osc.stop(t0 + dur + 0.05);
-  chSweep = { t0: t0, p0: performance.now() + 50, dur: dur, f0: f0, f1: f1, osc: osc, gain: g };
+  chPlateSince = kbSeq;
+  chSweep = { p0: performance.now() + 50, seq: kbSeq, base: base, plan: plan, osc: osc, gain: g };
   osc.onended = function(){ if(chSweep && chSweep.osc === osc){ chSweep = null; renderChladniTabs(); } };
   renderChladniTabs();
 }
@@ -5317,9 +5362,10 @@ function chDraw(){
   if(!cv) return;
   if(!chGrains) chInitGrains();
   const st = chState();
-  const key = chModeName(st.md) + st.md.k;
+  const resonant = st.energy > 0.5;
+  const key = chModeName(st.md) + st.md.k + resonant;
   // movimento reduzido: sem animação, assenta a areia de uma vez quando o modo muda
-  const steps = REDUCED_MOTION ? (key !== chLastKey ? 400 : 0) : 6;
+  const steps = REDUCED_MOTION ? (resonant && key !== chLastKey ? 1500 : 0) : st.hold ? (st.md.k < 6 ? 28 : 14) : 6; // parado no modo assenta mais rápido; os graves têm campo mais suave, pedem o dobro
   for(let i = 0; i < steps; i++) chStep(st.md, st.energy);
   chLastKey = key;
   const ctx = cv.getContext('2d');
@@ -5339,14 +5385,15 @@ function chDraw(){
   let html;
   if(chTab === 'iv'){
     const n = st.iv;
-    html = '<span class="k">' + (n.live ? 'tocando' : 'intervalo') + '</span>' + rpNoteName(n.a) + ' + ' + rpNoteName(n.b) + ' · razão <b>' + st.pq[0] + ':' + st.pq[1] + '</b> → modo <b>' + chModeName(st.md) + '</b><br>' +
+    html = '<span class="k">' + kbPairLabel(n, chIvSince) + '</span>' + rpNoteName(n.a) + ' + ' + rpNoteName(n.b) + ' · razão <b>' + st.pq[0] + ':' + st.pq[1] + '</b> → modo <b>' + chModeName(st.md) + '</b><br>' +
       '<span class="k">didático</span>o intervalo escolhe o modo; uma placa real não soa assim — ver aba <em>placa</em>';
   } else {
     const md = st.md, fm = chModeFreq(md), nn = chNearest(fm);
     html = '<span class="k">modo</span><b>' + chModeName(md) + '</b> · n² + m² = ' + md.k + ' · ' + md.k + '× a frequência do modo (0,1) · ' + fm.toFixed(1) + ' Hz ≈ ' + rpNoteName(nn.midi) + ' ' + (nn.off >= 0 ? '+' : '') + nn.off.toFixed(0) + '¢';
     if(st.f){
       const res = st.cents < 30 ? 'em ressonância — a areia desenha' : st.cents < 100 ? 'perto — a areia treme' : 'fora de ressonância — a placa quase não vibra';
-      html += '<br><span class="k">' + (st.sweep ? 'varrendo' : 'tocando') + '</span>' + st.f.toFixed(1) + ' Hz' + (st.midi !== undefined ? ' (' + rpNoteName(st.midi) + ')' : '') + ' · ' + st.cents.toFixed(0) + '¢ do modo · <b>' + res + '</b>';
+      html += '<br><span class="k">' + (st.sweep ? 'varrendo' : kbActiveNotes.size ? 'tocando' : 'última nota') + '</span>' + st.f.toFixed(1) + ' Hz' + (st.midi !== undefined ? ' (' + rpNoteName(st.midi) + ')' : '') + ' · ' + st.cents.toFixed(0) + '¢ do modo · <b>' + res + '</b>';
+      if(!st.sweep && st.cents >= 50) html += '<br><span class="k">teclas que desenham</span>' + chResonantKeys();
     } else html += '<br><span class="k">série da placa</span>1 · 2 · 4 · 5 · 8 · 9 · 10 · 13… (a série harmônica é 1 · 2 · 3 · 4 · 5 · 6…: a placa não tem o 3, logo não tem a quinta)';
   }
   if(info.innerHTML !== html) info.innerHTML = html;
@@ -5369,7 +5416,7 @@ function renderChladniTabs(){
       b.textContent = iv[1];
       if(iv[0] === chIv) b.classList.add('active');
       b.addEventListener('click', function(){
-        chIv = iv[0]; renderChladniTabs();
+        chIvSince = kbSeq; chIv = iv[0]; renderChladniTabs();
         if(ensureAudio()){ playPitch(0, 0, 0.02, 1.8, 0.12); playPitch(iv[0] % 12, Math.floor(iv[0] / 12), 0.02, 1.8, 0.12); pianoEchoMidiList([60 + tonic, 60 + tonic + iv[0]], 1700); }
       });
       row.appendChild(b);
@@ -5381,7 +5428,7 @@ function renderChladniTabs(){
       b.textContent = chModeName(md);
       b.title = 'n² + m² = ' + md.k;
       if(i === chModeIdx && !chSweep) b.classList.add('active');
-      b.addEventListener('click', function(){ chStopSweep(); chModeIdx = i; renderChladniTabs(); chPlayFreq(chModeFreq(md), 1.6); });
+      b.addEventListener('click', function(){ chStopSweep(); chPlateSince = kbSeq; chModeIdx = i; renderChladniTabs(); chPlayFreq(chModeFreq(md), 1.6); });
       row.appendChild(b);
     });
   }
@@ -6415,6 +6462,7 @@ function heroPlayCadence(){
     playMidiAt(m, audioCtx.currentTime + 0.02, 0.9, 0.16);
     heroLight([m], 600);
     pianoEchoMidiList([m], 500);
+    kbRemember(m);
     const c = document.getElementById('hero-center');
     if(c) c.textContent = pcName(m % 12);
   });

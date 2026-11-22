@@ -29,7 +29,7 @@
 11. **piano circular** — as 88 teclas enroladas em espiral (croma no ângulo, oitava no raio), vista 3D, espiral de quintas, rastro, cor da nota pela luz
 12. **lissajous** — a forma de um intervalo, ouvido junto, subindo ou descendo: razão simples fecha a figura, o batimento a faz girar (a forma se repete a cada batimento), quinta do lobo na afinação justa
 13. **órbitas** — o intervalo como sistema solar: cada nota é um planeta (frequência = velocidade angular, raio pela lei de Kepler), a linha entre os dois desenha a rosa do intervalo, p − q conjunções por ciclo, precessão no ritmo do batimento; ressonâncias reais (Netuno·Plutão 3:2, Io·Europa 2:1, Júpiter·Saturno ≈ 5:2, Vênus·Terra ≈ 13:8 e o pentagrama)
-14. **chladni** — o som desenhado na areia: 7 mil grãos chutados onde a placa vibra se juntam nas linhas nodais; aba *placa* com os modos reais (f ∝ n² + m², série inarmônica, sem a quinta), nota do piano → modo mais próximo em cents, varredura de frequência com ressonância; aba *intervalo* (didática) em que p:q escolhe o modo
+14. **chladni** — o som desenhado na areia: 7 mil grãos chutados onde a placa vibra se juntam nas linhas nodais; aba *placa* com os modos reais (f ∝ n² + m², série inarmônica, sem a quinta), nota do piano → modo mais próximo em cents, varredura de frequência que para em cada ressonância; aba *intervalo* (didática) em que p:q escolhe o modo
 
 **Grafia:** uma letra por grau nos modos de 7 notas (dó menor = C D E♭ F G A♭ B♭), em escala, acordes, campo, cadências e pentagrama. Escalas de 5, 6 e 8 notas seguem a letra do grau da escala-mãe (regra no código, em `GRAFIA`).
 
