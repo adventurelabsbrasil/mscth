@@ -839,7 +839,18 @@ function recStop(){
   $('fname').textContent=`gravado: ${notes.length} nota${notes.length===1?'':'s'} · ${fmtSec(len*sec)} · ▶ ouvir no piano ou ⤓ .mid`;
   recUI();
 }
-$('recBtn').onclick=()=>{ if(REC.on) recStop(); else recStart(); };
+// ⏺ liga o microfone sozinho (e espera a calibração); ⏹ já baixa o .wav e o .mid
+$('recBtn').onclick=async()=>{
+  if(REC.on){ recStop(); recSave(); return; }
+  if(REC.wait) return;
+  if(!mic){ REC.wait=true; $('recBtn').textContent='🎤 ligando… silêncio 1 s'; await micStart();
+    for(let i=0;i<60&&mic&&mic.floor==null;i++) await new Promise(r=>setTimeout(r,50)); REC.wait=false;
+    if(!mic){ $('fname').textContent='sem microfone: gravando só teclado/MIDI'; } }
+  recStart(); };
+function recSave(){ const tk=REC.take; if(!tk) return; const stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+  download('gravacao-'+stamp+'.mid', takeToMidi(tk), 'audio/midi');
+  if(tk.audio) setTimeout(()=>download('gravacao-'+stamp+'.wav', wavOf(tk.audio), 'audio/wav'),300);
+  $('fname').textContent='baixado: gravacao-'+stamp+(tk.audio?' .wav + .mid':' .mid (sem áudio: microfone desligado)'); }
 setInterval(()=>{ if(REC.on) recUI(); },250);
 
 // piano: amostras a cada 3 semitons (A0…C8), as do meio por transposição curta; sem rede → piano sintetizado
