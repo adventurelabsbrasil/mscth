@@ -17,6 +17,16 @@
   #fname{color:#f1f1ea;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #panel{position:fixed;left:16px;top:108px;max-height:calc(100vh - 140px);overflow:auto;width:250px;background:#141418ee;border:1px solid #2e2e34;border-radius:8px;padding:14px;font-size:13px;color:#c9c9c2;display:none}
   #panel.open{display:block}
+  #panel,#exp{z-index:20;box-shadow:0 8px 30px #000a}
+  #exp{position:fixed;left:16px;top:108px;width:260px;background:#141418ee;border:1px solid #2e2e34;border-radius:8px;padding:14px;font-size:13px;color:#c9c9c2;display:none;max-height:calc(100vh - 140px);overflow:auto}
+  #exp.open{display:block}
+  #exp h2{font-size:12px;font-weight:500;color:#8a8a82;margin:12px 0 6px;text-transform:uppercase;letter-spacing:.06em}
+  #exp h2:first-child{margin-top:0}
+  #exp label{padding:3px 0}
+  #exp input{accent-color:#e8451e}
+  .xbtns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .xbtns button{font-size:12px;padding:6px 4px}
+  .xnote{font-size:11.5px;color:#77776f;line-height:1.45;margin:10px 0 0}
   #panel h2{font-size:12px;font-weight:500;color:#8a8a82;margin:12px 0 6px;text-transform:uppercase;letter-spacing:.06em}
   #panel h2:first-child{margin-top:0}
   #panel label{padding:3px 0}
@@ -50,8 +60,27 @@
   <select id="song" title="música"><option value="demo">exemplo: C7M – Am – F – G7</option><option value="furelise">Für Elise · Beethoven</option><option value="file" hidden>seu MIDI</option></select>
   <span id="fname"></span>
   <button id="gear">⚙ camadas</button>
+  <button id="expBtn">⤓ exportar</button>
 </div>
 <div id="panel"></div>
+<div id="exp">
+  <h2>o que entra</h2>
+  <label><input type="checkbox" id="xMel" checked> melodia</label>
+  <label><input type="checkbox" id="xBass" checked> baixo</label>
+  <label><input type="checkbox" id="xChord" checked> notas do acorde</label>
+  <label><input type="checkbox" id="xRing" checked> anéis / forma dos acordes</label>
+  <h2>cor</h2>
+  <label><input type="radio" name="xCor" value="1" checked> colorido (cor da luz)</label>
+  <label><input type="radio" name="xCor" value="0"> branco</label>
+  <h2>fundo (2D)</h2>
+  <label><input type="radio" name="xBg" value="preto" checked> preto</label>
+  <label><input type="radio" name="xBg" value="transp"> transparente</label>
+  <h2>baixar · música inteira</h2>
+  <div class="xbtns"><button data-x="obj">OBJ · escultura 3D</button><button data-x="png">PNG · teia</button><button data-x="svg">SVG · teia</button><button data-x="json">JSON · dados</button></div>
+  <h2>baixar · agora</h2>
+  <div class="xbtns"><button data-x="view">PNG · vista atual</button></div>
+  <p class="xnote">a música inteira é calculada de uma vez, sem precisar tocar até o fim. o OBJ abre no Blender (cor por vértice) e serve pra impressão 3D.</p>
+</div>
 <div id="hud"><div class="n" id="hN"></div><div class="c" id="hC"></div><div class="g" id="hG"></div><div class="k" id="hK"></div></div>
 <div id="art" class="box"><canvas id="artc"></canvas><div class="cap"><span>teia da música</span><span><button id="artClr">limpar</button> <button id="artSave">⤓ png</button></span></div></div>
 <div id="roll" class="box"><canvas id="rollc"></canvas><div class="cap"><span>piano roll</span><span id="rollInfo"></span></div></div>
@@ -73,6 +102,7 @@ const mix=(c1,c2,t)=>[c1[0]+(c2[0]-c1[0])*t, c1[1]+(c2[1]-c1[1])*t, c1[2]+(c2[2]
 const scale=(c,k)=>[c[0]*k,c[1]*k,c[2]*k];
 
 // ================= música =================
+let SONG='exemplo C7M-Am-F-G7';
 let LOOP=16, BASE=[], BASE_RAW=[], MAXD=4, LOW=36, HIGH=84, BPB=4, OFFSET=0;
 (function demo(){
   const bar=(b,bass,triad,mel)=>{const o=b*4; BASE.push([bass,o,4,'baixo',0.8]); triad.forEach(m=>BASE.push([m,o,4,'acorde',0.7])); mel.forEach(([m,s,d])=>BASE.push([m,o+s,d,'melodia',0.9]));};
@@ -244,7 +274,8 @@ function setView(v){ st.view=v; st.yaw=VIEWS[v].yaw; st.pitch=VIEWS[v].pitch; $(
 $('front').onclick=()=>{ const order=['lado','frente','viagem']; setView(order[(order.indexOf(st.view)+1)%3]); };
 { const hv=(location.hash.match(/view=(\w+)/)||[])[1]; if(hv&&VIEWS[hv]) setView(hv); }
 $('snd').onclick=()=>{ st.sound=!st.sound; $('snd').textContent=st.sound?'som ligado':'som desligado'; $('snd').classList.toggle('on',st.sound); };
-$('gear').onclick=()=>{ $('panel').classList.toggle('open'); $('gear').classList.toggle('on'); };
+$('gear').onclick=()=>{ $('exp').classList.remove('open'); $('expBtn').classList.remove('on'); $('panel').classList.toggle('open'); $('gear').classList.toggle('on'); };
+$('expBtn').onclick=()=>{ $('panel').classList.remove('open'); $('gear').classList.remove('on'); $('exp').classList.toggle('open'); $('expBtn').classList.toggle('on'); };
 if(/pedal/.test(location.hash)){ L.pedal=true; }
 if(/panel/.test(location.hash)){ $('panel').classList.add('open'); $('gear').classList.add('on'); }
 
@@ -271,7 +302,12 @@ function setPlaying(on){ st.playing=on; $('play').textContent=on?'❚❚ pausar'
 $('play').onclick=()=>{ initAudio(); if(ac.state==='suspended') ac.resume(); setPlaying(!st.playing); };
 
 // ================= MIDI =================
-function afterLoad(){ if(window.artReady) artClear(); applyPedal(); KEY=keyAuto?detectKey():KEY; buildTimeline(); buildPanel(); }
+let THREADK={melodia:1,baixo:1};
+function afterLoad(){ if(window.artReady) artClear(); applyPedal(); KEY=keyAuto?detectKey():KEY; buildTimeline(); buildPanel();
+  const cnt=r=>new Set(BASE_RAW.filter(n=>n[3]===r).map(n=>n[1])).size;   // fios por música: muitas notas → fio mais tênue
+  THREADK={melodia:Math.min(1,140/Math.max(1,cnt('melodia'))), baixo:Math.min(1,90/Math.max(1,cnt('baixo')))}; }
+// forma do acorde para a teia: um polígono por troca de acorde, intensidade pela duração
+const chordPolyA=seg=>({fa:0.035*Math.min(3,seg.t1-seg.t0), sa:0.16});
 function loadMidi(file){
   return file.arrayBuffer().then(buf=>{
     const r=parseMidi(buf);
@@ -290,7 +326,7 @@ function loadMidi(file){
     let peak=0; for(let t=0;t<LOOP;t+=0.5) peak=Math.max(peak,soundingAt(t).length); polyGain=Math.min(1,4/Math.max(1,peak));
     $('bpm').value=r.bpm; $('bpm').oninput();
     st.now=0; schedUntil=0; afterLoad();
-    $('fname').textContent=file.name+' · '+BASE.length+' notas · '+r.bpm+' bpm';
+    $('fname').textContent=file.name+' · '+BASE.length+' notas · '+r.bpm+' bpm'; SONG=file.name;
   }).catch(e=>{ $('fname').textContent='erro: '+e.message; throw e; });
 }
 $('up').onclick=()=>$('file').click();
@@ -305,11 +341,11 @@ afterLoad();
 // músicas embutidas: o exemplo curto e Für Elise (Beethoven, WoO 59 · MIDI do Mutopia Project, domínio público)
 function loadDemo(){
   BASE_RAW=DEMO.map(n=>n.slice()); LOOP=16; BPB=4; OFFSET=0; LOW=36; HIGH=84; polyGain=1;
-  $('bpm').value=84; $('bpm').oninput(); st.now=0; schedUntil=0; afterLoad(); $('fname').textContent='';
+  $('bpm').value=84; $('bpm').oninput(); st.now=0; schedUntil=0; afterLoad(); $('fname').textContent=''; SONG='exemplo C7M-Am-F-G7';
 }
 function loadFurElise(){
   const bin=atob(FUR_ELISE.b64), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
-  return loadMidi({name:'Für Elise · MIDI: Mutopia Project (domínio público)',arrayBuffer:()=>Promise.resolve(u.buffer)});
+  return loadMidi({name:'Für Elise · MIDI: Mutopia Project (domínio público)',arrayBuffer:()=>Promise.resolve(u.buffer)}).then(()=>{ SONG='fur-elise'; });
 }
 $('song').onchange=()=>{ if($('song').value==='furelise') loadFurElise(); else loadDemo(); };
 if(/furelise|embed/.test(location.hash)){ $('song').value='furelise'; loadFurElise().then(()=>{ if(!isNaN(hashT)) st.now=hashT; }); }
@@ -317,9 +353,9 @@ if(/furelise|embed/.test(location.hash)){ $('song').value='furelise'; loadFurEli
 
 // ================= quadros 2D =================
 // quadro dos acordes: cada acorde que soa vira um polígono (ângulo = nota, raio = oitava) numa tela que não apaga
-const artc=document.getElementById('artc'), actx=artc.getContext('2d'); let artStep=-1, artPrevNow=0;
+const artc=document.getElementById('artc'), actx=artc.getContext('2d'); let artStep='', artPrevNow=0;
 function artSize(){ const z=Math.round(Math.min(240,innerWidth*0.2,innerHeight*0.3)); artc.style.width=artc.style.height=z+'px'; if(artc.width!==z*2){ artc.width=artc.height=z*2; artClear(); } }
-function artClear(){ actx.globalCompositeOperation='source-over'; actx.fillStyle='#050506'; actx.fillRect(0,0,artc.width,artc.height); artStep=-1; }
+function artClear(){ actx.globalCompositeOperation='source-over'; actx.fillStyle='#050506'; actx.fillRect(0,0,artc.width,artc.height); artStep=''; }
 window.artClear=artClear;
 document.getElementById('artClr').onclick=artClear;
 document.getElementById('artSave').onclick=()=>{ const a=document.createElement('a'); a.download='teia-da-musica.png'; a.href=artc.toDataURL('image/png'); a.click(); };
@@ -342,18 +378,20 @@ function drawArt(NOW, live, cc){
     let lastS=null;
     atk.forEach(([m,s,d,role])=>{
       if(role==='melodia'){ if(lastS===s) return; lastS=s;   // só a voz de cima
-        if(L.teiaMel && artMel!=null) silk(artMel,m,0.32,S/520);
+        if(L.teiaMel && artMel!=null) silk(artMel,m,0.32*THREADK.melodia,S/520);
         if(L.teiaMel) knot(m,0.10,S/220); artMel=m; }
-      else if(role==='baixo'){ if(L.teiaBaixo && artBass!=null) silk(artBass,m,0.22,S/260); if(L.teiaBaixo) knot(m,0.12,S/160); artBass=m; }
+      else if(role==='baixo'){ if(L.teiaBaixo && artBass!=null) silk(artBass,m,0.22*THREADK.baixo,S/260); if(L.teiaBaixo) knot(m,0.12,S/160); artBass=m; }
     });
   }
   artPrevNow=NOW;
-  // raios: o acorde que soa, bem translúcido (8 camadas por tempo, independe do fps)
-  const step=Math.floor(NOW*8); if(!L.teiaAcorde || step===artStep || live.length<2) return; artStep=step;
-  const pts=live.map(n=>P(n[0]));
+  // raios: um polígono por troca de acorde (as notas do acorde), intensidade pela duração
+  const seg=chordAt(NOW); if(!L.teiaAcorde || !seg) return;
+  const key=Math.floor(NOW/LOOP)+':'+seg.t0; if(key===artStep) return; artStep=key;
+  const ms=seg.ms.slice().sort((a,b)=>(a%12)-(b%12)); if(ms.length<2) return;
+  const pts=ms.map(m=>P(m)), A=chordPolyA(seg), cl=chordColor(seg.ci);
   actx.beginPath(); pts.forEach((q,i)=>i?actx.lineTo(q[0],q[1]):actx.moveTo(q[0],q[1])); actx.closePath();
-  actx.fillStyle=rgba(cc,0.010); actx.fill();
-  actx.strokeStyle=rgba(cc,0.045); actx.lineWidth=S/400; actx.stroke();
+  actx.fillStyle=rgba(cl,A.fa); actx.fill();
+  actx.strokeStyle=rgba(cl,A.sa); actx.lineWidth=S/400; actx.stroke();
 }
 // piano roll de jogo: notas caem até o teclado; a tecla acende na cor da nota, com clarão no ataque
 const rollc=document.getElementById('rollc'), rctx=rollc.getContext('2d');
@@ -390,6 +428,112 @@ function drawRoll(NOW){
   X.fillStyle='rgba(255,255,255,0.5)'; X.fillRect(0,top,w,1);
 }
 addEventListener('resize',artSize); artSize(); window.artReady=true;
+
+
+// ================= exportar a escultura =================
+const slug=t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\.midi?$/,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'musica';
+function download(name, data, type){
+  const url = typeof data==='string' && data.startsWith('data:') ? data : URL.createObjectURL(new Blob([data],{type}));
+  const a=document.createElement('a'); a.download=name; a.href=url; document.body.appendChild(a); a.click(); a.remove();
+  if(!url.startsWith('data:')) setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+function expOpts(){ return { mel:$('xMel').checked, bass:$('xBass').checked, chord:$('xChord').checked, ring:$('xRing').checked,
+  cor:document.querySelector('input[name=xCor]:checked').value==='1', bg:document.querySelector('input[name=xBg]:checked').value }; }
+const roleOn=(o,role)=>role==='melodia'?o.mel:role==='baixo'?o.bass:o.chord;
+const nCol=(o,m)=>o.cor?COL[((m%12)+12)%12]:[255,255,255];
+const cCol=(o,ci)=>o.cor?chordColor(ci):[255,255,255];
+const allNotes=()=>BASE.map(n=>n.slice()).sort((a,b)=>a[1]-b[1]||b[0]-a[0]);   // respeita o pedal
+
+// teia da música inteira, num "pintor" (canvas ou SVG) — mesma regra do quadro ao vivo
+function teiaPaint(pn, S, o){
+  const c=S/2, rO=S*0.46, rI=S*0.1;
+  const P=m=>{ const r=rO-(m-LOW)/(HIGH-LOW)*(rO-rI), a=-Math.PI/2+(m%12)/12*2*Math.PI; return [c+r*Math.cos(a), c+r*Math.sin(a)]; };
+  const ns=allNotes();
+  if(o.ring || o.chord) TL.forEach(seg=>{   // raios: um polígono por troca de acorde
+    const ms=seg.ms.slice().sort((a,b)=>(a%12)-(b%12)); if(ms.length<2) return;
+    const A=chordPolyA(seg); pn.poly(ms.map(m=>P(m)), cCol(o,seg.ci), A.fa, A.sa, S/400); });
+  const thread=(role,alpha,w,ka,kr)=>{ let last=null, lastS=null;
+    ns.filter(n=>n[3]===role).forEach(n=>{ if(role==='melodia'){ if(lastS===n[1]) return; lastS=n[1]; }
+      if(last!=null && last!==n[0]){ const p=P(last), q=P(n[0]), mx=(p[0]+q[0])/2, my=(p[1]+q[1])/2;
+        pn.silk(p, q, [mx+(c-mx)*0.18, my+(c-my)*0.18], nCol(o,last), nCol(o,n[0]), alpha, w); }
+      pn.knot(P(n[0]), nCol(o,n[0]), ka, kr); last=n[0]; }); };
+  if(o.bass) thread('baixo',0.22*THREADK.baixo,S/260,0.12*THREADK.baixo,S/160);
+  if(o.mel) thread('melodia',0.32*THREADK.melodia,S/520,0.10*THREADK.melodia,S/220);
+}
+function teiaPNG(o){
+  const S=2048, cv2=document.createElement('canvas'); cv2.width=cv2.height=S; const x=cv2.getContext('2d');
+  if(o.bg==='preto'){ x.fillStyle='#050506'; x.fillRect(0,0,S,S); }
+  x.globalCompositeOperation='lighter';
+  teiaPaint({
+    poly:(pts,cl,fa,sa,w)=>{ x.beginPath(); pts.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1])); x.closePath(); x.fillStyle=rgba(cl,fa); x.fill(); x.strokeStyle=rgba(cl,sa); x.lineWidth=w; x.stroke(); },
+    silk:(p,q,cp,c0,c1,a,w)=>{ const g=x.createLinearGradient(p[0],p[1],q[0],q[1]); g.addColorStop(0,rgba(c0,a)); g.addColorStop(1,rgba(c1,a));
+      x.strokeStyle=g; x.lineWidth=w; x.beginPath(); x.moveTo(p[0],p[1]); x.quadraticCurveTo(cp[0],cp[1],q[0],q[1]); x.stroke(); },
+    knot:(p,cl,a,r)=>{ x.fillStyle=rgba(cl,a); x.beginPath(); x.arc(p[0],p[1],r,0,7); x.fill(); },
+  }, S, o);
+  download(slug(SONG)+'-teia.png', cv2.toDataURL('image/png'));
+}
+function teiaSVG(o){
+  const S=1000, out=[], defs=[]; let g=0; const f=v=>v.toFixed(1), rgb=c=>`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
+  teiaPaint({
+    poly:(pts,cl,fa,sa,w)=>out.push(`<polygon class="l" points="${pts.map(q=>f(q[0])+','+f(q[1])).join(' ')}" fill="${rgb(cl)}" fill-opacity="${fa}" stroke="${rgb(cl)}" stroke-opacity="${sa}" stroke-width="${f(w)}"/>`),
+    silk:(p,q,cp,c0,c1,a,w)=>{ const id='g'+(g++);
+      defs.push(`<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${f(p[0])}" y1="${f(p[1])}" x2="${f(q[0])}" y2="${f(q[1])}"><stop offset="0" stop-color="${rgb(c0)}"/><stop offset="1" stop-color="${rgb(c1)}"/></linearGradient>`);
+      out.push(`<path class="l" d="M${f(p[0])} ${f(p[1])}Q${f(cp[0])} ${f(cp[1])} ${f(q[0])} ${f(q[1])}" fill="none" stroke="url(#${id})" stroke-opacity="${a}" stroke-width="${f(w)}"/>`); },
+    knot:(p,cl,a,r)=>out.push(`<circle class="l" cx="${f(p[0])}" cy="${f(p[1])}" r="${f(r)}" fill="${rgb(cl)}" fill-opacity="${a}"/>`),
+  }, S, o);
+  const bg=o.bg==='preto'?`<rect width="${S}" height="${S}" fill="#050506"/>`:'';
+  const svg=`<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S} ${S}" width="${S}" height="${S}">\n<title>teia · ${SONG}</title>\n<style>.l{mix-blend-mode:screen}</style>\n<defs>${defs.join('')}</defs>\n${bg}<g style="isolation:isolate">\n${out.join('\n')}\n</g></svg>`;
+  download(slug(SONG)+'-teia.svg', svg, 'image/svg+xml');
+}
+// escultura 3D: cada nota é um tubo em volta do eixo do tempo (x); raio do tubo = o som morrendo
+function sculptOBJ(o){
+  const U=10/46, SXo=10, RM=190*U, Rm=42*U, om=st.omega*2*Math.PI/BPB, SIDES=6;
+  const rOf=m=>RM-(m-LOW)/(HIGH-LOW)*(RM-Rm), cone=m=>(m-LOW)/(HIGH-LOW)*40*U;
+  const pos=(m,t)=>{ const r=rOf(m), a=-Math.PI/2+(m%12)/12*2*Math.PI+om*t; return [t*SXo+cone(m), -r*Math.sin(a), r*Math.cos(a)]; };
+  const V=[], F=[]; let nv=0;
+  const vtx=(p,cl)=>{ V.push('v '+p.map(x=>x.toFixed(3)).join(' ')+(o.cor?' '+cl.map(x=>(x/255).toFixed(3)).join(' '):'')); return ++nv; };
+  const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]], norm=a=>{ const l=Math.hypot(...a)||1; return a.map(x=>x/l); };
+  // tubo por uma lista de pontos com raios; fecha as pontas
+  const tube=(pts,rads,cl,closed)=>{
+    const rings=[];
+    pts.forEach((p,i)=>{ const T=norm(sub(pts[Math.min(pts.length-1,i+1)],pts[Math.max(0,i-1)]));
+      let Uv=norm([0,p[1],p[2]]); if(!isFinite(Uv[0])||Math.hypot(p[1],p[2])<1e-6) Uv=[0,1,0];
+      const Wv=norm(cross(T,Uv)); Uv=norm(cross(Wv,T));
+      const ring=[]; for(let k=0;k<SIDES;k++){ const a=k/SIDES*2*Math.PI, ca=Math.cos(a)*rads[i], sa=Math.sin(a)*rads[i];
+        ring.push(vtx([p[0]+Uv[0]*ca+Wv[0]*sa, p[1]+Uv[1]*ca+Wv[1]*sa, p[2]+Uv[2]*ca+Wv[2]*sa], cl)); }
+      rings.push(ring); });
+    const R=closed?rings.length:rings.length-1;
+    for(let i=0;i<R;i++){ const A=rings[i], B=rings[(i+1)%rings.length];
+      for(let k=0;k<SIDES;k++){ const k2=(k+1)%SIDES; F.push(`f ${A[k]} ${A[k2]} ${B[k2]} ${B[k]}`); } }
+    if(!closed){ const c0=vtx(pts[0],cl), c1=vtx(pts[pts.length-1],cl), A=rings[0], B=rings[rings.length-1];
+      for(let k=0;k<SIDES;k++){ const k2=(k+1)%SIDES; F.push(`f ${c0} ${A[k2]} ${A[k]}`); F.push(`f ${c1} ${B[k]} ${B[k2]}`); } }
+  };
+  const baseR={melodia:0.55,baixo:0.7,acorde:0.45};
+  allNotes().forEach(([m,s,d,role,v])=>{ if(!roleOn(o,role)) return;
+    const n=Math.max(3,Math.min(160,Math.round(d*10))), pts=[], rads=[];
+    for(let i=0;i<=n;i++){ const t=s+d*i/n, env=(0.25+0.75*Math.exp(-DECAY[role]*(t-s)))*(0.5+0.6*(v==null?0.8:v)); pts.push(pos(m,t)); rads.push(baseR[role]*(0.3+0.7*env)); }
+    tube(pts,rads,nCol(o,m),false); });
+  if(o.ring) TL.forEach(seg=>{ const ms=seg.ms.slice().sort((a,b)=>(a%12)-(b%12)); if(ms.length<2) return;
+    const pts=ms.map(m=>pos(m,seg.t0)); tube(pts,pts.map(()=>0.18),cCol(o,seg.ci),true); });
+  const head=['# mscth · túnel do tempo · escultura de "'+SONG+'"',
+    '# eixo x = tempo ('+SXo+' unidades por tempo) · ângulo em volta do eixo = nota (+ giro de '+st.omega+' volta/compasso) · distância ao eixo = oitava (grave por fora)',
+    '# tubo = nota (raio afina com o som morrendo) · anel fechado = forma do acorde na troca'+(o.cor?' · cor por vértice = cor da luz da nota':''),
+    'o '+slug(SONG)];
+  download(slug(SONG)+'-escultura.obj', head.concat(V,F).join('\n')+'\n', 'text/plain');
+}
+function exportJSON(){
+  const data={ app:'mscth · túnel do tempo', formato:1, musica:{ nome:SONG, bpm:st.bpm, tempos_por_compasso:BPB, anacruse:OFFSET, tempos:LOOP,
+      tom:{tonica:nm(KEY.tonic), modo:KEY.mode, automatico:keyAuto} },
+    mapeamento:{ tempo:'eixo do túnel (em tempos)', angulo:'nota (classe de altura), C no topo, sentido horário', raio:'oitava (grave por fora)', giro_voltas_por_compasso:st.omega, cor:'cor da luz: frequência dobrada ~40 oitavas até o visível' },
+    ajustes:{ pedal:!!L.pedal, cor_do_acorde:L.corAcorde },
+    notas: BASE_RAW.map(([m,s,d,role,v])=>({ midi:m, nota:nm(m%12)+(Math.floor(m/12)-1), inicio:+s.toFixed(4), duracao:+d.toFixed(4), papel:role, velocidade:+(v==null?0.8:v).toFixed(3),
+      cor:'#'+COL[m%12].map(x=>x.toString(16).padStart(2,'0')).join('') })),
+    acordes: TL.map(t=>({ inicio:t.t0, fim:t.t1, cifra:chordName(t.ci), composicao:chordNotes(t.ci), grau:chordDegree(t.ci) })) };
+  download(slug(SONG)+'-dados.json', JSON.stringify(data,null,1), 'application/json');
+}
+document.querySelectorAll('#exp [data-x]').forEach(b=>b.onclick=()=>{ const o=expOpts(), x=b.dataset.x;
+  if(x==='png') teiaPNG(o); else if(x==='svg') teiaSVG(o); else if(x==='obj') sculptOBJ(o); else if(x==='json') exportJSON();
+  else if(x==='view') download(slug(SONG)+'-vista.png', cv.toDataURL('image/png')); });
 
 // ================= câmera =================
 let drag=null;
@@ -468,30 +612,39 @@ function frame(ts){
       const g=ctx.createLinearGradient(p1[0],p1[1],p2[0],p2[1]); g.addColorStop(0,col(a[0],0.5*f)); g.addColorStop(1,col(b[0],0.5*f));
       ctx.strokeStyle=g; ctx.beginPath(); ctx.moveTo(p1[0],p1[1]); ctx.lineTo(p2[0],p2[1]); ctx.stroke(); }
   }
-  // fios: poucos traços por nota (sem shadowBlur)
+  // fios: cada nota é UMA fita contínua, com espessura e brilho variando ponto a ponto (sem degraus entre pedaços)
   const notes=notesIn(from,NOW).filter(n=>n[1]<=NOW && L[n[3]]);
   const wires=[];
   notes.forEach(([m,s,d,role,v])=>{
     const a0=Math.max(s,from), end=Math.min(s+d,NOW); if(end<=a0) return;
-    const n=Math.max(2,Math.min(48,Math.round((end-a0)*7))), pts=[], ts=[];
+    const n=Math.max(3,Math.min(120,Math.round((end-a0)*14))), pts=[], ts=[];
     for(let i=0;i<=n;i++){ const t=a0+(end-a0)*i/n; pts.push(pt(m,t)); ts.push(t); }
     wires.push({m,s,role,v:v==null?0.8:v,pts,ts,live:s+d>NOW,depth:pts[n>>1][2]});
   });
   wires.sort((a,b)=>a.depth-b.depth);
   const baseW={melodia:4.2,baixo:4.6,acorde:3.2};
-  ctx.lineCap='butt'; ctx.lineJoin='round';
   wires.forEach(w=>{
-    const CH=4;
-    for(let c=0;c<w.pts.length-1;c+=CH){
-      const e=Math.min(c+CH,w.pts.length-1), tm=(w.ts[c]+w.ts[e])/2;
-      const env=(0.25+0.75*Math.exp(-DECAY[w.role]*(tm-w.s)))*(0.5+0.6*w.v), f=fadeAt(tm);
-      const al=Math.min(1,(0.2+0.8*env)*Math.pow(f,1.3)*(w.live?1.15:0.9));
-      if(al<0.02) continue;
-      const zk=st.view==='viagem'?Math.min(5,Math.max(0.6,FC/Math.max(28,FC-w.pts[c][2]))):1;   // perto da câmera, fio mais grosso
-      const lw=baseW[w.role]*(0.3+0.7*env)*SC/0.7*zk;
-      ctx.beginPath(); ctx.moveTo(w.pts[c][0],w.pts[c][1]); for(let i=c+1;i<=e;i++) ctx.lineTo(w.pts[i][0],w.pts[i][1]);
-      if(L.brilho && NOW-tm<1.5){ ctx.strokeStyle=col(w.m,al*0.16); ctx.lineWidth=lw*3.2; ctx.stroke(); }
-      ctx.strokeStyle=col(w.m,al); ctx.lineWidth=lw; ctx.stroke();
+    const N=w.pts.length, A=[], HW=[], NX=[], NY=[];
+    for(let i=0;i<N;i++){
+      const t=w.ts[i], env=(0.25+0.75*Math.exp(-DECAY[w.role]*(t-w.s)))*(0.5+0.6*w.v), f=fadeAt(t);
+      A.push(Math.min(1,(0.2+0.8*env)*Math.pow(f,1.3)*(w.live?1.15:0.9)));
+      const zk=st.view==='viagem'?Math.min(5,Math.max(0.6,FC/Math.max(28,FC-w.pts[i][2]))):1;   // perto da câmera, fita mais larga
+      HW.push(Math.max(0.45,baseW[w.role]*(0.3+0.7*env)*SC/0.7*zk/2));
+    }
+    let nx=0, ny=-1;   // normal na tela, pela tangente média (vizinhos)
+    for(let i=0;i<N;i++){ const a=w.pts[Math.max(0,i-1)], b=w.pts[Math.min(N-1,i+1)], dx=b[0]-a[0], dy=b[1]-a[1], l=Math.hypot(dx,dy);
+      if(l>1e-6 && isFinite(l)){ nx=-dy/l; ny=dx/l; } NX.push(nx); NY.push(ny); }
+    const ribbon=(c,e,k,alpha)=>{ ctx.beginPath();
+      for(let i=c;i<=e;i++){ const p=w.pts[i], h=HW[i]*k; i===c?ctx.moveTo(p[0]+NX[i]*h,p[1]+NY[i]*h):ctx.lineTo(p[0]+NX[i]*h,p[1]+NY[i]*h); }
+      for(let i=e;i>=c;i--){ const p=w.pts[i], h=HW[i]*k; ctx.lineTo(p[0]-NX[i]*h,p[1]-NY[i]*h); }
+      ctx.closePath(); ctx.fillStyle=col(w.m,alpha); ctx.fill(); };
+    const CH=3;
+    for(let c=0;c<N-1;c+=CH){
+      const e=Math.min(c+CH,N-1); let ok=true; for(let i=c;i<=e;i++) if(!isFinite(w.pts[i][0])){ ok=false; break; }
+      if(!ok) continue;
+      const al=(A[c]+A[e])/2; if(al<0.02) continue;
+      if(L.brilho && NOW-(w.ts[c]+w.ts[e])/2<1.5) ribbon(c,e,3.2,al*0.16);
+      ribbon(c,e,1,al);
     }
   });
 
