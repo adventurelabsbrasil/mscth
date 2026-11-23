@@ -19,6 +19,9 @@ Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https:
 - **Painéis ⚙ e ⤓ por cima do quadro da teia.**
 
 ### added (túnel)
+- **Braço do violão** (aba no quadro do piano roll): afinação padrão, 15 trastes, digitação mais provável (janela de 4 trastes + cordas soltas, perto da pestana), outras posições como círculos vazios, clique toca no modo ao vivo. Mi maior, Dó maior e Sol maior saem nas formas abertas.
+- **Piano roll e braço juntos** (liga/desliga independentes), **19 casas**, **trava de posição** (auto ou casa 1–15) e **guitarra MIDI** (1 canal por corda = corda exata). A forma do acorde sai das notas ouvidas: Dm aberto, pestana na 5ª ou forma de E na 10ª.
+- **Afinador** (com o microfone): nota, Hz, régua de cents com verde/amarelo/vermelho e gráfico da altura nos últimos 5 s. Detector de uma nota só por autocorrelação (McLeod); voz sintética a +12 cents medida em +11,4.
 - **Microfone** (🎤, no modo ao vivo): ouve piano, violão ou voz e desenha no túnel, aproximado. Energia por nota + soma de harmônicos, subtraindo só a parte esperada dos harmônicos (a oitava de cima que sobra é nota de verdade); espera o estalo do ataque passar; notas do microfone ficam mudas no app. Validado com violão sintético: Mi maior de 6 cordas e Dó maior de 5 cordas exatos.
 - **Vista órbita** (⟳): a câmera dá a volta completa no sistema, por cima e por baixo do túnel.
 - **Tocar ao vivo** (`🎹` no seletor, ou `tunel.html#aovivo`): o usuário toca e o túnel desenha na hora. Teclado do computador (A W S E D F T G Y H U J K, Z/X oitava, espaço = pedal), teclado MIDI de verdade via Web MIDI (força da nota e pedal) ou clique no piano roll. Acorde, grau e tom detectados enquanto toca; a teia se tece junto; o piano roll mostra as notas subindo; o improviso pode ser exportado como escultura.
