@@ -1,0 +1,46 @@
+# túnel do tempo
+
+Página `tunel.html` (link na seção 11). Nasceu de uma pergunta: a onda de uma nota, que a gente desenha em 2D, poderia virar uma espiral em 3D?
+
+## a ideia em uma frase
+
+O piano circular da seção 11 (ângulo = nota, raio = oitava) **anda no tempo** e gira devagar. Cada nota que soa deixa um fio no espaço. A música vira um túnel desenhado.
+
+## decisões
+
+| tema | decisão | por quê |
+|---|---|---|
+| eixo do tempo | horizontal, separado da altura | o mockup "tempo = ângulo" perdia a nota no ângulo; com o tempo num eixo próprio, de frente é o piano circular e de lado é uma partitura |
+| espiral | vem do giro da cabeça (voltas por compasso) | uma hélice vista de lado **é** uma senoide; não precisa desenhar a onda por cima |
+| ondinha no fio | removida | a frequência já aparece 3 vezes (ângulo, raio, cor); o decaimento foi para espessura e brilho |
+| cor | cor da luz da nota (mesma função da seção 11) | física, não convenção: a nota sobe ~40 oitavas e cai na luz visível |
+| cor do acorde | fundamental; menor puxa 40% pra cor da 3ª menor, mais escuro e tracejado | maior e menor da mesma fundamental ficam parentes, mas distinguíveis |
+| acorde | janela harmônica alinhada ao compasso, casamento de modelo (Pardo & Birmingham) | em música arpejada (Für Elise) quase nunca há duas notas soando juntas |
+| tom | Krumhansl-Kessler pela duração, ou escolhido | grau e grafia (B♭, não A♯) dependem do tom |
+| melodia/baixo | pela trilha do MIDI (mais aguda / mais grave); sem trilhas, pela altura | mão direita e mão esquerda são o que o arquivo já sabe |
+| pedal | virtual e opcional (até o fim do compasso) | o MIDI de Für Elise não tem pedal; sem ele as semicolcheias viram confete |
+
+## o que já existe parecido (busca rápida, 2026-11-23)
+
+- Hélice de altura: Drobisch (1855), Shepard (1964). É a vista 3D da seção 11.
+- Spiral Array, Elaine Chew (MIT, 2000): hélices aninhadas de notas, acordes e tons. Harmonia, sem rastro no tempo.
+- Helical Keyboard, Herder & Cohen (Aizu, 1996/2002): teclado em hélice 3D animado por MIDI, com polígonos de acorde. É o primo mais próximo.
+- Music Animation Machine, Stephen Malinowski (1985–): piano roll 2D colorido pelo círculo das quintas.
+- Pôster de visualização MIDI da Univ. de Minnesota: cilindros ao longo de um eixo de tempo. **Não lido** (o site bloqueia download); ler antes de chamar o túnel de inédito.
+
+O que não apareceu junto em nenhum: cor física da nota, cabeça girando e andando no tempo, passado apagando, decaimento como espessura, teia acumulada.
+
+## ganchos de teste (no endereço)
+
+`#furelise` carrega o exemplo · `#t=12.5` pula para o tempo · `#view=viagem|frente|lado` · `#pedal` · `#panel` abre as camadas · `#midi=arquivo.mid` carrega um MIDI servido ao lado (precisa de servidor, não abre em `file://`).
+
+## limites conhecidos
+
+- Só o primeiro andamento do MIDI vale; mudanças de tempo no meio são ignoradas.
+- Acordes com 9ª/11ª/13ª saem como a tétrade-base; nota de passagem às vezes vira acorde (`Asus4`, `Am7/C` na seção B de Für Elise).
+- Desempenho não medido em máquina fraca; o desenho evita `shadowBlur` por segmento, que era o gargalo.
+
+## ideias estacionadas
+
+- Molas de consonância (zoom): cada fio com uma mola na frequência real, para ver quinta (3:2) e trítono se realinhando ou não.
+- Coleção de teias: tocar peças inteiras e salvar o PNG de cada uma, lado a lado.
