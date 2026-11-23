@@ -30,6 +30,18 @@ O piano circular da seção 11 (ângulo = nota, raio = oitava) **anda no tempo**
 
 O que não apareceu junto em nenhum: cor física da nota, cabeça girando e andando no tempo, passado apagando, decaimento como espessura, teia acumulada.
 
+## forma do cone
+
+Três mapeamentos de altura → raio, escolhíveis no ⚙ (com `?`):
+
+| forma | raio | grave ÷ agudo (A0–C8) | serve pra |
+|---|---|---|---|
+| ouvido | linear no semitom | 4,5× | acompanhar a música (padrão) |
+| Kepler | f^−2/3 (seção 13) | ≈ 28× | ligar com as órbitas; corneta suave |
+| ar | 1/f (comprimento de onda) | 152× | a escultura física; a melodia some no centro |
+
+A escala padrão é o piano inteiro, para que uma oitava tenha o mesmo tamanho em qualquer música. A comparação foi validada numa imagem com Für Elise antes de codar.
+
 ## exportar a escultura
 
 | formato | o que é |
