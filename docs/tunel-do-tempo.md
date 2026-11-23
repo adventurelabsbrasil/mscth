@@ -52,9 +52,17 @@ A escala padrão é o piano inteiro, para que uma oitava tenha o mesmo tamanho e
 
 A teia é normalizada pelo tamanho da música: um polígono por troca de acorde e fios mais tênues quando há muitas notas; sem isso, uma peça de 150 tempos vira um borrão branco.
 
+## exemplos embutidos
+
+- **Prelúdio em Dó, BWV 846** (Bach), padrão: um acorde arpejado por compasso, a melhor vitrine da harmonia. O detector acerta a progressão conhecida.
+- **Für Elise, WoO 59** (Beethoven): arpejos rápidos, modulação para Fá na seção B.
+- Exemplo curto C7M–Am–F–G7.
+
+Os MIDIs são do Mutopia Project, marcados como domínio público, embutidos em base64 (`tunel/*.js`).
+
 ## ganchos de teste (no endereço)
 
-`#furelise` carrega o exemplo · `#t=12.5` pula para o tempo · `#view=viagem|frente|lado` · `#pedal` · `#panel` abre as camadas · `#midi=arquivo.mid` carrega um MIDI servido ao lado (precisa de servidor, não abre em `file://`).
+`#furelise` ou `#demo` trocam o exemplo (sem nada, abre Bach) · `#t=12.5` pula para o tempo · `#view=viagem|frente|lado` · `#pedal` · `#panel` abre as camadas · `#midi=arquivo.mid` carrega um MIDI servido ao lado (precisa de servidor, não abre em `file://`).
 
 ## limites conhecidos
 
