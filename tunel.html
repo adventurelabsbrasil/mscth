@@ -62,7 +62,7 @@
   <button id="front">vista: lado</button>
   <button id="snd" class="on">som ligado</button>
   <button id="up">📂 subir MIDI</button><input id="file" type="file" accept=".mid,.midi,audio/midi" hidden>
-  <select id="song" title="música"><option value="demo">exemplo: C7M – Am – F – G7</option><option value="furelise">Für Elise · Beethoven</option><option value="file" hidden>seu MIDI</option></select>
+  <select id="song" title="música"><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option></select>
   <span id="fname"></span>
   <button id="gear">⚙ camadas</button>
   <button id="expBtn">⤓ exportar</button>
@@ -92,6 +92,7 @@
 <div id="hint">arraste pra girar a câmera · ângulo = nota · raio = oitava · fio = duração · espessura e brilho = o som morrendo</div>
 <script src="tunel/midi-parse.js"></script>
 <script src="tunel/fur-elise.js"></script>
+<script src="tunel/bach-prelude.js"></script>
 <script>
 // ================= cor da nota = cor da luz (mesma função do mscth) =================
 function noteLightNm(pc){ let f=440*Math.pow(2,(pc-9)/12); while(f<400e12) f*=2; while(f>=800e12) f/=2; return 299792458/f*1e9; }
@@ -378,12 +379,18 @@ function loadDemo(){
   BASE_RAW=DEMO.map(n=>n.slice()); LOOP=16; BPB=4; OFFSET=0; LOW=36; HIGH=84; polyGain=1;
   $('bpm').value=84; $('bpm').oninput(); st.now=0; schedUntil=0; afterLoad(); $('fname').textContent=''; SONG='exemplo C7M-Am-F-G7';
 }
-function loadFurElise(){
-  const bin=atob(FUR_ELISE.b64), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
-  return loadMidi({name:'Für Elise · MIDI: Mutopia Project (domínio público)',arrayBuffer:()=>Promise.resolve(u.buffer)}).then(()=>{ SONG='fur-elise'; });
+// exemplos embutidos (MIDI do Mutopia Project, domínio público)
+const EXAMPLES={
+  bach:{data:()=>window.BACH_PRELUDE, label:'Prelúdio em Dó, BWV 846 · J. S. Bach · MIDI: Mutopia Project (domínio público)', slug:'bach-preludio-bwv846'},
+  furelise:{data:()=>window.FUR_ELISE, label:'Für Elise, WoO 59 · Beethoven · MIDI: Mutopia Project (domínio público)', slug:'fur-elise'} };
+function loadExample(id){
+  const ex=EXAMPLES[id], bin=atob(ex.data().b64), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+  return loadMidi({name:ex.label,arrayBuffer:()=>Promise.resolve(u.buffer)}).then(()=>{ SONG=ex.slug; });
 }
-$('song').onchange=()=>{ if($('song').value==='furelise') loadFurElise(); else loadDemo(); };
-if(/furelise|embed/.test(location.hash)){ $('song').value='furelise'; loadFurElise().then(()=>{ if(!isNaN(hashT)) st.now=hashT; }); }
+const loadFurElise=()=>loadExample('furelise');
+$('song').onchange=()=>{ const v=$('song').value; if(EXAMPLES[v]) loadExample(v); else if(v==='demo') loadDemo(); };
+{ const want=/furelise|embed/.test(location.hash)?'furelise':/demo/.test(location.hash)?'demo':'bach';   // padrão: Bach
+  $('song').value=want; if(want==='demo') loadDemo(); else loadExample(want).then(()=>{ if(!isNaN(hashT)) st.now=hashT; }); }
 
 
 // ================= quadros 2D =================
