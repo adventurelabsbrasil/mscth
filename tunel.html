@@ -64,6 +64,7 @@
   <button id="up">📂 subir MIDI</button><input id="file" type="file" accept=".mid,.midi,audio/midi" hidden>
   <select id="song" title="música"><option value="live">🎹 tocar ao vivo</option><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option></select>
   <button id="midiIn" hidden title="usar um teclado MIDI ligado no computador">🎹 conectar teclado MIDI</button>
+  <button id="micIn" hidden title="ouvir um piano, violão ou voz pelo microfone e desenhar no túnel (aproximado)">🎤 microfone</button>
   <span id="fname"></span>
   <button id="gear">⚙ camadas</button>
   <button id="expBtn">⤓ exportar</button>
@@ -307,9 +308,9 @@ bind('giro','omega',v=>v===0?'parado':(v===1?'1 volta/comp.':v+' volta/comp.'));
 bind('mem','mem',v=>v+' tempos');
 bind('bpm','bpm',v=>v+' bpm');
 $('cam').onclick=()=>{ st.follow=!st.follow; $('cam').textContent=st.follow?'câmera segue':'câmera fixa'; $('cam').classList.toggle('on',st.follow); };
-const VIEWS={lado:{yaw:-0.42,pitch:0.32,label:'vista: lado'},frente:{yaw:1.5707,pitch:0.12,label:'vista: frente'},viagem:{yaw:-1.5707,pitch:0.0001,label:'vista: viagem ✈'}};
+const VIEWS={lado:{yaw:-0.42,pitch:0.32,label:'vista: lado'},frente:{yaw:1.5707,pitch:0.12,label:'vista: frente'},viagem:{yaw:-1.5707,pitch:0.0001,label:'vista: viagem ✈'},orbita:{yaw:-0.42,pitch:0.3,label:'vista: órbita ⟳'}};
 function setView(v){ st.view=v; st.yaw=VIEWS[v].yaw; st.pitch=VIEWS[v].pitch; $('front').textContent=VIEWS[v].label; $('front').classList.toggle('on',v!=='lado'); }
-$('front').onclick=()=>{ const order=['lado','frente','viagem']; setView(order[(order.indexOf(st.view)+1)%3]); };
+$('front').onclick=()=>{ const order=['lado','frente','viagem','orbita']; setView(order[(order.indexOf(st.view)+1)%order.length]); };
 { const hv=(location.hash.match(/view=(\w+)/)||[])[1]; if(hv&&VIEWS[hv]) setView(hv); }
 $('snd').onclick=()=>{ st.sound=!st.sound; $('snd').textContent=st.sound?'som ligado':'som desligado'; $('snd').classList.toggle('on',st.sound); };
 $('gear').onclick=()=>{ $('exp').classList.remove('open'); $('expBtn').classList.remove('on'); $('panel').classList.toggle('open'); $('gear').classList.toggle('on'); };
@@ -613,17 +614,17 @@ function startLive(){
   LIVE=true; BASE_RAW=[]; BASE=BASE_RAW; TL=[]; LOOP=1e9; BPB=4; OFFSET=0; LOW=36; HIGH=96; MAXD=0.05; polyGain=1;
   st.now=0; schedUntil=0; KEY={tonic:0,mode:'maior'}; THREADK={melodia:1,baixo:1}; SONG='improviso-ao-vivo';
   if(window.artReady) artClear(); buildPanel();
-  $('midiIn').hidden=false; $('fname').textContent='toque: A W S E D F T G Y H U J K · Z/X oitava · espaço = pedal · ou clique no piano';
+  $('midiIn').hidden=false; $('micIn').hidden=false; $('fname').textContent='toque: 1 … / são as brancas (T = dó central) · Caps Lock ou Shift = pretas · ↑↓ oitava · espaço = pedal';
   setPlaying(true);
 }
-function stopLive(){ if(!LIVE) return; Object.keys(HELD).forEach(k=>liveOff(+k,true)); LIVE=false; SUSTAIN=false; SUSTAINED.clear(); $('midiIn').hidden=true; }
-function liveOn(m,vel){
+function stopLive(){ if(!LIVE) return; micStop(); Object.keys(HELD).forEach(k=>liveOff(+k,true)); LIVE=false; SUSTAIN=false; SUSTAINED.clear(); $('midiIn').hidden=true; $('micIn').hidden=true; }
+function liveOn(m,vel,silent){
   if(!LIVE || HELD[m] || m<21 || m>108) return;
   if(ac && ac.state==='suspended') ac.resume();
   if(!st.playing) setPlaying(true);
   if(SUSTAINED.has(m)){ endNote(m); }                       // tecla re-atacada com o pedal: fecha a anterior
   const note=[m, st.now, 0.05, liveRole(m), vel]; BASE_RAW.push(note);
-  HELD[m]={note, vc:liveVoiceStart(m,vel)};
+  HELD[m]={note, vc:silent?null:liveVoiceStart(m,vel), mic:!!silent};
   if(m<LOW+1) LOW=Math.max(21,m-1); if(m>HIGH-1) HIGH=Math.min(108,m+1);
 }
 function endNote(m){ const h=HELD[m]; if(!h) return; h.note[2]=Math.max(0.05,st.now-h.note[1]); liveVoiceStop(h.vc); delete HELD[m]; SUSTAINED.delete(m); }
@@ -639,18 +640,30 @@ function liveUpdate(NOW){
   if(keyAuto && BASE_RAW.length>6 && NOW-liveKeyTick>4){ liveKeyTick=NOW; KEY=detectKey(); }
 }
 // teclado do computador: uma oitava e meia, a partir do Dó central
-const KB='awsedftgyhujkolp;'; const KEYNOTE={};   // tecla → nota tocada (soltar acha a nota certa mesmo se a oitava mudou)
+// teclado do computador = o mesmo do app: 46 teclas brancas pela posição física (QWERTY e ABNT2),
+// do 1 (A1) ao . (C8), com o T no Dó central; Caps Lock ligado ou Shift segurado = a preta à direita
+const KB_CODES=['Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0','Minus','Equal',
+  'KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP','BracketLeft','BracketRight','Backslash',
+  'KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL','Semicolon','Quote',
+  'KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash'];
+const KB_STEPS=[0,2,4,5,7,9,11];
+const kbWhite=i=>{ const j=i+5; return 24+Math.floor(j/7)*12+KB_STEPS[j%7]; };   // índice 0 = A1 (5ª branca a partir de C1)
+const KEYNOTE={};   // tecla → nota tocada (soltar acha a nota certa mesmo se a oitava mudou)
 addEventListener('keydown',e=>{
   if(!LIVE || e.metaKey || e.ctrlKey || e.altKey || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
   if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) setSustain(true); return; }
-  const k=e.key.toLowerCase();
-  if(k==='z'){ kbOct=Math.max(-3,kbOct-1); return; } if(k==='x'){ kbOct=Math.min(3,kbOct+1); return; }
-  const i=KB.indexOf(k); if(i<0||e.repeat) return; e.preventDefault(); const m=60+12*kbOct+i; KEYNOTE[k]=m; liveOn(m,0.75);
+  if(e.key==='ArrowUp'){ e.preventDefault(); kbOct=Math.min(2,kbOct+1); return; }
+  if(e.key==='ArrowDown'){ e.preventDefault(); kbOct=Math.max(-2,kbOct-1); return; }
+  const i=KB_CODES.indexOf(e.code); if(i<0||e.repeat||KEYNOTE[e.code]!=null) return;
+  let m=kbWhite(i); const black=e.shiftKey||(e.getModifierState&&e.getModifierState('CapsLock'));
+  if(black){ if([4,11].includes(m%12)) return; m+=1; }                  // E e B não têm preta à direita
+  m+=12*kbOct; if(m<21||m>108) return;
+  e.preventDefault(); KEYNOTE[e.code]=m; liveOn(m,0.75);
 });
 addEventListener('keyup',e=>{
   if(!LIVE) return;
   if(e.code==='Space'){ setSustain(false); return; }
-  const k=e.key.toLowerCase(); if(KEYNOTE[k]!=null){ liveOff(KEYNOTE[k]); delete KEYNOTE[k]; }
+  if(KEYNOTE[e.code]!=null){ liveOff(KEYNOTE[e.code]); delete KEYNOTE[e.code]; }
 });
 // clique/toque no teclado do piano roll
 let rollDown=null;
@@ -669,6 +682,78 @@ $('midiIn').onclick=()=>{
   navigator.requestMIDIAccess().then(acc=>{ midiAccess=acc; bindMidiInputs(); acc.onstatechange=bindMidiInputs; })
     .catch(()=>{ $('midiIn').textContent='🎹 acesso ao MIDI negado'; });
 };
+
+
+// ================= microfone: ouvir piano, violão ou voz e desenhar no túnel (aproximado) =================
+// espectro (FFT 16384) → energia de cada nota → soma dos harmônicos acha as fundamentais → até 6 notas.
+// o som do app fica mudo pras notas do microfone (senão ele se ouviria). acorde de violão sai aproximado:
+// pode sobrar um harmônico ou faltar uma nota; uma nota por vez é bem mais fiel.
+let mic=null; window.__micLog=[];
+async function micStart(){
+  initAudio(); if(ac.state==='suspended') await ac.resume();
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ $('micIn').textContent='🎤 sem acesso ao microfone neste navegador'; return; }
+  let stream;
+  try{ stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}); }
+  catch(e){ $('micIn').textContent='🎤 microfone negado'; return; }
+  const src=ac.createMediaStreamSource(stream), an=ac.createAnalyser(), an2=ac.createAnalyser();
+  an.fftSize=16384; an.smoothingTimeConstant=0; an2.fftSize=2048; src.connect(an); src.connect(an2);   // não liga na saída: sem eco
+  mic={stream,an,an2,spec:new Float32Array(an.frequencyBinCount),td:new Float32Array(2048),sr:ac.sampleRate,cal:[],floor:null,seen:{},miss:{},prevRms:0};
+  mic.timer=setInterval(micTick,40);
+  if(!st.playing) setPlaying(true);
+  $('micIn').classList.add('on'); $('micIn').textContent='🎤 calibrando… (silêncio 1 s)';
+}
+function micStop(){ if(!mic) return; clearInterval(mic.timer); mic.stream.getTracks().forEach(t=>t.stop());
+  Object.keys(HELD).forEach(k=>{ if(HELD[k].mic) endNote(+k); }); mic=null; $('micIn').classList.remove('on'); $('micIn').textContent='🎤 microfone'; }
+$('micIn').onclick=()=>{ if(mic) micStop(); else micStart(); };
+// teste: #aovivo&mictest liga o microfone sozinho e, depois de 10 s, resume no título o que ouviu
+if(/mictest/.test(location.hash)) setTimeout(()=>{ micStart(); setTimeout(()=>{ const seg=[]; let last='';
+  window.__micLog.forEach(r=>{ if(r.notas!==last){ seg.push(r.t+':'+(r.notas||'-')); last=r.notas; } });
+  const tl=TL.map(x=>x.name).join(' > '); document.title='MIC|'+seg.join(' ; ')+'|ACORDES|'+tl; },10500); },300);
+function micTick(){
+  if(!mic||!LIVE) return;
+  mic.an2.getFloatTimeDomainData(mic.td); let rms=0; for(const x of mic.td) rms+=x*x; rms=Math.sqrt(rms/mic.td.length);
+  if(mic.floor==null){ mic.cal.push(rms); if(mic.cal.length<30) return;   // ~1,2 s de calibração do ruído
+    const c=mic.cal.slice().sort((a,b)=>a-b); mic.floor=Math.max(0.002,c[c.length>>1]*2); }
+  const micHeld=()=>Object.keys(HELD).filter(k=>HELD[k].mic).map(Number);
+  if(rms<mic.floor*1.6){ micHeld().forEach(m=>endNote(m)); mic.seen={}; mic.prevRms=rms; $('micIn').textContent='🎤 ouvindo…'; return; }
+  mic.an.getFloatFrequencyData(mic.spec);
+  const sr=mic.sr, N=mic.an.fftSize, spec=mic.spec;
+  const magAt=(f,tol)=>{ const a=Math.max(1,Math.floor(f*Math.pow(2,-tol/12)*N/sr)), b=Math.min(spec.length-1,Math.ceil(f*Math.pow(2,tol/12)*N/sr)); let mx=0;
+    for(let i=a;i<=b;i++){ const v=Math.pow(10,spec[i]/20); if(v>mx) mx=v; } return mx; };
+  // energia de cada nota (C2–E7); depois, nota por nota: escolhe a mais forte com apoio dos harmônicos,
+  // e SUBTRAI dela só a parte esperada dos harmônicos — o que sobrar numa oitava acima é nota de verdade
+  const LOm=36, HIm=100, E={}; let maxE=0;
+  for(let m=LOm-1;m<=HIm+1;m++){ E[m]=magAt(freq(m),0.45); if(m>=LOm&&m<=HIm&&E[m]>maxE) maxE=E[m]; }
+  const R=Object.assign({},E), HW=[0,1,0.6,0.4,0.32,0.25,0.2], hk=h=>Math.round(12*Math.log2(h));
+  const found=[];
+  for(let it=0; it<6; it++){
+    let best=null, bs=0;
+    for(let m=LOm;m<=HIm;m++){
+      const r=R[m]; if(!(r>=0.12*maxE)) continue;
+      if(r<(R[m-1]||0) || r<(R[m+1]||0)) continue;                 // tem que ser um pico (o estalo do ataque não é)
+      let sc=r; for(let h=2;h<=6;h++){ const k=m+hk(h); if(R[k]!=null) sc+=Math.min(R[k],r*1.5)*HW[h]*0.5; }
+      if(sc>bs){ bs=sc; best=m; }
+    }
+    if(best==null) break;
+    found.push(best); const A=R[best];
+    R[best]=0; R[best-1]=0; R[best+1]=0;
+    for(let h=2;h<=6;h++){ const k=best+hk(h); if(R[k]!=null) R[k]=Math.max(0,R[k]-A*HW[h]);
+      [k-1,k+1].forEach(j=>{ if(R[j]!=null) R[j]=Math.max(0,R[j]-A*HW[h]*0.5); }); }   // o harmônico vaza pras vizinhas
+  }
+  // liga depois de 2 leituras seguidas (~80 ms), desliga depois de 3 faltas; ataque forte reinicia as notas
+  const attack=rms>mic.prevRms*1.8 && rms>mic.floor*3; mic.prevRms=rms;
+  if(attack) mic.hold=6;                                            // ~0,25 s: a janela ainda tem o estalo do ataque
+  const holding=(mic.hold||0)>0; if(holding) mic.hold--;
+  const fs=new Set(found);
+  fs.forEach(m=>{ mic.seen[m]=(mic.seen[m]||0)+1; mic.miss[m]=0; });
+  micHeld().forEach(m=>{ if(!fs.has(m)){ mic.miss[m]=(mic.miss[m]||0)+1; if(mic.miss[m]>=3){ endNote(m); mic.seen[m]=0; } } else if(attack){ endNote(m); } });
+  Object.keys(mic.seen).forEach(k=>{ if(!fs.has(+k)) mic.seen[k]=0; });
+  const vel=Math.max(0.2,Math.min(1,rms*10));
+  if(!holding) fs.forEach(m=>{ if(mic.seen[m]>=3 && !HELD[m]) liveOn(m,vel,true); });
+  const names=micHeld().sort((a,b)=>a-b).map(m=>nm(m%12)+(Math.floor(m/12)-1));
+  $('micIn').textContent='🎤 '+(names.length?names.join(' '):'ouvindo…');
+  window.__micLog.push({t:+st.now.toFixed(2),notas:names.join(' ')});
+}
 
 // ================= câmera =================
 let drag=null;
@@ -689,7 +774,11 @@ function frame(ts){
   scheduleAudio();
   if(LIVE) liveUpdate(st.now);
   const NOW=st.now, from=NOW-st.mem;
-  const SC=Math.min(W/1500,H/900), SX=46, RMAX=190, RMIN=42;
+  const ORB=st.view==='orbita';
+  if(ORB && !drag){   // órbita: a câmera dá a volta completa em 40 s e sobe e desce devagar (por cima e por baixo do túnel)
+    frame.orbT=(frame.orbT||0)+dt; st.yaw+=dt*2*Math.PI/40; st.pitch=0.25+0.75*Math.sin(frame.orbT*2*Math.PI/55); }
+  const SC=Math.min(W/1500,H/900)*(ORB?0.78:1), SX=46, RMAX=190, RMIN=42;
+  const PIV=ORB?st.mem*SX/2:0;   // órbita gira em volta do meio do túnel, não da cabeça
   const CX=(st.follow&&st.view==='lado')?W*0.68:W*0.5, CY=H*0.52;
   const FC=st.view==='viagem'?330:1800;   // distância da câmera: na viagem ela fica dentro do túnel, logo atrás da cabeça
   const headX=st.follow?0:(((NOW%LOOP)/LOOP)-0.5)*Math.min(LOOP,32)*SX*0.9;
@@ -698,7 +787,7 @@ function frame(ts){
   const cone=m=>coneFrac(m)*40;
   const om=st.omega*2*Math.PI/BPB;
   const ang=(m,t)=>-Math.PI/2+(m%12)/12*2*Math.PI+om*t;
-  const P=(x,y,z)=>{ const x1=x*cy-z*sy, z1=x*sy+z*cy; const y2=y*cp-z1*sp, z2=y*sp+z1*cp; const den=FC-z2; if(den<28) return [NaN,NaN,z2]; const k=FC/den; return [CX+x1*k*SC, CY-y2*k*SC, z2]; };
+  const P=(x,y,z)=>{ x+=PIV; const x1=x*cy-z*sy, z1=x*sy+z*cy; const y2=y*cp-z1*sp, z2=y*sp+z1*cp; const den=FC-z2; if(den<28) return [NaN,NaN,z2]; const k=FC/den; return [CX+x1*k*SC, CY-y2*k*SC, z2]; };
   const pt=(m,t)=>{ const r=rOf(m), a=ang(m,t); return P((t-NOW)*SX+headX+cone(m), -r*Math.sin(a), r*Math.cos(a)); };
   const headPt=(r,a,x)=>P(headX+x, -r*Math.sin(a), r*Math.cos(a));
   const fadeAt=t=>Math.max(0,1-(NOW-t)/st.mem);

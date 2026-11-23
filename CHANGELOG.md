@@ -19,9 +19,12 @@ Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https:
 - **Painéis ⚙ e ⤓ por cima do quadro da teia.**
 
 ### added (túnel)
+- **Microfone** (🎤, no modo ao vivo): ouve piano, violão ou voz e desenha no túnel, aproximado. Energia por nota + soma de harmônicos, subtraindo só a parte esperada dos harmônicos (a oitava de cima que sobra é nota de verdade); espera o estalo do ataque passar; notas do microfone ficam mudas no app. Validado com violão sintético: Mi maior de 6 cordas e Dó maior de 5 cordas exatos.
+- **Vista órbita** (⟳): a câmera dá a volta completa no sistema, por cima e por baixo do túnel.
 - **Tocar ao vivo** (`🎹` no seletor, ou `tunel.html#aovivo`): o usuário toca e o túnel desenha na hora. Teclado do computador (A W S E D F T G Y H U J K, Z/X oitava, espaço = pedal), teclado MIDI de verdade via Web MIDI (força da nota e pedal) ou clique no piano roll. Acorde, grau e tom detectados enquanto toca; a teia se tece junto; o piano roll mostra as notas subindo; o improviso pode ser exportado como escultura.
 
 ### changed
+- **Teclado do computador com 46 teclas brancas** (app e túnel): `1234567890-=` `qwertyuiop[]\` `asdfghjkl;'` `zxcvbnm,./`, do A1 ao C8, T continua no dó central; **Caps Lock ligado** ou Shift = pretas.
 - **Túnel abre com o Prelúdio em Dó de Bach (BWV 846)**: um acorde arpejado por compasso, a progressão inteira aparece no eixo (`C · Dm7/C · G7/B · C · Am/C · D7/C · G/B · C7M/B…`). Für Elise e o exemplo curto continuam no seletor. MIDI do Mutopia Project, domínio público.
 - **Entrada pelo topo do app**: `túnel do tempo ↗` ao lado de "como funciona", além do link na seção 11.
 - **Forma do cone escolhível** (⚙, com `?` explicando cada uma): *ouvido* (igual a cada semitom, padrão, 4,5×), *Kepler* (r ∝ f^−2/3, a lei da seção 13, ≈ 28×) e *ar* (comprimento de onda: A0 = 12,5 m, C8 = 8 cm, 152×). Escala *piano inteiro* (A0–C8, padrão, para comparar esculturas) ou *ajustar à música*. Vale para túnel, teia e exportações.
