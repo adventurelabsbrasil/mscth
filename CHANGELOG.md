@@ -18,6 +18,9 @@ Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https:
 - **Teia não satura em música longa**: um polígono por troca de acorde (intensidade pela duração) e fios mais tênues quando há muitas notas.
 - **Painéis ⚙ e ⤓ por cima do quadro da teia.**
 
+### added (túnel)
+- **Tocar ao vivo** (`🎹` no seletor, ou `tunel.html#aovivo`): o usuário toca e o túnel desenha na hora. Teclado do computador (A W S E D F T G Y H U J K, Z/X oitava, espaço = pedal), teclado MIDI de verdade via Web MIDI (força da nota e pedal) ou clique no piano roll. Acorde, grau e tom detectados enquanto toca; a teia se tece junto; o piano roll mostra as notas subindo; o improviso pode ser exportado como escultura.
+
 ### changed
 - **Túnel abre com o Prelúdio em Dó de Bach (BWV 846)**: um acorde arpejado por compasso, a progressão inteira aparece no eixo (`C · Dm7/C · G7/B · C · Am/C · D7/C · G/B · C7M/B…`). Für Elise e o exemplo curto continuam no seletor. MIDI do Mutopia Project, domínio público.
 - **Entrada pelo topo do app**: `túnel do tempo ↗` ao lado de "como funciona", além do link na seção 11.

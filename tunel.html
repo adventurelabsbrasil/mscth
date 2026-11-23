@@ -62,7 +62,8 @@
   <button id="front">vista: lado</button>
   <button id="snd" class="on">som ligado</button>
   <button id="up">📂 subir MIDI</button><input id="file" type="file" accept=".mid,.midi,audio/midi" hidden>
-  <select id="song" title="música"><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option></select>
+  <select id="song" title="música"><option value="live">🎹 tocar ao vivo</option><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option></select>
+  <button id="midiIn" hidden title="usar um teclado MIDI ligado no computador">🎹 conectar teclado MIDI</button>
   <span id="fname"></span>
   <button id="gear">⚙ camadas</button>
   <button id="expBtn">⤓ exportar</button>
@@ -120,7 +121,9 @@ let LOOP=16, BASE=[], BASE_RAW=[], MAXD=4, LOW=36, HIGH=84, BPB=4, OFFSET=0;
 })();
 const DEMO=BASE_RAW.map(n=>n.slice());
 // pedal virtual: cada nota soa até o fim do seu compasso
+let LIVE=false;
 function applyPedal(){
+  if(LIVE){ BASE=BASE_RAW; return; }
   BASE=BASE_RAW.map(n=>{ const c=n.slice(); if(L.pedal){ const k=Math.floor((n[1]-OFFSET)/BPB+1e-6); const barEnd=OFFSET+(k+1)*BPB; c[2]=Math.max(n[2],barEnd-n[1]); } return c; });
   MAXD=Math.max(...BASE.map(n=>n[2]));
 }
@@ -329,7 +332,7 @@ function voice(m,when,dur,role,vel){
   o.connect(g); g.connect(master); o.start(when); o.stop(end+0.6);
 }
 function scheduleAudio(){
-  if(!ac||!st.playing||!st.sound){ schedUntil=st.now; return; }
+  if(LIVE||!ac||!st.playing||!st.sound){ schedUntil=st.now; return; }
   const ahead=st.now+0.6; if(schedUntil<st.now) schedUntil=st.now;
   notesIn(schedUntil,ahead).forEach(([m,s,d,r,v])=>{ if(s>=schedUntil && s<ahead) voice(m,Math.max(ac.currentTime,ac.currentTime+(s-st.now)*60/st.bpm),d,r,v); });
   schedUntil=ahead;
@@ -345,6 +348,7 @@ function afterLoad(){ if(window.artReady) artClear(); applyPedal(); KEY=keyAuto?
 // forma do acorde para a teia: um polígono por troca de acorde, intensidade pela duração
 const chordPolyA=seg=>({fa:0.035*Math.min(3,seg.t1-seg.t0), sa:0.16});
 function loadMidi(file){
+  stopLive();
   return file.arrayBuffer().then(buf=>{
     const r=parseMidi(buf);
     if(!r.notes.length) throw new Error('nenhuma nota encontrada (só bateria?)');
@@ -376,6 +380,7 @@ if(hm) fetch(hm).then(r=>r.arrayBuffer()).then(buf=>loadMidi({name:hm,arrayBuffe
 afterLoad();
 // músicas embutidas: o exemplo curto e Für Elise (Beethoven, WoO 59 · MIDI do Mutopia Project, domínio público)
 function loadDemo(){
+  stopLive();
   BASE_RAW=DEMO.map(n=>n.slice()); LOOP=16; BPB=4; OFFSET=0; LOW=36; HIGH=84; polyGain=1;
   $('bpm').value=84; $('bpm').oninput(); st.now=0; schedUntil=0; afterLoad(); $('fname').textContent=''; SONG='exemplo C7M-Am-F-G7';
 }
@@ -388,9 +393,10 @@ function loadExample(id){
   return loadMidi({name:ex.label,arrayBuffer:()=>Promise.resolve(u.buffer)}).then(()=>{ SONG=ex.slug; });
 }
 const loadFurElise=()=>loadExample('furelise');
-$('song').onchange=()=>{ const v=$('song').value; if(EXAMPLES[v]) loadExample(v); else if(v==='demo') loadDemo(); };
-{ const want=/furelise|embed/.test(location.hash)?'furelise':/demo/.test(location.hash)?'demo':'bach';   // padrão: Bach
-  $('song').value=want; if(want==='demo') loadDemo(); else loadExample(want).then(()=>{ if(!isNaN(hashT)) st.now=hashT; }); }
+$('song').onchange=()=>{ const v=$('song').value; $('song').blur();   // tira o foco: as letras viram notas, não trocam a opção
+  if(v==='live') startLive(); else if(EXAMPLES[v]) loadExample(v); else if(v==='demo') loadDemo(); };
+{ const want=/furelise|embed/.test(location.hash)?'furelise':/demo/.test(location.hash)?'demo':/aovivo/.test(location.hash)?'live':'bach';   // padrão: Bach
+  $('song').value=want; if(want==='live') setTimeout(startLive,0); else if(want==='demo') loadDemo(); else loadExample(want).then(()=>{ if(!isNaN(hashT)) st.now=hashT; }); }
 
 
 // ================= quadros 2D =================
@@ -446,13 +452,16 @@ function drawRoll(NOW){
   const X=rctx; X.setTransform(dpr,0,0,dpr,0,0);
   X.globalCompositeOperation='source-over'; X.fillStyle='#050506'; X.fillRect(0,0,w,h);
   const lo=Math.max(21,LOW-1), hi=Math.min(108,HIGH+1), n=hi-lo+1, kw=w/n, KH=Math.min(34,h*0.18), top=h-KH;
+  ROLLG={lo,hi,kw,top,w,h};
   const AHEAD=6, PX=top/AHEAD;   // 6 tempos de futuro caindo
   // linhas de compasso
   X.strokeStyle='rgba(255,255,255,0.06)'; X.lineWidth=1;
-  for(let b=Math.ceil((NOW-OFFSET)/BPB)*BPB+OFFSET; b<NOW+AHEAD; b+=BPB){ const y=top-(b-NOW)*PX; X.beginPath(); X.moveTo(0,y); X.lineTo(w,y); X.stroke(); }
+  const dir=LIVE?-1:1;   // ao vivo: o passado sobe; tocando MIDI: o futuro cai
+  for(let b=Math.ceil((NOW-(LIVE?AHEAD:0)-OFFSET)/BPB)*BPB+OFFSET; b<NOW+(LIVE?0:AHEAD); b+=BPB){ const y=top-dir*(b-NOW)*PX; X.beginPath(); X.moveTo(0,y); X.lineTo(w,y); X.stroke(); }
   const FL=0.25*st.bpm/60, lit={};
-  notesIn(NOW-0.01,NOW+AHEAD).forEach(([m,s,d,role,v])=>{ if(!L[role]||m<lo||m>hi) return;
-    const x=(m-lo)*kw, y1=top-(s-NOW)*PX, y0=top-(s+d-NOW)*PX, on=s<=NOW&&s+d>NOW;
+  notesIn(LIVE?NOW-AHEAD:NOW-0.01,LIVE?NOW:NOW+AHEAD).forEach(([m,s,d,role,v])=>{ if(!L[role]||m<lo||m>hi) return;
+    const x=(m-lo)*kw, on=s<=NOW&&s+d>NOW+(LIVE?-1e-9:0)||(LIVE&&HELD[m]&&HELD[m].note[1]===s);
+    let y1=top-(s-NOW)*PX, y0=top-(s+d-NOW)*PX; if(LIVE){ const a=top+(s-NOW)*PX, b=top+(Math.min(s+d,NOW)-NOW)*PX; y0=a; y1=b; }
     X.fillStyle=col(m,on?1:0.75); rrect(X,x+0.5,Math.max(0,y0),Math.max(1,kw-1),Math.min(top,y1)-Math.max(0,y0),Math.min(3,kw/2));
     if(on){ lit[m]={age:NOW-s,v}; }
   });
@@ -586,6 +595,81 @@ document.querySelectorAll('#exp [data-x]').forEach(b=>b.onclick=()=>{ const o=ex
   if(x==='png') teiaPNG(o); else if(x==='svg') teiaSVG(o); else if(x==='obj') sculptOBJ(o); else if(x==='json') exportJSON();
   else if(x==='view') download(slug(SONG)+'-vista.png', cv.toDataURL('image/png')); });
 
+
+// ================= tocar ao vivo: teclado do computador, teclado MIDI ou clique no piano roll =================
+let ROLLG=null; const HELD={}; let SUSTAIN=false; const SUSTAINED=new Set(); let liveKeyTick=0, kbOct=0, midiAccess=null;
+const liveRole=m=>m<48?'baixo':(m>=72?'melodia':'acorde');
+function liveVoiceStart(m,vel){
+  if(!ac||!st.sound) return null;
+  const f=440*Math.pow(2,(m-69)/12), o=ac.createOscillator(), g=ac.createGain(), role=liveRole(m), t=ac.currentTime;
+  o.type=role==='melodia'?'triangle':'sine'; o.frequency.value=f;
+  const peak=(role==='melodia'?0.5:(role==='baixo'?0.55:0.3))*(0.3+0.9*vel);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(peak,t+0.01); g.gain.setTargetAtTime(peak*0.25,t+0.01,DECAY[role]>0.5?0.25:0.9);
+  o.connect(g); g.connect(master); o.start(t); return {o,g};
+}
+function liveVoiceStop(vc){ if(!vc||!ac) return; const t=ac.currentTime; vc.g.gain.cancelScheduledValues(t); vc.g.gain.setTargetAtTime(0,t,0.12); vc.o.stop(t+0.8); }
+function startLive(){
+  initAudio(); if(ac.state==='suspended') ac.resume();
+  LIVE=true; BASE_RAW=[]; BASE=BASE_RAW; TL=[]; LOOP=1e9; BPB=4; OFFSET=0; LOW=36; HIGH=96; MAXD=0.05; polyGain=1;
+  st.now=0; schedUntil=0; KEY={tonic:0,mode:'maior'}; THREADK={melodia:1,baixo:1}; SONG='improviso-ao-vivo';
+  if(window.artReady) artClear(); buildPanel();
+  $('midiIn').hidden=false; $('fname').textContent='toque: A W S E D F T G Y H U J K · Z/X oitava · espaço = pedal · ou clique no piano';
+  setPlaying(true);
+}
+function stopLive(){ if(!LIVE) return; Object.keys(HELD).forEach(k=>liveOff(+k,true)); LIVE=false; SUSTAIN=false; SUSTAINED.clear(); $('midiIn').hidden=true; }
+function liveOn(m,vel){
+  if(!LIVE || HELD[m] || m<21 || m>108) return;
+  if(ac && ac.state==='suspended') ac.resume();
+  if(!st.playing) setPlaying(true);
+  if(SUSTAINED.has(m)){ endNote(m); }                       // tecla re-atacada com o pedal: fecha a anterior
+  const note=[m, st.now, 0.05, liveRole(m), vel]; BASE_RAW.push(note);
+  HELD[m]={note, vc:liveVoiceStart(m,vel)};
+  if(m<LOW+1) LOW=Math.max(21,m-1); if(m>HIGH-1) HIGH=Math.min(108,m+1);
+}
+function endNote(m){ const h=HELD[m]; if(!h) return; h.note[2]=Math.max(0.05,st.now-h.note[1]); liveVoiceStop(h.vc); delete HELD[m]; SUSTAINED.delete(m); }
+function liveOff(m,force){ if(!HELD[m]) return; if(SUSTAIN && !force){ SUSTAINED.add(m); return; } endNote(m); }
+function setSustain(on){ SUSTAIN=on; if(!on){ [...SUSTAINED].forEach(m=>endNote(m)); } }
+function liveUpdate(NOW){
+  const ms=[]; Object.keys(HELD).forEach(k=>{ const h=HELD[k]; h.note[2]=Math.max(0.05,NOW-h.note[1]); if(h.note[2]>MAXD) MAXD=h.note[2]; ms.push(+k); });
+  // acorde do que está soando agora (precisa de 2+ notas diferentes)
+  const ci=chordInfo(ms), name=chordName(ci), last=TL[TL.length-1];
+  if(name){ if(last && last.open && last.name===name){ last.t1=NOW+0.001; last.ms=ms; }
+    else { if(last) last.open=false; TL.push({t0:NOW,t1:NOW+0.001,name,ci,ms,open:true}); } }
+  else if(last && last.open){ last.open=false; }
+  if(keyAuto && BASE_RAW.length>6 && NOW-liveKeyTick>4){ liveKeyTick=NOW; KEY=detectKey(); }
+}
+// teclado do computador: uma oitava e meia, a partir do Dó central
+const KB='awsedftgyhujkolp;'; const KEYNOTE={};   // tecla → nota tocada (soltar acha a nota certa mesmo se a oitava mudou)
+addEventListener('keydown',e=>{
+  if(!LIVE || e.metaKey || e.ctrlKey || e.altKey || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) setSustain(true); return; }
+  const k=e.key.toLowerCase();
+  if(k==='z'){ kbOct=Math.max(-3,kbOct-1); return; } if(k==='x'){ kbOct=Math.min(3,kbOct+1); return; }
+  const i=KB.indexOf(k); if(i<0||e.repeat) return; e.preventDefault(); const m=60+12*kbOct+i; KEYNOTE[k]=m; liveOn(m,0.75);
+});
+addEventListener('keyup',e=>{
+  if(!LIVE) return;
+  if(e.code==='Space'){ setSustain(false); return; }
+  const k=e.key.toLowerCase(); if(KEYNOTE[k]!=null){ liveOff(KEYNOTE[k]); delete KEYNOTE[k]; }
+});
+// clique/toque no teclado do piano roll
+let rollDown=null;
+rollc.addEventListener('pointerdown',e=>{ if(!LIVE||!ROLLG) return; const r=rollc.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+  if(y<ROLLG.top) return; const m=Math.floor(x/ROLLG.kw)+ROLLG.lo; rollDown=m; rollc.setPointerCapture(e.pointerId); liveOn(m,0.75); });
+rollc.addEventListener('pointerup',()=>{ if(rollDown!=null){ liveOff(rollDown); rollDown=null; } });
+rollc.addEventListener('pointercancel',()=>{ if(rollDown!=null){ liveOff(rollDown); rollDown=null; } });
+// teclado MIDI de verdade (Web MIDI)
+function onMidiMsg(ev){ const [st0,d1,d2]=ev.data, t=st0&0xf0;
+  if(t===0x90 && d2>0) liveOn(d1,d2/127); else if(t===0x80 || (t===0x90 && d2===0)) liveOff(d1);
+  else if(t===0xB0 && d1===64) setSustain(d2>=64); }
+function bindMidiInputs(){ const names=[]; midiAccess.inputs.forEach(inp=>{ inp.onmidimessage=onMidiMsg; names.push(inp.name); });
+  $('midiIn').textContent=names.length?'🎹 '+names.join(', '):'🎹 nenhum teclado MIDI encontrado'; }
+$('midiIn').onclick=()=>{
+  if(!navigator.requestMIDIAccess){ $('midiIn').textContent='🎹 este navegador não tem Web MIDI (use Chrome ou Edge)'; return; }
+  navigator.requestMIDIAccess().then(acc=>{ midiAccess=acc; bindMidiInputs(); acc.onstatechange=bindMidiInputs; })
+    .catch(()=>{ $('midiIn').textContent='🎹 acesso ao MIDI negado'; });
+};
+
 // ================= câmera =================
 let drag=null;
 const cv=$('cv'), ctx=cv.getContext('2d');
@@ -603,6 +687,7 @@ function frame(ts){
   const dt=Math.min(0.1,(ts-frame.last)/1000); frame.last=ts;
   if(st.playing) st.now+=dt*st.bpm/60;
   scheduleAudio();
+  if(LIVE) liveUpdate(st.now);
   const NOW=st.now, from=NOW-st.mem;
   const SC=Math.min(W/1500,H/900), SX=46, RMAX=190, RMIN=42;
   const CX=(st.follow&&st.view==='lado')?W*0.68:W*0.5, CY=H*0.52;

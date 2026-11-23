@@ -60,6 +60,10 @@ A teia é normalizada pelo tamanho da música: um polígono por troca de acorde 
 
 Os MIDIs são do Mutopia Project, marcados como domínio público, embutidos em base64 (`tunel/*.js`).
 
+## tocar ao vivo
+
+`🎹 tocar ao vivo` troca a música por um registro vazio que cresce: cada nota entra no ataque com duração crescente até soltar (ou até o pedal soltar). O tempo corre no andamento do controle. O acorde vem das notas seguradas (2+ classes de altura), o tom é redetectado a cada 4 tempos. Entradas: teclado do computador (uma oitava e meia a partir do Dó central, `Z`/`X` oitava, espaço = pedal), Web MIDI (note on/off e CC64) e clique no teclado do piano roll. Cada tecla do computador guarda a nota que tocou, para não prender nota se a oitava mudar com a tecla apertada.
+
 ## ganchos de teste (no endereço)
 
 `#furelise` ou `#demo` trocam o exemplo (sem nada, abre Bach) · `#t=12.5` pula para o tempo · `#view=viagem|frente|lado` · `#pedal` · `#panel` abre as camadas · `#midi=arquivo.mid` carrega um MIDI servido ao lado (precisa de servidor, não abre em `file://`).
