@@ -19,6 +19,8 @@ Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https:
 - **Painéis ⚙ e ⤓ por cima do quadro da teia.**
 
 ### added (túnel)
+- **Grau com inversão** (estilo popular): o baixo entra no grau pelo intervalo a partir da fundamental — `C/E` → `I/3`, `C/G` → `I/5`, `G7/F` → `V7/7`, `Am/C` → `VIm/3`; baixo fora do acorde também (`C/D` → `I/9`).
+- **Exemplo Jingle Bells** no seletor (Pierpont, 1857, domínio público; arranjo próprio em 3 trilhas, 160 bpm, baixo alternado em oitava para não virar falsa inversão).
 - **Prisma do acorde** (camada ⚙ `forma do acorde em 3D`, ligada por padrão): a forma do acorde esticada pelo tempo em que ele soa, pele translúcida na cor do acorde, torcida pelo giro do túnel, com uma seção a cada tempo; tríade vira prisma triangular, tétrade quadrangular.
 - **Microfone ancorado no ataque**: a nota entra no instante do toque, não quando o detector confirma (atraso medido 281 ms → 20 ms); fim da nota 80 ms mais cedo.
 - **Comparar violão × MIDI** (`⇄ comparar`, depois de gravar com o microfone): onda do áudio cru, ataques reais, notas MIDI e ligação ataque→nota na mesma linha do tempo; mede atraso e variação; toca original, MIDI ou os dois; versões deslocada e ancorada no ataque; baixa `.wav`.
