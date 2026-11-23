@@ -33,6 +33,11 @@
   #panel input[type=checkbox]{accent-color:#e8451e}
   #panel select{width:100%;margin-top:2px}
   .presets{display:flex;gap:8px}
+  #panel select+select{margin-top:6px}
+  .qbtn{padding:0 7px;font-size:11px;line-height:17px;border-radius:50%;margin-left:6px;vertical-align:1px;text-transform:none}
+  .cshort{font-size:11.5px;color:#8a8a82;margin-top:5px}
+  .help{font-size:12px;line-height:1.5;color:#c9c9c2;background:#1c1c21;border:1px solid #33333a;border-radius:6px;padding:9px 10px;margin-top:8px}
+  .help b{color:#f1f1ea;font-weight:500}
   .presets button{flex:1}
   #hud{position:fixed;right:24px;bottom:18px;text-align:right;pointer-events:none}
   #hud .n{font-size:46px;color:#f1f1ea;line-height:1}
@@ -232,6 +237,23 @@ function chordColor(ci){
 }
 const chordDash=ci=>!ci||L.corAcorde==='branco' ? [] : ci.q==='min' ? [7,5] : ci.q==='dim' ? [2,4] : [];
 
+// ================= forma do cone: raio de cada nota (1 = borda) =================
+const freq=m=>440*Math.pow(2,(m-69)/12);
+const scaleRange=()=>L.escala==='piano'?[21,108]:[LOW,HIGH];
+function radiusFrac(m){ const [lo,hi]=scaleRange(); m=Math.max(lo,Math.min(hi,m));
+  if(L.cone==='kepler') return Math.pow(freq(m)/freq(lo),-2/3);           // 3ª lei de Kepler, como na seção 13
+  if(L.cone==='ar') return freq(lo)/freq(m);                                 // comprimento de onda no ar
+  return 1-(m-lo)/(hi-lo)*(1-1/4.5); }                                       // ouvido: igual a cada semitom
+const coneFrac=m=>{ const [lo,hi]=scaleRange(); return Math.max(0,Math.min(1,(m-lo)/(hi-lo))); };
+const coneRatio=()=>{ const [lo,hi]=scaleRange(); return radiusFrac(lo)/radiusFrac(hi); };
+const CONE_HELP={
+  ouvido:'<b>ouvido</b> · cada semitom diminui o raio na mesma medida, então cada oitava ocupa o mesmo espaço, como no teclado e na partitura. É como o ouvido sente a altura. Bom pra acompanhar a música.',
+  kepler:'<b>Kepler</b> · o raio segue a 3ª lei de Kepler, r ∝ f<sup>−2/3</sup>, a mesma da seção 13 (órbitas): a nota grave é um planeta lento, por fora. O cone vira uma corneta suave, e a melodia aperta perto do centro.',
+  ar:'<b>ar</b> · o raio é proporcional ao comprimento de onda no ar. O Lá mais grave do piano (A0, 27,5 Hz) mede 12,5 m; o Dó mais agudo (C8, 4.186 Hz) mede 8 cm. É a corneta física de verdade, mas as oitavas de cima somem no centro. Ótimo como escultura, ruim pra acompanhar.',
+  piano:'<b>piano inteiro</b> · a escala é sempre A0–C8, então uma oitava tem o mesmo tamanho em qualquer música e as esculturas podem ser comparadas.',
+  musica:'<b>ajustar à música</b> · usa só a extensão da peça: cada nota ganha mais espaço, mas a escala muda de uma música pra outra.' };
+const CONE_SHORT={ouvido:'como o ouvido sente', kepler:'como as órbitas da seção 13', ar:'o tamanho real da onda'};
+
 // ================= camadas (o que mostrar) =================
 const LAYERS=[
   ['fios',[['baixo','baixo'],['acorde','notas do acorde'],['melodia','melodia'],['contorno','contorno da melodia'],['pedal','pedal (sustenta até o fim do compasso)']]],
@@ -239,13 +261,17 @@ const LAYERS=[
   ['quadros 2D',[['quadro','teia (quadro que se acumula)'],['teiaAcorde','teia: acordes (raios)'],['teiaMel','teia: melodia (espiral)'],['teiaBaixo','teia: baixo (fio-guia)'],['roll','piano roll']]],
   ['cena',[['clarao','clarão branco no ataque'],['cabeca','cabeça (anéis e notas)'],['eixo','eixo do tempo'],['brilho','brilho'],['hud','acorde no canto']]],
 ];
-const DEF={teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental'};
+const DEF={teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental',cone:'ouvido',escala:'piano'};
 let L=Object.assign({},DEF);
 try{ const saved=JSON.parse(localStorage.getItem('tunel-camadas')||'null'); if(saved) L=Object.assign(L,saved); }catch(e){}
 const saveL=()=>{ try{ localStorage.setItem('tunel-camadas',JSON.stringify(L)); }catch(e){} };
 function buildPanel(){
   const p=document.getElementById('panel'); let h='';
   LAYERS.forEach(([title,items])=>{ h+=`<h2>${title}</h2>`; items.forEach(([k,lab])=>{ h+=`<label><input type="checkbox" data-k="${k}" ${L[k]?'checked':''}> ${lab}</label>`; }); });
+  h+=`<h2>forma do cone <button class="qbtn" id="coneQ" title="o que muda em cada forma">?</button></h2>
+      <select id="coneSel"><option value="ouvido">ouvido · igual a cada semitom</option><option value="kepler">Kepler · r ∝ f^−2/3</option><option value="ar">ar · comprimento de onda</option></select>
+      <select id="escSel"><option value="piano">escala: piano inteiro (A0–C8)</option><option value="musica">escala: ajustar à música</option></select>
+      <div class="cshort" id="coneShort"></div><div class="help" id="coneHelp" hidden></div>`;
   h+=`<h2>cor do acorde</h2><select id="corAcorde">
       <option value="fundamental">fundamental (menor puxa pra 3ª)</option><option value="mistura">mistura das notas</option><option value="branco">branco</option></select>`;
   h+=`<h2>tom</h2><select id="keySel"><option value="auto">automático</option>`;
@@ -253,6 +279,14 @@ function buildPanel(){
   h+=`</select><h2>predefinições</h2><div class="presets"><button id="pClean">limpo</button><button id="pFull">completo</button></div>`;
   p.innerHTML=h;
   p.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{ L[c.dataset.k]=c.checked; saveL(); if(c.dataset.k==='pedal'){ applyPedal(); } });
+  const cs=document.getElementById('coneSel'), es=document.getElementById('escSel'), cq=document.getElementById('coneQ');
+  cs.value=L.cone; es.value=L.escala;
+  const coneText=()=>{ const r=coneRatio(); document.getElementById('coneShort').textContent=CONE_SHORT[L.cone]+' · grave/agudo '+(r<10?r.toFixed(1).replace('.',','):Math.round(r))+'×';
+    document.getElementById('coneHelp').innerHTML=CONE_HELP[L.cone]+'<br><br>'+CONE_HELP[L.escala]; };
+  coneText();
+  cs.onchange=()=>{ L.cone=cs.value; saveL(); coneText(); if(window.artReady) artClear(); };
+  es.onchange=()=>{ L.escala=es.value; saveL(); coneText(); if(window.artReady) artClear(); };
+  cq.onclick=()=>{ const hp=document.getElementById('coneHelp'); hp.hidden=!hp.hidden; cq.classList.toggle('on',!hp.hidden); };
   const ca=document.getElementById('corAcorde'); ca.value=L.corAcorde; ca.onchange=()=>{ L.corAcorde=ca.value; saveL(); };
   const ks=document.getElementById('keySel'); ks.value=keyAuto?'auto':KEY.tonic+':'+KEY.mode;
   ks.onchange=()=>{ if(ks.value==='auto'){ keyAuto=true; KEY=detectKey(); } else { keyAuto=false; const [t,md]=ks.value.split(':'); KEY={tonic:+t,mode:md}; } };
@@ -277,6 +311,7 @@ $('snd').onclick=()=>{ st.sound=!st.sound; $('snd').textContent=st.sound?'som li
 $('gear').onclick=()=>{ $('exp').classList.remove('open'); $('expBtn').classList.remove('on'); $('panel').classList.toggle('open'); $('gear').classList.toggle('on'); };
 $('expBtn').onclick=()=>{ $('panel').classList.remove('open'); $('gear').classList.remove('on'); $('exp').classList.toggle('open'); $('expBtn').classList.toggle('on'); };
 if(/pedal/.test(location.hash)){ L.pedal=true; }
+{ const hc=(location.hash.match(/cone=(ouvido|kepler|ar)/)||[])[1]; if(hc) L.cone=hc; }
 if(/panel/.test(location.hash)){ $('panel').classList.add('open'); $('gear').classList.add('on'); }
 
 // ================= áudio =================
@@ -364,7 +399,7 @@ function drawArt(NOW, live, cc){
   document.getElementById('art').style.display=L.quadro?'':'none'; if(!L.quadro){ artPrevNow=NOW; return; }
   if(NOW<artPrevNow-1e-6 || Math.floor(NOW/LOOP)!==Math.floor(artPrevNow/LOOP)){ artClear(); artMel=artBass=null; artPrevNow=NOW; }
   const S=artc.width, c=S/2, rO=S*0.46, rI=S*0.1;
-  const P=m=>{ const r=rO-(m-LOW)/(HIGH-LOW)*(rO-rI), a=-Math.PI/2+(m%12)/12*2*Math.PI; return [c+r*Math.cos(a), c+r*Math.sin(a)]; };
+  const P=m=>{ const r=rO*radiusFrac(m), a=-Math.PI/2+(m%12)/12*2*Math.PI; return [c+r*Math.cos(a), c+r*Math.sin(a)]; };
   actx.globalCompositeOperation='lighter';
   // fio de seda: curva levemente puxada pro centro, em gradiente entre as cores das duas notas
   const silk=(a,b,alpha,width)=>{ const p=P(a), q=P(b); if(a===b) return;
@@ -447,7 +482,7 @@ const allNotes=()=>BASE.map(n=>n.slice()).sort((a,b)=>a[1]-b[1]||b[0]-a[0]);   /
 // teia da música inteira, num "pintor" (canvas ou SVG) — mesma regra do quadro ao vivo
 function teiaPaint(pn, S, o){
   const c=S/2, rO=S*0.46, rI=S*0.1;
-  const P=m=>{ const r=rO-(m-LOW)/(HIGH-LOW)*(rO-rI), a=-Math.PI/2+(m%12)/12*2*Math.PI; return [c+r*Math.cos(a), c+r*Math.sin(a)]; };
+  const P=m=>{ const r=rO*radiusFrac(m), a=-Math.PI/2+(m%12)/12*2*Math.PI; return [c+r*Math.cos(a), c+r*Math.sin(a)]; };
   const ns=allNotes();
   if(o.ring || o.chord) TL.forEach(seg=>{   // raios: um polígono por troca de acorde
     const ms=seg.ms.slice().sort((a,b)=>(a%12)-(b%12)); if(ms.length<2) return;
@@ -488,7 +523,7 @@ function teiaSVG(o){
 // escultura 3D: cada nota é um tubo em volta do eixo do tempo (x); raio do tubo = o som morrendo
 function sculptOBJ(o){
   const U=10/46, SXo=10, RM=190*U, Rm=42*U, om=st.omega*2*Math.PI/BPB, SIDES=6;
-  const rOf=m=>RM-(m-LOW)/(HIGH-LOW)*(RM-Rm), cone=m=>(m-LOW)/(HIGH-LOW)*40*U;
+  const rOf=m=>RM*radiusFrac(m), cone=m=>coneFrac(m)*40*U;
   const pos=(m,t)=>{ const r=rOf(m), a=-Math.PI/2+(m%12)/12*2*Math.PI+om*t; return [t*SXo+cone(m), -r*Math.sin(a), r*Math.cos(a)]; };
   const V=[], F=[]; let nv=0;
   const vtx=(p,cl)=>{ V.push('v '+p.map(x=>x.toFixed(3)).join(' ')+(o.cor?' '+cl.map(x=>(x/255).toFixed(3)).join(' '):'')); return ++nv; };
@@ -525,7 +560,7 @@ function sculptOBJ(o){
   if(o.ring) TL.forEach(seg=>{ const ms=seg.ms.slice().sort((a,b)=>(a%12)-(b%12)); if(ms.length<2) return;
     const pts=ms.map(m=>pos(m,seg.t0)); tube(pts,pts.map(()=>0.18),cCol(o,seg.ci),true); });
   const head=['# mscth · túnel do tempo · escultura de "'+SONG+'"',
-    '# eixo x = tempo ('+SXo+' unidades por tempo) · ângulo em volta do eixo = nota (+ giro de '+st.omega+' volta/compasso) · distância ao eixo = oitava (grave por fora)',
+    '# eixo x = tempo ('+SXo+' unidades por tempo) · ângulo em volta do eixo = nota (+ giro de '+st.omega+' volta/compasso) · distância ao eixo = altura, forma do cone "'+L.cone+'" (grave/agudo '+coneRatio().toFixed(1)+'×, escala '+L.escala+')',
     '# tubo = nota (raio afina com o som morrendo) · anel fechado = forma do acorde na troca'+(o.cor?' · cor por vértice = cor da luz da nota':''),
     'o '+slug(SONG)];
   download(slug(SONG)+'-escultura.obj', head.concat(V,F).join('\n')+'\n', 'text/plain');
@@ -533,7 +568,7 @@ function sculptOBJ(o){
 function exportJSON(){
   const data={ app:'mscth · túnel do tempo', formato:1, musica:{ nome:SONG, bpm:st.bpm, tempos_por_compasso:BPB, anacruse:OFFSET, tempos:LOOP,
       tom:{tonica:nm(KEY.tonic), modo:KEY.mode, automatico:keyAuto} },
-    mapeamento:{ tempo:'eixo do túnel (em tempos)', angulo:'nota (classe de altura), C no topo, sentido horário', raio:'oitava (grave por fora)', giro_voltas_por_compasso:st.omega, cor:'cor da luz: frequência dobrada ~40 oitavas até o visível' },
+    mapeamento:{ tempo:'eixo do túnel (em tempos)', angulo:'nota (classe de altura), C no topo, sentido horário', raio:'altura (grave por fora)', forma_do_cone:L.cone, escala:L.escala, razao_grave_agudo:+coneRatio().toFixed(2), giro_voltas_por_compasso:st.omega, cor:'cor da luz: frequência dobrada ~40 oitavas até o visível' },
     ajustes:{ pedal:!!L.pedal, cor_do_acorde:L.corAcorde },
     notas: BASE_RAW.map(([m,s,d,role,v])=>({ midi:m, nota:nm(m%12)+(Math.floor(m/12)-1), inicio:+s.toFixed(4), duracao:+d.toFixed(4), papel:role, velocidade:+(v==null?0.8:v).toFixed(3),
       cor:'#'+COL[m%12].map(x=>x.toString(16).padStart(2,'0')).join('') })),
@@ -567,8 +602,8 @@ function frame(ts){
   const FC=st.view==='viagem'?330:1800;   // distância da câmera: na viagem ela fica dentro do túnel, logo atrás da cabeça
   const headX=st.follow?0:(((NOW%LOOP)/LOOP)-0.5)*Math.min(LOOP,32)*SX*0.9;
   const cy=Math.cos(st.yaw), sy=Math.sin(st.yaw), cp=Math.cos(st.pitch), sp=Math.sin(st.pitch);
-  const rOf=m=>RMAX-(m-LOW)/(HIGH-LOW)*(RMAX-RMIN);
-  const cone=m=>(m-LOW)/(HIGH-LOW)*40;
+  const rOf=m=>RMAX*radiusFrac(m);
+  const cone=m=>coneFrac(m)*40;
   const om=st.omega*2*Math.PI/BPB;
   const ang=(m,t)=>-Math.PI/2+(m%12)/12*2*Math.PI+om*t;
   const P=(x,y,z)=>{ const x1=x*cy-z*sy, z1=x*sy+z*cy; const y2=y*cp-z1*sp, z2=y*sp+z1*cp; const den=FC-z2; if(den<28) return [NaN,NaN,z2]; const k=FC/den; return [CX+x1*k*SC, CY-y2*k*SC, z2]; };
@@ -666,7 +701,8 @@ function frame(ts){
   // cabeça
   ctx.globalCompositeOperation='source-over';
   if(L.cabeca){
-    for(let m=Math.ceil(LOW/12)*12;m<=HIGH;m+=12){ ctx.beginPath(); const r=rOf(m);
+    const [rlo,rhi]=scaleRange();
+    for(let m=Math.ceil(rlo/12)*12;m<=rhi;m+=12){ ctx.beginPath(); const r=rOf(m); if(r<3) continue;
       for(let i=0;i<=72;i++){ const q=headPt(r,i/72*2*Math.PI,cone(m)); i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]); }
       ctx.strokeStyle='rgba(255,255,255,0.22)'; ctx.lineWidth=1; ctx.stroke(); }
     for(let pc=0;pc<12;pc++){ const q=headPt(RMAX+12,ang(pc,NOW),0); ctx.fillStyle=col(pc,0.8); ctx.beginPath(); ctx.arc(q[0],q[1],3.2*SC/0.7,0,7); ctx.fill(); }
