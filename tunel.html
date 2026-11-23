@@ -735,6 +735,7 @@ $('midiIn').onclick=()=>{
 // o som do app fica mudo pras notas do microfone (senão ele se ouviria). acorde de violão sai aproximado:
 // pode sobrar um harmônico ou faltar uma nota; uma nota por vez é bem mais fiel.
 let mic=null; window.__micLog=[];
+const MIC_ATK_LAG=0.035;   // atraso do próprio detector de ataque (s), descontado na âncora
 async function micStart(){
   initAudio(); if(ac.state==='suspended') await ac.resume();
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ $('micIn').textContent='🎤 sem acesso ao microfone neste navegador'; return; }
@@ -791,14 +792,17 @@ function micTick(){
   }
   // liga depois de 2 leituras seguidas (~80 ms), desliga depois de 3 faltas; ataque forte reinicia as notas
   const attack=rms>mic.prevRms*1.8 && rms>mic.floor*3; mic.prevRms=rms;
-  if(attack) mic.hold=6;                                            // ~0,25 s: a janela ainda tem o estalo do ataque
+  if(attack){ mic.hold=6; mic.atk=st.now-MIC_ATK_LAG*st.bpm/60; }   // ~0,25 s: a janela ainda tem o estalo do ataque
+  const beats=s=>s*st.bpm/60;
   const holding=(mic.hold||0)>0; if(holding) mic.hold--;
   const fs=new Set(found);
   fs.forEach(m=>{ mic.seen[m]=(mic.seen[m]||0)+1; mic.miss[m]=0; });
-  micHeld().forEach(m=>{ if(!fs.has(m)){ mic.miss[m]=(mic.miss[m]||0)+1; if(mic.miss[m]>=3){ endNote(m); mic.seen[m]=0; } } else if(attack){ endNote(m); } });
+  micHeld().forEach(m=>{ if(!fs.has(m)){ mic.miss[m]=(mic.miss[m]||0)+1; if(mic.miss[m]>=3){ const n=HELD[m].note; endNote(m); n[2]=Math.max(0.05,n[2]-beats(0.08)); mic.seen[m]=0; } } else if(attack){ endNote(m); } });
   Object.keys(mic.seen).forEach(k=>{ if(!fs.has(+k)) mic.seen[k]=0; });
   const vel=Math.max(0.2,Math.min(1,rms*10));
-  if(!holding) fs.forEach(m=>{ if(mic.seen[m]>=3 && !HELD[m]) liveOn(m,vel,true); });
+  // a nota só é confirmada ~0,3 s depois do toque: grava no instante do ataque (ou, sem ataque recente, 3 leituras antes)
+  if(!holding) fs.forEach(m=>{ if(mic.seen[m]>=3 && !HELD[m]){ liveOn(m,vel,true);
+    if(HELD[m]){ const a=mic.atk!=null && st.now-mic.atk<beats(0.7) ? mic.atk : st.now-beats(0.12); HELD[m].note[1]=Math.max(a, st.now-beats(0.7)); } } });
   const names=micHeld().sort((a,b)=>a-b).map(m=>nm(m%12)+(Math.floor(m/12)-1));
   $('micIn').textContent='🎤 '+(names.length?names.join(' '):'ouvindo…');
   window.__micLog.push({t:+st.now.toFixed(2),notas:names.join(' ')});
