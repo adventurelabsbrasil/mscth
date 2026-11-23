@@ -77,7 +77,7 @@
   <button id="front">vista: lado</button>
   <button id="snd" class="on">som ligado</button>
   <button id="up">📂 subir MIDI</button><input id="file" type="file" accept=".mid,.midi,audio/midi" hidden>
-  <select id="song" title="música"><option value="live">🎹 tocar ao vivo</option><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option><option value="take" hidden>sua gravação</option></select>
+  <select id="song" title="música"><option value="live">🎹 tocar ao vivo</option><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="jingle">Jingle Bells · Pierpont</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option><option value="take" hidden>sua gravação</option></select>
   <button id="midiIn" hidden title="usar um teclado MIDI ligado no computador">🎹 conectar teclado MIDI</button>
   <button id="micIn" hidden title="ouvir um piano, violão ou voz pelo microfone e desenhar no túnel (aproximado)">🎤 microfone</button>
   <button id="recBtn" hidden title="grava um trecho do que você toca (microfone, teclado ou MIDI) pra ouvir depois em piano">⏺ gravar trecho</button>
@@ -128,6 +128,7 @@
 <script src="tunel/midi-parse.js"></script>
 <script src="tunel/fur-elise.js"></script>
 <script src="tunel/bach-prelude.js"></script>
+<script src="tunel/jingle-bells.js"></script>
 <script>
 // ================= cor da nota = cor da luz (mesma função do mscth) =================
 function noteLightNm(pc){ let f=440*Math.pow(2,(pc-9)/12); while(f<400e12) f*=2; while(f>=800e12) f/=2; return 299792458/f*1e9; }
@@ -207,7 +208,13 @@ function chordInfo(ms){
 }
 const chordName=ci=>ci ? nm(ci.root)+ci.suf+(ci.bass!==ci.root?'/'+nm(ci.bass):'') : '';
 const chordNotes=ci=>ci ? ci.tones.map(nm).join(' ') : '';
-const chordDegree=ci=>ci ? DEG[(ci.root-KEY.tonic+12)%12]+ci.suf : '';
+// grau com inversão no estilo popular: o baixo vira o intervalo a partir da fundamental (C/E → I/3, G7/F → V7/7);
+// baixo fora do acorde (pedal, baixo trocado) sai pelo intervalo também (C/D → I/9)
+const BASS_TONE=r=>r===3||r===4?'3':r>=6&&r<=8?'5':r>=9?'7':r===5?'4':'2';
+const BASS_OUT={1:'♭9',2:'9',3:'♯9',4:'3',5:'4',6:'♯11',7:'5',8:'♭13',9:'6',10:'7',11:'7M'};
+function bassDegree(ci){ if(ci.bass===ci.root) return ''; const r=(ci.bass-ci.root+12)%12, t=TPL.find(x=>x[0]===ci.suf&&x[2]===ci.q);
+  return '/'+(t&&t[1].includes(r)?BASS_TONE(r):BASS_OUT[r]); }
+const chordDegree=ci=>ci ? DEG[(ci.root-KEY.tonic+12)%12]+ci.suf+bassDegree(ci) : '';
 
 // tom pelo perfil de Krumhansl-Kessler (peso = duração)
 function detectKey(){
@@ -422,7 +429,8 @@ function loadDemo(){
 // exemplos embutidos (MIDI do Mutopia Project, domínio público)
 const EXAMPLES={
   bach:{data:()=>window.BACH_PRELUDE, label:'Prelúdio em Dó, BWV 846 · J. S. Bach · MIDI: Mutopia Project (domínio público)', slug:'bach-preludio-bwv846'},
-  furelise:{data:()=>window.FUR_ELISE, label:'Für Elise, WoO 59 · Beethoven · MIDI: Mutopia Project (domínio público)', slug:'fur-elise'} };
+  furelise:{data:()=>window.FUR_ELISE, label:'Für Elise, WoO 59 · Beethoven · MIDI: Mutopia Project (domínio público)', slug:'fur-elise'},
+  jingle:{data:()=>window.JINGLE_BELLS, label:'Jingle Bells · J. L. Pierpont, 1857 (domínio público) · arranjo mscth', slug:'jingle-bells'} };
 function loadExample(id){
   const ex=EXAMPLES[id], bin=atob(ex.data().b64), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
   return loadMidi({name:ex.label,arrayBuffer:()=>Promise.resolve(u.buffer)}).then(()=>{ SONG=ex.slug; });
@@ -430,7 +438,7 @@ function loadExample(id){
 const loadFurElise=()=>loadExample('furelise');
 $('song').onchange=()=>{ const v=$('song').value; $('song').blur();   // tira o foco: as letras viram notas, não trocam a opção
   if(v==='live') startLive(); else if(v==='take') loadTake(); else if(EXAMPLES[v]) loadExample(v); else if(v==='demo') loadDemo(); };
-{ const want=/furelise|embed/.test(location.hash)?'furelise':/demo/.test(location.hash)?'demo':/aovivo/.test(location.hash)?'live':'bach';   // padrão: Bach
+{ const want=/furelise|embed/.test(location.hash)?'furelise':/jingle/.test(location.hash)?'jingle':/demo/.test(location.hash)?'demo':/aovivo/.test(location.hash)?'live':'bach';   // padrão: Bach
   $('song').value=want; if(want==='live') setTimeout(startLive,0); else if(want==='demo') loadDemo(); else loadExample(want).then(()=>{ if(!isNaN(hashT)) st.now=hashT; }); }
 
 
