@@ -20,6 +20,7 @@ Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https:
 
 ### added (túnel)
 - **Braço do violão** (aba no quadro do piano roll): afinação padrão, 15 trastes, digitação mais provável (janela de 4 trastes + cordas soltas, perto da pestana), outras posições como círculos vazios, clique toca no modo ao vivo. Mi maior, Dó maior e Sol maior saem nas formas abertas.
+- **Piano roll e braço juntos** (liga/desliga independentes), **19 casas**, **trava de posição** (auto ou casa 1–15) e **guitarra MIDI** (1 canal por corda = corda exata). A forma do acorde sai das notas ouvidas: Dm aberto, pestana na 5ª ou forma de E na 10ª.
 - **Afinador** (com o microfone): nota, Hz, régua de cents com verde/amarelo/vermelho e gráfico da altura nos últimos 5 s. Detector de uma nota só por autocorrelação (McLeod); voz sintética a +12 cents medida em +11,4.
 - **Microfone** (🎤, no modo ao vivo): ouve piano, violão ou voz e desenha no túnel, aproximado. Energia por nota + soma de harmônicos, subtraindo só a parte esperada dos harmônicos (a oitava de cima que sobra é nota de verdade); espera o estalo do ataque passar; notas do microfone ficam mudas no app. Validado com violão sintético: Mi maior de 6 cordas e Dó maior de 5 cordas exatos.
 - **Vista órbita** (⟳): a câmera dá a volta completa no sistema, por cima e por baixo do túnel.

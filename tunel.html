@@ -51,6 +51,7 @@
   .cap button{padding:2px 8px;font-size:12px}
   #art{left:16px} #roll{right:16px;top:108px;bottom:auto} #tuner{right:16px;top:300px;bottom:auto;display:none}
   .rtabs button{padding:2px 9px;font-size:12px;margin-left:4px}
+  .rtabs select{padding:2px 4px;font-size:11px;margin-left:4px}
 </style></head><body>
 <canvas id="cv"></canvas>
 <div id="ui">
@@ -91,7 +92,7 @@
 </div>
 <div id="hud"><div class="n" id="hN"></div><div class="c" id="hC"></div><div class="g" id="hG"></div><div class="k" id="hK"></div></div>
 <div id="art" class="box"><canvas id="artc"></canvas><div class="cap"><span>teia da música</span><span><button id="artClr">limpar</button> <button id="artSave">⤓ png</button></span></div></div>
-<div id="roll" class="box"><canvas id="rollc"></canvas><div class="cap"><span id="rollTitle">piano roll</span><span class="rtabs"><button id="rtPiano">piano</button><button id="rtViolao">violão</button></span></div></div>
+<div id="roll" class="box"><canvas id="rollc"></canvas><canvas id="fretc" style="margin-top:6px"></canvas><div class="cap"><span id="rollTitle">piano roll</span><span class="rtabs"><select id="fretPos" title="onde a mão está no braço: automático (pelo som) ou travado numa casa"><option value="auto">posição: auto</option></select><button id="rtPiano" title="liga/desliga o piano roll">piano</button><button id="rtViolao" title="liga/desliga o braço do violão">violão</button></span></div></div>
 <div id="tuner" class="box"><canvas id="tunc"></canvas><div class="cap"><span>afinador</span><span id="tunInfo">A4 = 440 Hz</span></div></div>
 <div id="hint">arraste pra girar a câmera · ângulo = nota · raio = oitava · fio = duração · espessura e brilho = o som morrendo</div>
 <script src="tunel/midi-parse.js"></script>
@@ -265,10 +266,10 @@ const CONE_SHORT={ouvido:'como o ouvido sente', kepler:'como as órbitas da seç
 const LAYERS=[
   ['fios',[['baixo','baixo'],['acorde','notas do acorde'],['melodia','melodia'],['contorno','contorno da melodia'],['pedal','pedal (sustenta até o fim do compasso)']]],
   ['acordes',[['poligono','forma do acorde agora'],['fatias','anel na troca de acorde'],['nomes','cifra no eixo'],['comp','composição (C E G)'],['grau','grau no tom (I7M)']]],
-  ['quadros 2D',[['quadro','teia (quadro que se acumula)'],['teiaAcorde','teia: acordes (raios)'],['teiaMel','teia: melodia (espiral)'],['teiaBaixo','teia: baixo (fio-guia)'],['roll','piano roll / braço do violão'],['afinador','afinador (com microfone)']]],
+  ['quadros 2D',[['quadro','teia (quadro que se acumula)'],['teiaAcorde','teia: acordes (raios)'],['teiaMel','teia: melodia (espiral)'],['teiaBaixo','teia: baixo (fio-guia)'],['roll','piano roll / braço do violão'],['violaoMidi','guitarra MIDI: 1 canal por corda'],['afinador','afinador (com microfone)']]],
   ['cena',[['clarao','clarão branco no ataque'],['cabeca','cabeça (anéis e notas)'],['eixo','eixo do tempo'],['brilho','brilho'],['hud','acorde no canto']]],
 ];
-const DEF={afinador:true,rollMode:'piano',teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental',cone:'ouvido',escala:'piano'};
+const DEF={afinador:true,rollPiano:true,rollFret:false,violaoMidi:false,teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental',cone:'ouvido',escala:'piano'};
 let L=Object.assign({},DEF);
 try{ const saved=JSON.parse(localStorage.getItem('tunel-camadas')||'null'); if(saved) L=Object.assign(L,saved); }catch(e){}
 const saveL=()=>{ try{ localStorage.setItem('tunel-camadas',JSON.stringify(L)); }catch(e){} };
@@ -448,13 +449,22 @@ function drawArt(NOW, live, cc){
 const rollc=document.getElementById('rollc'), rctx=rollc.getContext('2d');
 const BLACK=[1,3,6,8,10];
 function rrect(X,x,y,w,h,r){ if(h<=0||w<=0) return; X.beginPath(); if(X.roundRect) X.roundRect(x,y,w,h,Math.min(r,h/2)); else X.rect(x,y,w,h); X.fill(); }
+const rollW=()=>Math.round(Math.min(380,innerWidth*0.27));
 function drawRoll(NOW){
-  document.getElementById('roll').style.display=L.roll?'':'none'; if(!L.roll) return;
-  const w=Math.round(Math.min(330,innerWidth*0.24)), h=Math.round(Math.min(150,innerHeight*0.2)), dpr=1.5;
+  const on=L.roll&&(L.rollPiano||L.rollFret); document.getElementById('roll').style.display=on?'':'none'; if(!on) return;
+  rollc.style.display=L.rollPiano?'block':'none'; fretc.style.display=L.rollFret?'block':'none';
+  $('fretPos').style.display=L.rollFret?'':'none';
+  $('rollTitle').textContent=L.rollPiano&&L.rollFret?'piano · braço':L.rollFret?'braço do violão':'piano roll';
+  if(L.rollPiano) drawPianoRoll(NOW);
+  if(L.rollFret){ const w=rollW(), h=Math.round(Math.min(128,innerHeight*0.17)), dpr=1.5;
+    if(fretc.width!==w*dpr||fretc.height!==h*dpr){ fretc.width=w*dpr; fretc.height=h*dpr; fretc.style.width=w+'px'; fretc.style.height=h+'px'; }
+    const X=fctx; X.setTransform(dpr,0,0,dpr,0,0); X.globalCompositeOperation='source-over'; X.fillStyle='#050506'; X.fillRect(0,0,w,h); drawFret(X,w,h,NOW); }
+}
+function drawPianoRoll(NOW){
+  const w=rollW(), h=Math.round(Math.min(150,innerHeight*0.2)), dpr=1.5;
   if(rollc.width!==w*dpr||rollc.height!==h*dpr){ rollc.width=w*dpr; rollc.height=h*dpr; rollc.style.width=w+'px'; rollc.style.height=h+'px'; }
   const X=rctx; X.setTransform(dpr,0,0,dpr,0,0);
   X.globalCompositeOperation='source-over'; X.fillStyle='#050506'; X.fillRect(0,0,w,h);
-  if(L.rollMode==='violao'){ drawFret(X,w,h,NOW); return; }
   const lo=Math.max(21,LOW-1), hi=Math.min(108,HIGH+1), n=hi-lo+1, kw=w/n, KH=Math.min(34,h*0.18), top=h-KH;
   ROLLG={lo,hi,kw,top,w,h};
   const AHEAD=6, PX=top/AHEAD;   // 6 tempos de futuro caindo
@@ -671,12 +681,12 @@ addEventListener('keyup',e=>{
 // clique/toque no teclado do piano roll
 let rollDown=null;
 rollc.addEventListener('pointerdown',e=>{ if(!LIVE||!ROLLG) return; const r=rollc.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
-  if(L.rollMode==='violao'){ const m=fretMidiAt(x,y); if(m==null) return; rollDown=m; rollc.setPointerCapture(e.pointerId); liveOn(m,0.75); return; }
   if(y<ROLLG.top) return; const m=Math.floor(x/ROLLG.kw)+ROLLG.lo; rollDown=m; rollc.setPointerCapture(e.pointerId); liveOn(m,0.75); });
 rollc.addEventListener('pointerup',()=>{ if(rollDown!=null){ liveOff(rollDown); rollDown=null; } });
 rollc.addEventListener('pointercancel',()=>{ if(rollDown!=null){ liveOff(rollDown); rollDown=null; } });
 // teclado MIDI de verdade (Web MIDI)
-function onMidiMsg(ev){ const [st0,d1,d2]=ev.data, t=st0&0xf0;
+function onMidiMsg(ev){ const [st0,d1,d2]=ev.data, t=st0&0xf0, ch=st0&0x0f;
+  if(L.violaoMidi && ch<=5 && (t===0x90||t===0x80)){ if(t===0x90&&d2>0) STRING_OF[d1]=5-ch; }   // canal 1 = Mi agudo … canal 6 = Mi grave
   if(t===0x90 && d2>0) liveOn(d1,d2/127); else if(t===0x80 || (t===0x90 && d2===0)) liveOff(d1);
   else if(t===0xB0 && d1===64) setSustain(d2>=64); }
 function bindMidiInputs(){ const names=[]; midiAccess.inputs.forEach(inp=>{ inp.onmidimessage=onMidiMsg; names.push(inp.name); });
@@ -766,9 +776,11 @@ function micTick(){
 // ================= braço do violão (aba do piano roll) =================
 // afinação padrão, 15 trastes; escolhe a digitação: a janela de 4 trastes (+ cordas soltas) que cobre mais notas,
 // perto da pestana e sem pular à toa; as outras posições possíveis da mesma nota aparecem apagadas
-const TUNING=[40,45,50,55,59,64], NFRET=15; let FRETG=null, fretP=0;
+const TUNING=[40,45,50,55,59,64], NFRET=19; let FRETG=null, fretP=0, fretBand=0; const STRING_OF={};   // nota → corda (guitarra MIDI)
+const fretc=document.getElementById('fretc'), fctx=fretc.getContext('2d');
 const fretX=(f,x0,x1)=>{ const k=1/(1-Math.pow(2,-(NFRET+0.6)/12)); return x0+(x1-x0)*k*(1-Math.pow(2,-f/12)); };
 function fretPlace(ms,p){ const used=new Set(), out=[]; let lastS=-1;
+  if(L.violaoMidi && ms.length && ms.every(m=>STRING_OF[m]!=null)) return ms.map(m=>({m,s:STRING_OF[m],f:m-TUNING[STRING_OF[m]]})).filter(x=>x.f>=0&&x.f<=NFRET);   // corda exata
   ms.forEach(m=>{ for(let s2=lastS+1;s2<6;s2++){ if(used.has(s2)) continue; const f=m-TUNING[s2]; if(f<0||f>NFRET) continue;
       if(f===0||(f>=p&&f<=p+4)){ used.add(s2); out.push({m,s:s2,f}); lastS=s2; return; } } });
   return out; }
@@ -777,21 +789,24 @@ function fretMidiAt(x,y){ if(!FRETG) return null; const {x0,x1,y0,y1,sg}=FRETG; 
 function drawFret(X,w,h,NOW){
   const x0=24, x1=w-6, y0=13, y1=h-15, sg=(y1-y0)/5; FRETG={x0,x1,y0,y1,sg};
   const sy=s2=>y1-s2*sg;   // corda mais grave embaixo, Mi agudo em cima (como na tablatura)
-  document.getElementById('rollTitle').textContent='braço do violão';
   X.fillStyle='#17120d'; X.fillRect(x0,y0-6,x1-x0,y1-y0+12);
   // janela da mão
   const act=notesIn(NOW-1.5,NOW).filter(n=>n[1]<=NOW && L[n[3]]);
   const live=act.filter(n=>n[1]+n[2]>NOW+(LIVE?-1e-9:0)||(LIVE&&HELD[n[0]]&&HELD[n[0]].note[1]===n[1]));
   const ms=[...new Set(live.map(n=>n[0]))].sort((a,b)=>a-b);
-  if(ms.length){ let best=fretP, bs=-1e9; for(let p=0;p<=11;p++){ const sc=fretPlace(ms,p).length*10-p*0.3+(p===fretP?0.8:0); if(sc>bs){ bs=sc; best=p; } } fretP=best; }
-  if(fretP>0){ X.fillStyle='rgba(232,69,30,0.07)'; const a=fretX(fretP-1,x0,x1), b=fretX(Math.min(NFRET,fretP+4),x0,x1); X.fillRect(a,y0-6,b-a,y1-y0+12); }
+  const lock=$('fretPos').value;
+  if(lock!=='auto') fretP=+lock;
+  else if(ms.length){ let best=fretP, bs=-1e9; for(let p=0;p<=15;p++){ const sc=fretPlace(ms,p).length*10-p*0.3+(p===fretP?0.8:0); if(sc>bs){ bs=sc; best=p; } }
+    fretP=best; }
+  { const fr=fretPlace(ms,fretP).filter(x=>x.f>0).map(x=>x.f); fretBand=fr.length?Math.min(...fr):fretP; }   // a faixa desenhada começa na 1ª casa presa
+  if(fretBand>0){ X.fillStyle='rgba(232,69,30,0.07)'; const a=fretX(fretBand-1,x0,x1), b=fretX(Math.min(NFRET,fretBand+3),x0,x1); X.fillRect(a,y0-6,b-a,y1-y0+12); }
   // trastes, marcações e cordas
-  [3,5,7,9,15].forEach(f=>{ const xm=(fretX(f-1,x0,x1)+fretX(f,x0,x1))/2; X.fillStyle='#3a3128'; X.beginPath(); X.arc(xm,(y0+y1)/2,2.6,0,7); X.fill(); });
+  [3,5,7,9,15,17,19].forEach(f=>{ const xm=(fretX(f-1,x0,x1)+fretX(f,x0,x1))/2; X.fillStyle='#3a3128'; X.beginPath(); X.arc(xm,(y0+y1)/2,2.6,0,7); X.fill(); });
   { const xm=(fretX(11,x0,x1)+fretX(12,x0,x1))/2; X.fillStyle='#3a3128'; [sy(1.5),sy(3.5)].forEach(yy=>{ X.beginPath(); X.arc(xm,yy,2.6,0,7); X.fill(); }); }
   for(let f=1;f<=NFRET;f++){ const x=fretX(f,x0,x1); X.fillStyle='#6b6356'; X.fillRect(x-0.6,y0-6,1.2,y1-y0+12); }
   X.fillStyle='#d8d2c2'; X.fillRect(x0-2,y0-6,3,y1-y0+12);
   X.font='9px Menlo'; X.fillStyle='#77776f'; X.textAlign='center';
-  [3,5,7,9,12,15].forEach(f=>X.fillText(f,(fretX(f-1,x0,x1)+fretX(f,x0,x1))/2,h-3));
+  [3,5,7,9,12,15,17,19].forEach(f=>X.fillText(f,(fretX(f-1,x0,x1)+fretX(f,x0,x1))/2,h-3));
   for(let s2=0;s2<6;s2++){ X.strokeStyle='rgba(220,215,200,0.55)'; X.lineWidth=0.7+(5-s2)*0.22; X.lineCap='round'; X.beginPath(); X.moveTo(x0,sy(s2)); X.lineTo(x1,sy(s2)); X.stroke();
     X.fillStyle='#8a8a82'; X.fillText(['E','A','D','G','B','e'][s2],10,sy(s2)+3); }
   const posX=f=>f===0?x0-9:(fretX(f-1,x0,x1)+fretX(f,x0,x1))/2;
@@ -809,8 +824,18 @@ function drawFret(X,w,h,NOW){
     X.fillStyle='#050506'; X.font='bold 8px Menlo'; X.fillText(nm(pl.m%12).replace('♯','#').replace('♭','b'),x,y+3); });
   X.textAlign='left';
 }
-const setRollMode=v=>{ L.rollMode=v; saveL(); $('rtPiano').classList.toggle('on',v==='piano'); $('rtViolao').classList.toggle('on',v==='violao'); if(v==='piano') $('rollTitle').textContent='piano roll'; };
-$('rtPiano').onclick=()=>setRollMode('piano'); $('rtViolao').onclick=()=>setRollMode('violao'); setRollMode(L.rollMode||'piano');
+if(L.rollMode==='violao'){ L.rollFret=true; L.rollPiano=false; } delete L.rollMode;   // preferência antiga (aba única)
+const syncRollBtns=()=>{ $('rtPiano').classList.toggle('on',!!L.rollPiano); $('rtViolao').classList.toggle('on',!!L.rollFret); };
+$('rtPiano').onclick=()=>{ L.rollPiano=!L.rollPiano; if(!L.rollPiano&&!L.rollFret) L.rollFret=true; saveL(); syncRollBtns(); };
+$('rtViolao').onclick=()=>{ L.rollFret=!L.rollFret; if(!L.rollPiano&&!L.rollFret) L.rollPiano=true; saveL(); syncRollBtns(); };
+syncRollBtns();
+for(let f=1;f<=15;f++){ const o=document.createElement('option'); o.value=String(f); o.textContent='posição: casa '+f; $('fretPos').appendChild(o); }
+$('fretPos').onchange=()=>$('fretPos').blur();
+let fretDown=null;
+fretc.addEventListener('pointerdown',e=>{ if(!LIVE) return; const r=fretc.getBoundingClientRect(), m=fretMidiAt(e.clientX-r.left,e.clientY-r.top); if(m==null) return;
+  fretDown=m; fretc.setPointerCapture(e.pointerId); liveOn(m,0.75); });
+fretc.addEventListener('pointerup',()=>{ if(fretDown!=null){ liveOff(fretDown); fretDown=null; } });
+fretc.addEventListener('pointercancel',()=>{ if(fretDown!=null){ liveOff(fretDown); fretDown=null; } });
 
 // ================= afinador: uma nota só, pela autocorrelação (McLeod) =================
 function pitchMPM(buf,sr){
@@ -832,7 +857,7 @@ function drawTuner(){
   const box=document.getElementById('tuner'), show=!!(mic && L.afinador && LIVE);
   box.style.display=show?'block':'none'; if(!show) return;
   const rb=document.getElementById('roll').getBoundingClientRect(); box.style.top=(L.roll?rb.bottom+10:108)+'px';
-  const w=Math.round(Math.min(330,innerWidth*0.24)), h=150, dpr=1.5;
+  const w=rollW(), h=150, dpr=1.5;
   if(tunc.width!==w*dpr){ tunc.width=w*dpr; tunc.height=h*dpr; tunc.style.width=w+'px'; tunc.style.height=h+'px'; }
   const X=tctx; X.setTransform(dpr,0,0,dpr,0,0); X.fillStyle='#050506'; X.fillRect(0,0,w,h);
   const now=performance.now(), ph=mic.ph, last=[...ph].reverse().find(p=>p.mf!=null && now-p.t<220);

@@ -71,6 +71,7 @@ Escuta aproximada, no próprio navegador: FFT de 16384 pontos (~0,34 s a 48 kHz)
 ## braço do violão e afinador
 
 - **Braço:** a mesma nota existe em várias casas; a digitação escolhida é a da janela de 4 trastes (mais cordas soltas) que cobre mais notas do que está soando, com notas em cordas ascendentes, penalidade leve pra janela alta e preferência pela janela anterior (não pula à toa). As outras posições aparecem apagadas.
+- **Qual forma do acorde:** só dá pra saber pelas notas. Dm aberto (D3 A3 D4 F4), pestana na 5ª (+A4) e forma de E na 10ª (+A4 D5) têm conjuntos diferentes e o app acerta; quando duas formas soam as mesmas alturas (ex.: pestana com a 1ª corda abafada), só o timbre muda e o app fica com a posição mais baixa. Pra isso existe a trava de posição e o modo guitarra MIDI (captador hexafônico, canal 1 = Mi agudo … 6 = Mi grave).
 - **Afinador:** autocorrelação normalizada (NSDF, McLeod & Wyvill) na janela de 2048 amostras, atraso de 65 a 1100 Hz, primeiro máximo-chave acima de 90% do maior, interpolação parabólica. Só conta leitura com clareza acima de 0,82. A4 fixo em 440 Hz.
 
 ## teclado do computador
