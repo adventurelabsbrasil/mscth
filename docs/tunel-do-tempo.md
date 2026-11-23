@@ -68,6 +68,10 @@ Os MIDIs são do Mutopia Project, marcados como domínio público, embutidos em 
 
 Escuta aproximada, no próprio navegador: FFT de 16384 pontos (~0,34 s a 48 kHz), energia de cada nota de C2 a E7, e escolha gulosa da nota mais forte com apoio dos harmônicos. A cada nota escolhida, subtrai só a parte esperada de cada harmônico (pesos 0,6 · 0,4 · 0,32 · 0,25 · 0,2) e o vazamento pras vizinhas: o que sobra é nota de verdade (o E3 numa corda E3 junto com o E2). Pico obrigatório, espera de ~0,25 s depois do ataque, liga com 3 leituras e desliga com 3 faltas. Testado com violão sintético; ainda falta o teste com instrumento real.
 
+## gravar e ouvir em piano
+
+No modo ao vivo, `⏺ gravar trecho` marca o início e `⏹ parar` o fim. Entra tudo o que o modo ao vivo registrou no intervalo (microfone, teclado, MIDI); notas com menos de 70 ms saem (estalo de ataque, leitura solta) e o trecho começa na primeira nota. `▶ ouvir no piano` carrega a gravação como música (seletor: *sua gravação*), no andamento em que foi tocada, e toca em loop com timbre de piano; `⤓ .mid` baixa um MIDI formato 0 (480 tiques por semínima, programa 0). O piano usa amostras do **Salamander Grand Piano** (Alexander Holm, CC-BY 3.0), servidas por `tonejs.github.io/audio/salamander/`: uma a cada 3 semitons de A0 a C8, as do meio por transposição curta. Sem rede, cai num piano sintetizado. O seletor `timbre` vale também pras músicas e pro teclado ao vivo. A gravação vive só na página: recarregou, perdeu (baixe o `.mid`). A qualidade do MIDI depende da escuta do microfone: nota solta sai fiel, acorde batido sai aproximado.
+
 ## braço do violão e afinador
 
 - **Braço:** a mesma nota existe em várias casas; a digitação escolhida é a da janela de 4 trastes (mais cordas soltas) que cobre mais notas do que está soando, com notas em cordas ascendentes, penalidade leve pra janela alta e preferência pela janela anterior (não pula à toa). As outras posições aparecem apagadas.
