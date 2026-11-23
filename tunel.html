@@ -14,7 +14,11 @@
   label{display:flex;gap:8px;align-items:center}
   input[type=range]{width:110px;accent-color:#e8451e}
   output{min-width:60px;color:#f1f1ea}
-  #fname{color:#f1f1ea;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #fname{color:#f1f1ea;width:300px;flex:0 0 300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #fname:empty{display:none}
+  /* textos que mudam a cada leitura (notas do microfone, cronômetro da gravação): largura fixa, a barra não pula */
+  #micIn,#recBtn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;font-variant-numeric:tabular-nums}
+  #micIn{width:27ch} #recBtn{width:26ch}
   #panel{position:fixed;left:16px;top:108px;max-height:calc(100vh - 140px);overflow:auto;width:250px;background:#141418ee;border:1px solid #2e2e34;border-radius:8px;padding:14px;font-size:13px;color:#c9c9c2;display:none}
   #panel.open{display:block}
   #panel,#exp{z-index:20;box-shadow:0 8px 30px #000a}
