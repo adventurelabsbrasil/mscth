@@ -19,6 +19,10 @@ Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https:
 - **Painéis ⚙ e ⤓ por cima do quadro da teia.**
 
 ### added (túnel)
+- **Piano roll com memória** (tocando música): o que já soou continua descendo abaixo do teclado por 3 tempos, apagando. Ao vivo segue como antes.
+- **Braço do violão com previsão** (tocando música): as próximas notas (até 2 tempos) aparecem como anéis que se fecham sobre a casa onde vão soar.
+- **Acorde incompleto** (ao vivo): com 3+ notas, aceita o acorde com UMA nota faltando, desde que a fundamental soe, e avisa o que falta — `F A B` → `Bm7(♭5)/F`, `B F A · sem 3ª`. Sus e quinta pura não entram na tolerância. Sem acorde nenhum, o canto mostra `?`, as notas e o trítono, se houver.
+- **Joyful a 140 bpm** (padrão do exemplo).
 - **Grau com inversão** (estilo popular): o baixo entra no grau pelo intervalo a partir da fundamental — `C/E` → `I/3`, `C/G` → `I/5`, `G7/F` → `V7/7`, `Am/C` → `VIm/3`; baixo fora do acorde também (`C/D` → `I/9`).
 - **Exemplo Joyful, Joyful, We Adore Thee** no seletor (melodia Hymn to Joy, Beethoven 1824; letra H. van Dyke 1907; domínio público): arranjo de hino próprio em Sol maior, 100 bpm, acordes sustentados, cadência IV–V7–I.
 - **Exemplo Jingle Bells** no seletor (Pierpont, 1857, domínio público; arranjo próprio em 3 trilhas, 160 bpm, baixo alternado em oitava para não virar falsa inversão).
