@@ -1170,7 +1170,7 @@
     <button class="kb-toggle" id="kb-toggle" aria-label="abrir/fechar teclado">▾ piano</button>
     <div class="kb-detected">
       <div class="kb-name empty" id="kb-name">toque para identificar acorde</div>
-      <div class="kb-meta" id="kb-meta">teclado: 1 → M = brancas · shift + tecla = preta · espaço = sustain</div>
+      <div class="kb-meta" id="kb-meta">teclado: 1 → . = brancas (T = dó central) · Caps Lock ou shift = pretas · espaço = sustain</div>
       <div class="kb-interval" id="kb-interval"></div>
     </div>
     <button class="kb-clear" id="kb-clear" aria-label="limpar">clear</button>
@@ -1694,8 +1694,8 @@ const MODAL_DOCS = {
 <p><b>livre</b> — notas tocam e desligam ao soltar. modo padrão, ideal para dedilhado e melodias.<br>
 <b>sustain</b> — notas permanecem ativas até serem clicadas novamente ou até apertar <em>clear</em>. permite construir acordes complexos uma nota por vez.<br>
 <b>snap ao modo</b> — só permite tocar notas dentro do modo atual. útil para improvisar dentro de um modo específico sem se preocupar com acertar as notas certas.</p>
-<p><b>teclado do computador</b> — mesmo padrão dos pianos virtuais: as 36 teclas de <code>1</code> até <code>M</code>, lidas em sequência (<code>1 2 3 … 0</code>, <code>Q … P</code>, <code>A … L</code>, <code>Z … M</code>), são as teclas <b>brancas</b> do grave pro agudo — de C2 (tecla <code>1</code>) até C7 (tecla <code>M</code>). a tecla <code>T</code> é o dó central (C4).</p>
-<p><b>shift + tecla</b> = a tecla <b>preta</b> logo à direita. ex.: <code>T</code> = C4, <code>shift+T</code> = C♯4 (ou D♭4, conforme a tonalidade). em E e B não há preta, então shift não toca nada.</p>
+<p><b>teclado do computador</b> — mesmo padrão dos pianos virtuais: as 46 teclas de <code>1</code> até <code>/</code>, lidas em sequência (<code>1 2 3 … 0 - =</code>, <code>Q … P [ ] \</code>, <code>A … L ; '</code>, <code>Z … M , . /</code>), são as teclas <b>brancas</b> do grave pro agudo — de A1 (tecla <code>1</code>) até C8 (tecla <code>.</code>, a última do piano; a <code>/</code> passa do piano e fica muda). a tecla <code>T</code> continua sendo o dó central (C4). abaixo do A1, use <b>↓</b> (oitava).</p>
+<p><b>Caps Lock ligado</b> (liga/desliga) ou <b>shift + tecla</b> = a tecla <b>preta</b> logo à direita. ex.: <code>T</code> = C4, <code>shift+T</code> = C♯4 (ou D♭4, conforme a tonalidade). em E e B não há preta, então shift (ou Caps Lock) não toca nada.</p>
 <p><b>espaço</b> = pedal de sustain enquanto pressionado.<br>
 <b>esc</b> = clear (libera todas as notas).<br>
 <b>← / →</b> = transpor meio tom (o mesmo que os botões <em>transpor − / +</em> do console).<br>
@@ -3666,21 +3666,21 @@ const KB_MIDI_END = 96; // 3 oitavas: C4-B6 (60-95, terminando antes de C7)
 const KB_OCTAVES = 3;
 
 // Teclado do computador → piano (padrão dos pianos virtuais):
-// 36 teclas brancas em sequência, do 1 (C2) ao M (C7), usando a posição física (e.code),
-// então funciona igual em QWERTY e ABNT2. shift + tecla = sustenido (a preta à direita).
-// a tecla T cai no C4 (dó central).
-const KB_WHITE_CODES = ['Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0',
-  'KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP',
-  'KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL',
-  'KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM'];
-const KB_WHITE_BASE = 36; // C2
+// 46 teclas brancas em sequência, 1234567890-= qwertyuiop[]\ asdfghjkl;' zxcvbnm,./ , do 1 (A1) ao . (C8),
+// usando a posição física (e.code), então funciona em QWERTY e ABNT2. A tecla T cai no C4 (dó central).
+// Pretas: Caps Lock ligado (liga/desliga) ou Shift segurado = a preta à direita. Mesmo mapa do túnel do tempo.
+const KB_WHITE_CODES = ['Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0','Minus','Equal',
+  'KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP','BracketLeft','BracketRight','Backslash',
+  'KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL','Semicolon','Quote',
+  'KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash'];
 const KB_WHITE_STEPS = [0,2,4,5,7,9,11];
-function kbWhiteMidi(i){ return KB_WHITE_BASE + Math.floor(i/7)*12 + KB_WHITE_STEPS[i % 7]; }
+const KB_CODE_LABEL = { Minus:'-', Equal:'=', BracketLeft:'[', BracketRight:']', Backslash:'\\', Semicolon:';', Quote:"'", Comma:',', Period:'.', Slash:'/' };
+function kbWhiteMidi(i){ const j = i + 5; return 24 + Math.floor(j/7)*12 + KB_WHITE_STEPS[j % 7]; } // índice 0 = A1
 // midi (sem transposição) → rótulo da tecla do computador
 function kbQwertyHint(midi){
   for(let i = 0; i < KB_WHITE_CODES.length; i++){
     const w = kbWhiteMidi(i);
-    const label = KB_WHITE_CODES[i].replace(/^(Digit|Key)/, '');
+    const label = KB_CODE_LABEL[KB_WHITE_CODES[i]] || KB_WHITE_CODES[i].replace(/^(Digit|Key)/, '');
     if(w === midi) return label;
     if(w + 1 === midi && [4,11].indexOf(w % 12) < 0) return '⇧' + label;
   }
@@ -3952,7 +3952,7 @@ function updateChordDetection(){
   if(kbHeldNotes.size === 0){
     nameEl.textContent = 'toque para identificar acorde';
     nameEl.classList.add('empty');
-    metaEl.textContent = 'teclado: 1 → M = brancas · shift + tecla = preta · espaço = sustain';
+    metaEl.textContent = 'teclado: 1 → . = brancas (T = dó central) · Caps Lock ou shift = pretas · espaço = sustain';
     // limpar destaques no Tonnetz e círculo
     document.querySelectorAll('.t-tri.kb-detected').forEach(function(t){ t.classList.remove('kb-detected'); });
     document.querySelectorAll('.node-circle.kb-detected circle').forEach(function(c){
@@ -4136,7 +4136,7 @@ document.addEventListener('keydown', function(e){
   const i = KB_WHITE_CODES.indexOf(e.code);
   if(i < 0 || e.repeat || kbCodeMidi.has(e.code)) return;
   let base = kbWhiteMidi(i);
-  if(e.shiftKey){
+  if(e.shiftKey || (e.getModifierState && e.getModifierState('CapsLock'))){ // Shift segurado ou Caps Lock ligado = preta
     if([4,11].indexOf(base % 12) >= 0) return; // E e B não têm preta à direita
     base += 1;
   }

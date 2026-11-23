@@ -60,6 +60,18 @@ A teia é normalizada pelo tamanho da música: um polígono por troca de acorde 
 
 Os MIDIs são do Mutopia Project, marcados como domínio público, embutidos em base64 (`tunel/*.js`).
 
+## tocar ao vivo
+
+`🎹 tocar ao vivo` troca a música por um registro vazio que cresce: cada nota entra no ataque com duração crescente até soltar (ou até o pedal soltar). O tempo corre no andamento do controle. O acorde vem das notas seguradas (2+ classes de altura), o tom é redetectado a cada 4 tempos. Entradas: teclado do computador (uma oitava e meia a partir do Dó central, `Z`/`X` oitava, espaço = pedal), Web MIDI (note on/off e CC64) e clique no teclado do piano roll. Cada tecla do computador guarda a nota que tocou, para não prender nota se a oitava mudar com a tecla apertada.
+
+## microfone
+
+Escuta aproximada, no próprio navegador: FFT de 16384 pontos (~0,34 s a 48 kHz), energia de cada nota de C2 a E7, e escolha gulosa da nota mais forte com apoio dos harmônicos. A cada nota escolhida, subtrai só a parte esperada de cada harmônico (pesos 0,6 · 0,4 · 0,32 · 0,25 · 0,2) e o vazamento pras vizinhas: o que sobra é nota de verdade (o E3 numa corda E3 junto com o E2). Pico obrigatório, espera de ~0,25 s depois do ataque, liga com 3 leituras e desliga com 3 faltas. Testado com violão sintético; ainda falta o teste com instrumento real.
+
+## teclado do computador
+
+46 teclas brancas pela posição física (`e.code`): `1`=A1, `T`=C4, `.`=C8, `/` passa do piano. Caps Lock ligado ou Shift = preta à direita (E e B ficam mudas). No ABNT2 o `\` fica na fileira do A e o `/` ao lado do ponto, então a sequência pula de fileira nesses dois.
+
 ## ganchos de teste (no endereço)
 
 `#furelise` ou `#demo` trocam o exemplo (sem nada, abre Bach) · `#t=12.5` pula para o tempo · `#view=viagem|frente|lado` · `#pedal` · `#panel` abre as camadas · `#midi=arquivo.mid` carrega um MIDI servido ao lado (precisa de servidor, não abre em `file://`).
