@@ -77,7 +77,7 @@
   <button id="front">vista: lado</button>
   <button id="snd" class="on">som ligado</button>
   <button id="up">📂 subir MIDI</button><input id="file" type="file" accept=".mid,.midi,audio/midi" hidden>
-  <select id="song" title="música"><option value="live">🎹 tocar ao vivo</option><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="jingle">Jingle Bells · Pierpont</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option><option value="take" hidden>sua gravação</option></select>
+  <select id="song" title="música"><option value="live">🎹 tocar ao vivo</option><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="jingle">Jingle Bells · Pierpont</option><option value="joyful">Joyful, Joyful, We Adore Thee · Beethoven</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option><option value="take" hidden>sua gravação</option></select>
   <button id="midiIn" hidden title="usar um teclado MIDI ligado no computador">🎹 conectar teclado MIDI</button>
   <button id="micIn" hidden title="ouvir um piano, violão ou voz pelo microfone e desenhar no túnel (aproximado)">🎤 microfone</button>
   <button id="recBtn" hidden title="grava um trecho do que você toca (microfone, teclado ou MIDI) pra ouvir depois em piano">⏺ gravar trecho</button>
@@ -129,6 +129,7 @@
 <script src="tunel/fur-elise.js"></script>
 <script src="tunel/bach-prelude.js"></script>
 <script src="tunel/jingle-bells.js"></script>
+<script src="tunel/joyful.js"></script>
 <script>
 // ================= cor da nota = cor da luz (mesma função do mscth) =================
 function noteLightNm(pc){ let f=440*Math.pow(2,(pc-9)/12); while(f<400e12) f*=2; while(f>=800e12) f/=2; return 299792458/f*1e9; }
@@ -430,7 +431,8 @@ function loadDemo(){
 const EXAMPLES={
   bach:{data:()=>window.BACH_PRELUDE, label:'Prelúdio em Dó, BWV 846 · J. S. Bach · MIDI: Mutopia Project (domínio público)', slug:'bach-preludio-bwv846'},
   furelise:{data:()=>window.FUR_ELISE, label:'Für Elise, WoO 59 · Beethoven · MIDI: Mutopia Project (domínio público)', slug:'fur-elise'},
-  jingle:{data:()=>window.JINGLE_BELLS, label:'Jingle Bells · J. L. Pierpont, 1857 (domínio público) · arranjo mscth', slug:'jingle-bells'} };
+  jingle:{data:()=>window.JINGLE_BELLS, label:'Jingle Bells · J. L. Pierpont, 1857 (domínio público) · arranjo mscth', slug:'jingle-bells'},
+  joyful:{data:()=>window.JOYFUL, label:'Joyful, Joyful, We Adore Thee · melodia Hymn to Joy, Beethoven 1824 · letra H. van Dyke 1907 (domínio público) · arranjo mscth', slug:'joyful-joyful'} };
 function loadExample(id){
   const ex=EXAMPLES[id], bin=atob(ex.data().b64), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
   return loadMidi({name:ex.label,arrayBuffer:()=>Promise.resolve(u.buffer)}).then(()=>{ SONG=ex.slug; });
@@ -438,7 +440,7 @@ function loadExample(id){
 const loadFurElise=()=>loadExample('furelise');
 $('song').onchange=()=>{ const v=$('song').value; $('song').blur();   // tira o foco: as letras viram notas, não trocam a opção
   if(v==='live') startLive(); else if(v==='take') loadTake(); else if(EXAMPLES[v]) loadExample(v); else if(v==='demo') loadDemo(); };
-{ const want=/furelise|embed/.test(location.hash)?'furelise':/jingle/.test(location.hash)?'jingle':/demo/.test(location.hash)?'demo':/aovivo/.test(location.hash)?'live':'bach';   // padrão: Bach
+{ const want=/furelise|embed/.test(location.hash)?'furelise':/jingle/.test(location.hash)?'jingle':/joyful/.test(location.hash)?'joyful':/demo/.test(location.hash)?'demo':/aovivo/.test(location.hash)?'live':'bach';   // padrão: Bach
   $('song').value=want; if(want==='live') setTimeout(startLive,0); else if(want==='demo') loadDemo(); else loadExample(want).then(()=>{ if(!isNaN(hashT)) st.now=hashT; }); }
 
 
