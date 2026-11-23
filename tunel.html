@@ -198,17 +198,21 @@ function chordInfo(ms){
   const pcs=new Set(ms.map(m=>m%12)); if(pcs.size<2) return null;
   const bass=Math.min(...ms)%12; let best=null;
   for(const [suf,iv,q] of TPL) for(let r=0;r<12;r++){
-    if(!iv.every(x=>pcs.has((r+x)%12))) continue;
-    const sc=iv.length*10-(pcs.size-iv.length)*4+(r===bass?3:0)-(q==='sus'||q==='pow'?2:0);
-    if(!best||sc>best.sc) best={sc,root:r,suf,iv,q};
+    const miss=iv.filter(x=>!pcs.has((r+x)%12));
+    // completo, ou (com 3+ notas soando) faltando UMA nota que não é a fundamental: F A B → Bm7(♭5) sem 3ª
+    if(miss.length>1 || (miss.length===1 && (pcs.size<3 || iv.length<3 || miss[0]===0 || q==='sus' || q==='pow'))) continue;
+    const pres=iv.length-miss.length;
+    const sc=pres*10-miss.length*8-(pcs.size-pres)*4+(r===bass?3:0)-(q==='sus'||q==='pow'?2:0);
+    if(!best||sc>best.sc) best={sc,root:r,suf,iv,q,miss:miss[0]};
   }
   if(!best) return null;
   const extra=[...pcs].map(p=>(p-best.root+12)%12).filter(x=>!best.iv.includes(x)).sort((a,b)=>a-b);
   const tones=best.iv.concat(extra).map(x=>(best.root+x)%12);
-  return {root:best.root,suf:best.suf,q:best.q,bass,tones,pcs:[...pcs]};
+  const MISS={1:'♭9',2:'9',3:'3ª',4:'3ª',5:'4ª',6:'5ª',7:'5ª',8:'5ª',9:'7ª',10:'7ª',11:'7ª'};
+  return {root:best.root,suf:best.suf,q:best.q,bass,tones:tones.filter(pc=>pcs.has(pc)),pcs:[...pcs],miss:best.miss!=null?MISS[best.miss]:null};
 }
 const chordName=ci=>ci ? nm(ci.root)+ci.suf+(ci.bass!==ci.root?'/'+nm(ci.bass):'') : '';
-const chordNotes=ci=>ci ? ci.tones.map(nm).join(' ') : '';
+const chordNotes=ci=>ci ? ci.tones.map(nm).join(' ')+(ci.miss?' · sem '+ci.miss:'') : '';
 // grau com inversão no estilo popular: o baixo vira o intervalo a partir da fundamental (C/E → I/3, G7/F → V7/7);
 // baixo fora do acorde (pedal, baixo trocado) sai pelo intervalo também (C/D → I/9)
 const BASS_TONE=r=>r===3||r===4?'3':r>=6&&r<=8?'5':r>=9?'7':r===5?'4':'2';
@@ -502,11 +506,12 @@ function drawRoll(NOW){
     const X=fctx; X.setTransform(dpr,0,0,dpr,0,0); X.globalCompositeOperation='source-over'; X.fillStyle='#050506'; X.fillRect(0,0,w,h); drawFret(X,w,h,NOW); }
 }
 function drawPianoRoll(NOW){
-  const w=rollW(), h=Math.round(Math.min(150,innerHeight*0.2)), dpr=1.5;
+  const w=rollW(), h=Math.round(Math.min(LIVE?150:200,innerHeight*(LIVE?0.2:0.26))), dpr=1.5;
   if(rollc.width!==w*dpr||rollc.height!==h*dpr){ rollc.width=w*dpr; rollc.height=h*dpr; rollc.style.width=w+'px'; rollc.style.height=h+'px'; }
   const X=rctx; X.setTransform(dpr,0,0,dpr,0,0);
   X.globalCompositeOperation='source-over'; X.fillStyle='#050506'; X.fillRect(0,0,w,h);
-  const lo=Math.max(21,LOW-1), hi=Math.min(108,HIGH+1), n=hi-lo+1, kw=w/n, KH=Math.min(34,h*0.18), top=h-KH;
+  const PASTH=LIVE?0:Math.round(h*0.26);   // tocando MIDI: o que já soou continua descendo abaixo do teclado
+  const lo=Math.max(21,LOW-1), hi=Math.min(108,HIGH+1), n=hi-lo+1, kw=w/n, KH=Math.min(34,h*0.18), top=h-KH-PASTH;
   ROLLG={lo,hi,kw,top,w,h};
   const AHEAD=6, PX=top/AHEAD;   // 6 tempos de futuro caindo
   // linhas de compasso
@@ -520,6 +525,13 @@ function drawPianoRoll(NOW){
     X.fillStyle=col(m,on?1:0.75); rrect(X,x+0.5,Math.max(0,y0),Math.max(1,kw-1),Math.min(top,y1)-Math.max(0,y0),Math.min(3,kw/2));
     if(on){ lit[m]={age:NOW-s,v}; }
   });
+  if(PASTH){ const kb=top+KH, BEH=3, PX2=PASTH/BEH;   // memória: 3 tempos, apagando
+    X.save(); X.beginPath(); X.rect(0,kb,w,PASTH); X.clip();
+    for(let b=Math.ceil((NOW-BEH-OFFSET)/BPB)*BPB+OFFSET; b<=NOW; b+=BPB){ const y=kb+(NOW-b)*PX2; X.fillStyle='rgba(255,255,255,0.05)'; X.fillRect(0,y,w,1); }
+    notesIn(NOW-BEH,NOW).forEach(([m,s,d,role])=>{ if(!L[role]||m<lo||m>hi||s>NOW) return;
+      const e=Math.min(s+d,NOW), yA=kb+(NOW-e)*PX2, yB=kb+(NOW-s)*PX2, age=NOW-e;
+      X.fillStyle=col(m,Math.max(0.08,0.55*(1-age/BEH))); rrect(X,(m-lo)*kw+0.5,yA,Math.max(1,kw-1),Math.max(1,yB-yA),Math.min(3,kw/2)); });
+    X.restore(); X.fillStyle='rgba(255,255,255,0.12)'; X.fillRect(0,kb,w,1); }
   // teclado
   for(let m=lo;m<=hi;m++){ const x=(m-lo)*kw, bk=BLACK.includes(m%12), L2=lit[m];
     X.fillStyle=L2?col(m):(bk?'#1b1b1f':'#d8d8d2'); rrect(X,x+0.5,top+1,Math.max(1,kw-1),bk?KH*0.62:KH-1,Math.min(2.5,kw/2));
@@ -1069,6 +1081,12 @@ function drawFret(X,w,h,NOW){
   // rastro curto das notas que acabaram de soar
   act.filter(n=>!ms.includes(n[0])).forEach(n=>{ const pl=fretPlace([n[0]],fretP)[0]; if(!pl) return; const age=NOW-(n[1]+n[2]); if(age<0) return;
     X.fillStyle=col(n[0],Math.max(0,0.5*(1-age/1.5))); X.beginPath(); X.arc(posX(pl.f),sy(pl.s),Math.min(5,sg*0.3),0,7); X.fill(); });
+  // previsão: as próximas notas (até 2 tempos) aparecem como anéis que se fecham sobre a casa onde vão soar
+  if(!LIVE){ const AH=2, nx=notesIn(NOW,NOW+AH).filter(n=>n[1]>NOW && L[n[3]]);
+    const byT={}; nx.forEach(n=>{ const k=n[1].toFixed(3); (byT[k]=byT[k]||[]).push(n[0]); });
+    Object.keys(byT).forEach(k=>{ const t=+k, u=(t-NOW)/AH, msN=[...new Set(byT[k])].sort((a,b)=>a-b);
+      fretPlace(msN,fretP).forEach(pl=>{ const x=posX(pl.f), y=sy(pl.s), r0=Math.min(7.5,sg*0.44);
+        X.strokeStyle=col(pl.m,0.25+0.6*(1-u)); X.lineWidth=1.4; X.beginPath(); X.arc(x,y,r0*(1+2.2*u),0,7); X.stroke(); }); }); }
   // digitação escolhida
   const FL=0.25*st.bpm/60;
   fretPlace(ms,fretP).forEach(pl=>{ const x=posX(pl.f), y=sy(pl.s), r=Math.min(7.5,sg*0.44);
@@ -1320,11 +1338,16 @@ function frame(ts){
   ctx.globalCompositeOperation='source-over';
 
   // canto: cifra, composição, grau e tom
-  const ci=cur&&cur.ci, key=(L.hud?1:0)+'|'+chordName(ci)+'|'+L.comp+L.grau+L.corAcorde+KEY.tonic+KEY.mode;
+  const ci=cur&&cur.ci, lpc=[...new Set(live.map(n=>n[0]).concat(LIVE?Object.keys(HELD).map(Number):[]).map(m=>((m%12)+12)%12))].sort((a,b)=>a-b);
+  const key=(L.hud?1:0)+'|'+chordName(ci)+'|'+(ci?'':lpc.join())+'|'+L.comp+L.grau+L.corAcorde+KEY.tonic+KEY.mode;
   if(key!==hudLast){ hudLast=key;
     $('hud').style.display=L.hud?'':'none';
     $('hN').textContent=chordName(ci); $('hN').style.color=L.corAcorde==='branco'?'#f1f1ea':rgba(mix(curC,[255,255,255],0.3),1);
     $('hC').textContent=L.comp?chordNotes(ci):''; $('hG').textContent=L.grau?chordDegree(ci):'';
+    if(!ci && lpc.length>=2){   // notas soando sem acorde reconhecido: diz quais são e se há trítono (tensão de dominante)
+      const tri=lpc.find(a=>lpc.includes((a+6)%12));
+      $('hN').textContent='?'; $('hN').style.color='#9a9a92'; $('hC').textContent=lpc.map(nm).join(' ')+' · sem acorde reconhecido';
+      $('hG').textContent=tri!=null?'trítono '+nm(tri)+'–'+nm((tri+6)%12)+': tensão de dominante':''; }
     $('hK').textContent='tom: '+nm(KEY.tonic)+' '+KEY.mode+(keyAuto?' (automático)':'');
   }
   drawArt(NOW, live, curC); drawRoll(NOW); drawTuner();
