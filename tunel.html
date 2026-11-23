@@ -14,7 +14,11 @@
   label{display:flex;gap:8px;align-items:center}
   input[type=range]{width:110px;accent-color:#e8451e}
   output{min-width:60px;color:#f1f1ea}
-  #fname{color:#f1f1ea;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #fname{color:#f1f1ea;width:300px;flex:0 0 300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #fname:empty{display:none}
+  /* textos que mudam a cada leitura (notas do microfone, cronômetro da gravação): largura fixa, a barra não pula */
+  #micIn,#recBtn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;font-variant-numeric:tabular-nums}
+  #micIn{width:27ch} #recBtn{width:26ch}
   #panel{position:fixed;left:16px;top:108px;max-height:calc(100vh - 140px);overflow:auto;width:250px;background:#141418ee;border:1px solid #2e2e34;border-radius:8px;padding:14px;font-size:13px;color:#c9c9c2;display:none}
   #panel.open{display:block}
   #panel,#exp{z-index:20;box-shadow:0 8px 30px #000a}
@@ -49,6 +53,15 @@
   .box canvas{display:block;border-radius:4px;background:#050506}
   .cap{display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:8px}
   .cap button{padding:2px 8px;font-size:12px}
+  #cmp{position:fixed;left:16px;right:16px;bottom:16px;z-index:25;background:#141418f4;border:1px solid #2e2e34;border-radius:8px;padding:12px 14px;font-size:13px;color:#c9c9c2;display:none;box-shadow:0 8px 30px #000a}
+  #cmp.open{display:block}
+  .cmph{display:flex;justify-content:space-between;align-items:center;color:#f1f1ea}
+  #cmpStats{margin-top:6px;font-variant-numeric:tabular-nums}
+  #cmpVerdict{margin-top:3px;color:#f0a030}
+  .cmpc{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  #cmpScroll{overflow-x:auto;border-radius:4px;background:#050506}
+  #cmpc{display:block}
+  .cmpl{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:11.5px;color:#8a8a82;margin-top:6px}
   #art{left:16px} #roll{right:16px;top:108px;bottom:auto} #tuner{right:16px;top:300px;bottom:auto;display:none}
   .rtabs button{padding:2px 9px;font-size:12px;margin-left:4px}
   .rtabs select{padding:2px 4px;font-size:11px;margin-left:4px}
@@ -64,14 +77,31 @@
   <button id="front">vista: lado</button>
   <button id="snd" class="on">som ligado</button>
   <button id="up">📂 subir MIDI</button><input id="file" type="file" accept=".mid,.midi,audio/midi" hidden>
-  <select id="song" title="música"><option value="live">🎹 tocar ao vivo</option><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option></select>
+  <select id="song" title="música"><option value="live">🎹 tocar ao vivo</option><option value="bach">Prelúdio em Dó · Bach</option><option value="furelise">Für Elise · Beethoven</option><option value="demo">exemplo curto: C7M – Am – F – G7</option><option value="file" hidden>seu MIDI</option><option value="take" hidden>sua gravação</option></select>
   <button id="midiIn" hidden title="usar um teclado MIDI ligado no computador">🎹 conectar teclado MIDI</button>
   <button id="micIn" hidden title="ouvir um piano, violão ou voz pelo microfone e desenhar no túnel (aproximado)">🎤 microfone</button>
+  <button id="recBtn" hidden title="grava um trecho do que você toca (microfone, teclado ou MIDI) pra ouvir depois em piano">⏺ gravar trecho</button>
+  <button id="recPlay" hidden title="toca a gravação como MIDI, com som de piano">▶ ouvir no piano</button>
+  <button id="recMid" hidden title="baixa a gravação como arquivo .mid">⤓ .mid</button>
+  <button id="cmpBtn" hidden title="põe o áudio do violão e o MIDI lado a lado e mede o atraso">⇄ comparar</button>
+  <select id="instr" title="timbre do som do app"><option value="synth">timbre: sintético</option><option value="piano">timbre: piano</option></select>
   <span id="fname"></span>
   <button id="gear">⚙ camadas</button>
   <button id="expBtn">⤓ exportar</button>
 </div>
 <div id="panel"></div>
+<div id="cmp">
+  <div class="cmph"><b>comparar · violão × MIDI</b><button id="cmpX" title="fechar">✕</button></div>
+  <div id="cmpStats"></div><div id="cmpVerdict"></div>
+  <div class="cmpc">
+    <button data-p="orig">▶ violão</button><button data-p="midi">▶ MIDI piano</button><button data-p="both" title="violão na esquerda, piano na direita">▶ os dois juntos</button><button data-p="stop">■ parar</button>
+    <select id="cmpVer"><option value="raw">MIDI como saiu</option><option value="shift">MIDI deslocado pelo atraso médio</option><option value="anchor">MIDI ancorado no ataque real</option></select>
+    <button id="cmpUse" title="a gravação passa a ser esta versão (ouvir no piano e .mid)">usar esta versão</button>
+    <button id="cmpWav">⤓ áudio .wav</button>
+  </div>
+  <div id="cmpScroll"><canvas id="cmpc"></canvas></div>
+  <div class="cmpl"><span style="color:#9a9a92">▮ onda do violão</span> <span style="color:#f0a030">│ ataque real</span> <span>▬ nota MIDI (cor da nota)</span> <span style="color:#f0a030">╲ ligação ataque → nota: quanto mais inclinada, mais atraso</span></div>
+</div>
 <div id="exp">
   <h2>o que entra</h2>
   <label><input type="checkbox" id="xMel" checked> melodia</label>
@@ -265,11 +295,11 @@ const CONE_SHORT={ouvido:'como o ouvido sente', kepler:'como as órbitas da seç
 // ================= camadas (o que mostrar) =================
 const LAYERS=[
   ['fios',[['baixo','baixo'],['acorde','notas do acorde'],['melodia','melodia'],['contorno','contorno da melodia'],['pedal','pedal (sustenta até o fim do compasso)']]],
-  ['acordes',[['poligono','forma do acorde agora'],['fatias','anel na troca de acorde'],['nomes','cifra no eixo'],['comp','composição (C E G)'],['grau','grau no tom (I7M)']]],
+  ['acordes',[['poligono','forma do acorde agora'],['prisma','forma do acorde em 3D (prisma enquanto soa)'],['fatias','anel na troca de acorde'],['nomes','cifra no eixo'],['comp','composição (C E G)'],['grau','grau no tom (I7M)']]],
   ['quadros 2D',[['quadro','teia (quadro que se acumula)'],['teiaAcorde','teia: acordes (raios)'],['teiaMel','teia: melodia (espiral)'],['teiaBaixo','teia: baixo (fio-guia)'],['roll','piano roll / braço do violão'],['violaoMidi','guitarra MIDI: 1 canal por corda'],['afinador','afinador (com microfone)']]],
   ['cena',[['clarao','clarão branco no ataque'],['cabeca','cabeça (anéis e notas)'],['eixo','eixo do tempo'],['brilho','brilho'],['hud','acorde no canto']]],
 ];
-const DEF={afinador:true,rollPiano:true,rollFret:false,violaoMidi:false,teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental',cone:'ouvido',escala:'piano'};
+const DEF={afinador:true,rollPiano:true,rollFret:false,violaoMidi:false,teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,prisma:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental',cone:'ouvido',escala:'piano'};
 let L=Object.assign({},DEF);
 try{ const saved=JSON.parse(localStorage.getItem('tunel-camadas')||'null'); if(saved) L=Object.assign(L,saved); }catch(e){}
 const saveL=()=>{ try{ localStorage.setItem('tunel-camadas',JSON.stringify(L)); }catch(e){} };
@@ -326,6 +356,7 @@ if(/panel/.test(location.hash)){ $('panel').classList.add('open'); $('gear').cla
 let ac=null, master=null, schedUntil=0, polyGain=1;
 function initAudio(){ if(ac) return; ac=new (window.AudioContext||window.webkitAudioContext)(); master=ac.createGain(); master.gain.value=0.22; master.connect(ac.destination); }
 function voice(m,when,dur,role,vel){
+  if(st.instr==='piano'){ pianoVoice(m,when,dur*60/st.bpm,vel==null?0.8:vel); return; }
   const f=440*Math.pow(2,(m-69)/12), o=ac.createOscillator(), g=ac.createGain();
   o.type=role==='melodia'?'triangle':'sine'; o.frequency.value=f;
   const peak=(role==='melodia'?0.5:(role==='baixo'?0.55:0.22))*(0.3+0.9*(vel==null?0.8:vel))*polyGain;
@@ -398,7 +429,7 @@ function loadExample(id){
 }
 const loadFurElise=()=>loadExample('furelise');
 $('song').onchange=()=>{ const v=$('song').value; $('song').blur();   // tira o foco: as letras viram notas, não trocam a opção
-  if(v==='live') startLive(); else if(EXAMPLES[v]) loadExample(v); else if(v==='demo') loadDemo(); };
+  if(v==='live') startLive(); else if(v==='take') loadTake(); else if(EXAMPLES[v]) loadExample(v); else if(v==='demo') loadDemo(); };
 { const want=/furelise|embed/.test(location.hash)?'furelise':/demo/.test(location.hash)?'demo':/aovivo/.test(location.hash)?'live':'bach';   // padrão: Bach
   $('song').value=want; if(want==='live') setTimeout(startLive,0); else if(want==='demo') loadDemo(); else loadExample(want).then(()=>{ if(!isNaN(hashT)) st.now=hashT; }); }
 
@@ -615,6 +646,7 @@ let ROLLG=null; const HELD={}; let SUSTAIN=false; const SUSTAINED=new Set(); let
 const liveRole=m=>m<48?'baixo':(m>=72?'melodia':'acorde');
 function liveVoiceStart(m,vel){
   if(!ac||!st.sound) return null;
+  if(st.instr==='piano') return pianoVoice(m,ac.currentTime,null,vel);
   const f=440*Math.pow(2,(m-69)/12), o=ac.createOscillator(), g=ac.createGain(), role=liveRole(m), t=ac.currentTime;
   o.type=role==='melodia'?'triangle':'sine'; o.frequency.value=f;
   const peak=(role==='melodia'?0.5:(role==='baixo'?0.55:0.3))*(0.3+0.9*vel);
@@ -627,10 +659,10 @@ function startLive(){
   LIVE=true; BASE_RAW=[]; BASE=BASE_RAW; TL=[]; LOOP=1e9; BPB=4; OFFSET=0; LOW=36; HIGH=96; MAXD=0.05; polyGain=1;
   st.now=0; schedUntil=0; KEY={tonic:0,mode:'maior'}; THREADK={melodia:1,baixo:1}; SONG='improviso-ao-vivo';
   if(window.artReady) artClear(); buildPanel();
-  $('midiIn').hidden=false; $('micIn').hidden=false; $('fname').textContent='toque: 1 … / são as brancas (T = dó central) · Caps Lock ou Shift = pretas · ↑↓ oitava · espaço = pedal';
+  $('midiIn').hidden=false; $('micIn').hidden=false; recUI(); $('fname').textContent='toque: 1 … / são as brancas (T = dó central) · Caps Lock ou Shift = pretas · ↑↓ oitava · espaço = pedal';
   setPlaying(true);
 }
-function stopLive(){ if(!LIVE) return; micStop(); Object.keys(HELD).forEach(k=>liveOff(+k,true)); LIVE=false; SUSTAIN=false; SUSTAINED.clear(); $('midiIn').hidden=true; $('micIn').hidden=true; }
+function stopLive(){ if(!LIVE) return; if(REC.on) recStop(); micStop(); Object.keys(HELD).forEach(k=>liveOff(+k,true)); LIVE=false; SUSTAIN=false; SUSTAINED.clear(); $('midiIn').hidden=true; $('micIn').hidden=true; recUI(); }
 function liveOn(m,vel,silent){
   if(!LIVE || HELD[m] || m<21 || m>108) return;
   if(ac && ac.state==='suspended') ac.resume();
@@ -703,6 +735,7 @@ $('midiIn').onclick=()=>{
 // o som do app fica mudo pras notas do microfone (senão ele se ouviria). acorde de violão sai aproximado:
 // pode sobrar um harmônico ou faltar uma nota; uma nota por vez é bem mais fiel.
 let mic=null; window.__micLog=[];
+const MIC_ATK_LAG=0.035;   // atraso do próprio detector de ataque (s), descontado na âncora
 async function micStart(){
   initAudio(); if(ac.state==='suspended') await ac.resume();
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ $('micIn').textContent='🎤 sem acesso ao microfone neste navegador'; return; }
@@ -711,7 +744,7 @@ async function micStart(){
   catch(e){ $('micIn').textContent='🎤 microfone negado'; return; }
   const src=ac.createMediaStreamSource(stream), an=ac.createAnalyser(), an2=ac.createAnalyser();
   an.fftSize=16384; an.smoothingTimeConstant=0; an2.fftSize=4096; src.connect(an); src.connect(an2);   // não liga na saída: sem eco
-  mic={stream,an,an2,spec:new Float32Array(an.frequencyBinCount),td:new Float32Array(4096),ph:[],sr:ac.sampleRate,cal:[],floor:null,seen:{},miss:{},prevRms:0};
+  mic={stream,src,an,an2,spec:new Float32Array(an.frequencyBinCount),td:new Float32Array(4096),ph:[],sr:ac.sampleRate,cal:[],floor:null,seen:{},miss:{},prevRms:0};
   mic.timer=setInterval(micTick,40);
   if(!st.playing) setPlaying(true);
   $('micIn').classList.add('on'); $('micIn').textContent='🎤 calibrando… (silêncio 1 s)';
@@ -759,18 +792,229 @@ function micTick(){
   }
   // liga depois de 2 leituras seguidas (~80 ms), desliga depois de 3 faltas; ataque forte reinicia as notas
   const attack=rms>mic.prevRms*1.8 && rms>mic.floor*3; mic.prevRms=rms;
-  if(attack) mic.hold=6;                                            // ~0,25 s: a janela ainda tem o estalo do ataque
+  if(attack){ mic.hold=6; mic.atk=st.now-MIC_ATK_LAG*st.bpm/60; }   // ~0,25 s: a janela ainda tem o estalo do ataque
+  const beats=s=>s*st.bpm/60;
   const holding=(mic.hold||0)>0; if(holding) mic.hold--;
   const fs=new Set(found);
   fs.forEach(m=>{ mic.seen[m]=(mic.seen[m]||0)+1; mic.miss[m]=0; });
-  micHeld().forEach(m=>{ if(!fs.has(m)){ mic.miss[m]=(mic.miss[m]||0)+1; if(mic.miss[m]>=3){ endNote(m); mic.seen[m]=0; } } else if(attack){ endNote(m); } });
+  micHeld().forEach(m=>{ if(!fs.has(m)){ mic.miss[m]=(mic.miss[m]||0)+1; if(mic.miss[m]>=3){ const n=HELD[m].note; endNote(m); n[2]=Math.max(0.05,n[2]-beats(0.08)); mic.seen[m]=0; } } else if(attack){ endNote(m); } });
   Object.keys(mic.seen).forEach(k=>{ if(!fs.has(+k)) mic.seen[k]=0; });
   const vel=Math.max(0.2,Math.min(1,rms*10));
-  if(!holding) fs.forEach(m=>{ if(mic.seen[m]>=3 && !HELD[m]) liveOn(m,vel,true); });
+  // a nota só é confirmada ~0,3 s depois do toque: grava no instante do ataque (ou, sem ataque recente, 3 leituras antes)
+  if(!holding) fs.forEach(m=>{ if(mic.seen[m]>=3 && !HELD[m]){ liveOn(m,vel,true);
+    if(HELD[m]){ const a=mic.atk!=null && st.now-mic.atk<beats(0.7) ? mic.atk : st.now-beats(0.12); HELD[m].note[1]=Math.max(a, st.now-beats(0.7)); } } });
   const names=micHeld().sort((a,b)=>a-b).map(m=>nm(m%12)+(Math.floor(m/12)-1));
   $('micIn').textContent='🎤 '+(names.length?names.join(' '):'ouvindo…');
   window.__micLog.push({t:+st.now.toFixed(2),notas:names.join(' ')});
 }
+
+
+// ================= gravar um trecho e ouvir em piano =================
+// grava o que entra no modo ao vivo (microfone, teclado, MIDI) entre ⏺ e ⏹, limpa os estalos curtos e
+// devolve como uma música: toca no túnel com piano de verdade (amostras do Salamander Grand Piano) e baixa .mid
+let REC={on:false,t0:0,take:null};
+const fmtSec=x=>{ const s=Math.round(x); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+function recUI(){
+  const b=$('recBtn'); b.hidden=!LIVE; b.classList.toggle('on',REC.on);
+  if(REC.on){ const n=BASE_RAW.filter(x=>x[1]>=REC.t0).length; b.textContent=`⏹ parar · ${fmtSec((st.now-REC.t0)*60/st.bpm)} · ${n} nota${n===1?'':'s'}`; }
+  else b.textContent=REC.take?'⏺ gravar de novo':'⏺ gravar trecho';
+  $('recPlay').hidden=!REC.take; $('recMid').hidden=!REC.take; $('cmpBtn').hidden=!(REC.take&&REC.take.audio);
+}
+function recStart(){ if(!LIVE) return; if(!st.playing) setPlaying(true); REC.on=true; REC.t0=st.now; REC.pcm=[]; REC.beat0=null;
+  if(mic&&mic.src){   // áudio cru junto com as notas, pra comparar depois (blocos de 1024 amostras ≈ 21 ms)
+    const sp=ac.createScriptProcessor(1024,1,1), z=ac.createGain(); z.gain.value=0;
+    sp.onaudioprocess=e=>{ if(!REC.on) return; const d=e.inputBuffer.getChannelData(0);
+      if(REC.beat0==null) REC.beat0=st.now-(d.length/ac.sampleRate)*st.bpm/60;   // amostra 0 ↔ este tempo do túnel
+      REC.pcm.push(new Float32Array(d)); };
+    mic.src.connect(sp); sp.connect(z); z.connect(ac.destination); REC.sp=sp; }
+  recUI(); }
+function recStop(){
+  REC.on=false; const t0=REC.t0, t1=st.now, sec=60/st.bpm;
+  let audio=null; if(REC.sp){ try{ REC.sp.disconnect(); }catch(e){} REC.sp=null;
+    const n=REC.pcm.reduce((a,c)=>a+c.length,0); if(n&&REC.beat0!=null){ const pcm=new Float32Array(n); let o=0; REC.pcm.forEach(c=>{ pcm.set(c,o); o+=c.length; }); audio={pcm,sr:ac.sampleRate,beat0:REC.beat0}; } REC.pcm=[]; }
+  let notes=BASE_RAW.filter(n=>n[1]>=t0-1e-6 && n[1]<t1)
+    .map(n=>[n[0], n[1]-t0, Math.min(n[2], t1-n[1]), n[3], n[4]==null?0.8:n[4]])
+    .filter(n=>n[2]*sec>=0.07)                                       // estalo de ataque e leitura solta: fora
+    .sort((a,b)=>a[1]-b[1]||a[0]-b[0]);
+  if(!notes.length){ $('fname').textContent='nada gravado: nenhuma nota firme no trecho'; recUI(); return; }
+  const s0=notes[0][1]; notes.forEach(n=>n[1]-=s0);                  // começa na primeira nota
+  const len=Math.max(...notes.map(n=>n[1]+n[2]));
+  REC.take={notes, len, bpm:st.bpm, base:t0+s0, audio};
+  $('fname').textContent=`gravado: ${notes.length} nota${notes.length===1?'':'s'} · ${fmtSec(len*sec)} · ▶ ouvir no piano ou ⤓ .mid`;
+  recUI();
+}
+// ⏺ liga o microfone sozinho (e espera a calibração); ⏹ já baixa o .wav e o .mid
+$('recBtn').onclick=async()=>{
+  if(REC.on){ recStop(); recSave(); return; }
+  if(REC.wait) return;
+  if(!mic){ REC.wait=true; $('recBtn').textContent='🎤 ligando… silêncio 1 s'; await micStart();
+    for(let i=0;i<60&&mic&&mic.floor==null;i++) await new Promise(r=>setTimeout(r,50)); REC.wait=false;
+    if(!mic){ $('fname').textContent='sem microfone: gravando só teclado/MIDI'; } }
+  recStart(); };
+function recSave(){ const tk=REC.take; if(!tk) return; const stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+  download('gravacao-'+stamp+'.mid', takeToMidi(tk), 'audio/midi');
+  if(tk.audio) setTimeout(()=>download('gravacao-'+stamp+'.wav', wavOf(tk.audio), 'audio/wav'),300);
+  $('fname').textContent='baixado: gravacao-'+stamp+(tk.audio?' .wav + .mid':' .mid (sem áudio: microfone desligado)'); }
+setInterval(()=>{ if(REC.on) recUI(); },250);
+
+// piano: amostras a cada 3 semitons (A0…C8), as do meio por transposição curta; sem rede → piano sintetizado
+const PIANO={buf:{},ready:null}, PNAMES=['C','Cs','D','Ds','E','F','Fs','G','Gs','A','As','B'];
+function pianoLoad(){
+  if(PIANO.ready) return PIANO.ready; initAudio();
+  const jobs=[]; for(let m=21;m<=108;m+=3){ const n=PNAMES[m%12]+(Math.floor(m/12)-1);
+    jobs.push(fetch(`https://tonejs.github.io/audio/salamander/${n}.mp3`).then(r=>{ if(!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+      .then(b=>ac.decodeAudioData(b)).then(d=>{ PIANO.buf[m]=d; }).catch(()=>{})); }
+  PIANO.ready=Promise.race([Promise.all(jobs), new Promise(r=>setTimeout(r,9000))]);
+  return PIANO.ready;
+}
+function synthPiano(m,out,when){   // reserva: corda com harmônicos que morrem
+  const o=ac.createOscillator(), eg=ac.createGain(), re=new Float32Array([0,1,.55,.32,.2,.13,.08,.05]);
+  o.setPeriodicWave(ac.createPeriodicWave(re,new Float32Array(re.length))); o.frequency.value=freq(m);
+  eg.gain.setValueAtTime(.5,when); eg.gain.setTargetAtTime(0,when+.01,m<48?1.6:m<72?1:.6); o.connect(eg); eg.connect(out); return o;
+}
+function pianoVoice(m,when,durSec,vel,dest){
+  let s=null; for(let d=0;d<=6&&s==null;d++){ if(PIANO.buf[m-d]) s=m-d; else if(PIANO.buf[m+d]) s=m+d; }
+  const g=ac.createGain(), peak=(0.35+0.9*vel)*polyGain*1.2; let src;
+  if(s!=null){ src=ac.createBufferSource(); src.buffer=PIANO.buf[s]; src.playbackRate.value=Math.pow(2,(m-s)/12); src.connect(g); }
+  else src=synthPiano(m,g,when);
+  g.gain.setValueAtTime(peak,when); g.connect(dest||master); src.start(when);
+  if(durSec!=null){ const end=when+Math.max(.08,durSec); g.gain.setTargetAtTime(0,end,0.15); src.stop(end+1.5); }   // soltar a tecla abafa
+  return {o:src,g};
+}
+function setInstr(v){ st.instr=v; $('instr').value=v; try{ localStorage.setItem('tunel-instr',v); }catch(e){} if(v==='piano') pianoLoad(); }
+$('instr').onchange=()=>{ setInstr($('instr').value); $('instr').blur(); };
+{ let v=null; try{ v=localStorage.getItem('tunel-instr'); }catch(e){} st.instr=v==='piano'?'piano':'synth'; $('instr').value=st.instr; }
+
+function loadTake(){
+  const tk=REC.take; if(!tk) return; stopLive();
+  BASE_RAW=tk.notes.map(n=>n.slice()); BASE=BASE_RAW.map(n=>n.slice());
+  BPB=4; OFFSET=0; LOOP=Math.max(BPB,Math.ceil((tk.len+0.5)/BPB)*BPB); MAXD=Math.max(...BASE.map(n=>n[2]));
+  const ms=BASE.map(n=>n[0]); LOW=Math.min(36,...ms); HIGH=Math.max(84,...ms);
+  let peak=0; for(let t=0;t<LOOP;t+=0.25) peak=Math.max(peak,soundingAt(t).length); polyGain=Math.min(1,4/Math.max(1,peak));
+  $('bpm').value=tk.bpm; $('bpm').oninput(); st.now=0; schedUntil=0; afterLoad();
+  SONG='gravacao'; const so=$('song'); so.querySelector('option[value=take]').hidden=false; so.value='take';
+  setPlaying(false); setInstr('piano'); initAudio(); if(ac.state==='suspended') ac.resume();
+  $('fname').textContent='carregando o piano…';
+  pianoLoad().then(()=>{ if($('song').value!=='take') return;
+    const ok=Object.keys(PIANO.buf).length;
+    $('fname').textContent=`sua gravação · ${tk.notes.length} notas · ${fmtSec(tk.len*60/tk.bpm)} · `+(ok?'piano Salamander':'piano sintetizado (sem rede pras amostras)');
+    st.now=0; schedUntil=0; setPlaying(true); recUI(); });
+}
+$('recPlay').onclick=loadTake;
+
+// Standard MIDI File formato 0, 480 tiques por semínima, programa 0 (piano de cauda)
+function takeToMidi(tk){
+  const PPQ=480, ev=[], out=[], vlq=n=>{ const o=[n&0x7f]; while(n>127){ n>>=7; o.unshift((n&0x7f)|0x80); } return o; };
+  tk.notes.forEach(([m,s,d,,v])=>{ const a=Math.round(s*PPQ), b=Math.max(a+1,Math.round((s+d)*PPQ));
+    ev.push([a,0x90,m,Math.max(1,Math.min(127,Math.round(v*127)))]); ev.push([b,0x80,m,0]); });
+  ev.sort((x,y)=>x[0]-y[0]||(x[1]===0x80?-1:1));                     // no mesmo tique, solta antes de atacar
+  const tempo=Math.round(60000000/tk.bpm);
+  out.push(0,0xFF,0x51,3,(tempo>>16)&255,(tempo>>8)&255,tempo&255, 0,0xFF,0x58,4,4,2,24,8, 0,0xC0,0);
+  let last=0; ev.forEach(([t,s,m,v])=>{ out.push(...vlq(t-last),s,m,v); last=t; }); out.push(0,0xFF,0x2F,0);
+  const L=out.length;
+  return new Uint8Array([0x4D,0x54,0x68,0x64,0,0,0,6,0,0,0,1,PPQ>>8,PPQ&255, 0x4D,0x54,0x72,0x6B,(L>>>24)&255,(L>>16)&255,(L>>8)&255,L&255, ...out]);
+}
+$('recMid').onclick=()=>{ if(REC.take) download('gravacao-'+new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')+'.mid', takeToMidi(REC.take), 'audio/midi'); };
+// ---------- comparar: o áudio do violão e o MIDI que saiu dele, na mesma linha do tempo ----------
+// ataques reais = subida brusca da energia do áudio cru (janelas de 10 ms); cada grupo de notas MIDI
+// é ligado ao último ataque antes dele (até 0,9 s) e a distância é o atraso do detector
+const CMP={pxs:110,src:[],t0:0,dur:0,play:null,m:null};
+function audioOnsets(a){
+  const hop=Math.round(a.sr*0.01), n=Math.floor(a.pcm.length/hop), env=new Float32Array(n);
+  for(let i=0;i<n;i++){ let e=0; for(let j=i*hop;j<Math.min(a.pcm.length,(i+2)*hop);j++) e+=a.pcm[j]*a.pcm[j]; env[i]=10*Math.log10(e/(2*hop)+1e-10); }
+  const so=Array.from(env).sort((x,y)=>x-y), floor=so[Math.floor(n*0.2)]||-100, out=[]; let last=-1e9;
+  for(let i=5;i<n;i++){ let mn=1e9; for(let k=1;k<=5;k++) mn=Math.min(mn,env[i-k]);
+    if(env[i]-mn>6 && env[i]>floor+12 && i-last>=8){ let k=i; while(k>0&&env[k-1]<env[k]-1&&i-k<4) k--; out.push(k*0.01); last=i; } }
+  return out;
+}
+const takeSec=(tk,n)=>(n[1]+tk.base-tk.audio.beat0)*60/tk.bpm;     // nota → segundos no áudio gravado
+function cmpMeasure(tk){
+  const ons=audioOnsets(tk.audio), ev=[];
+  tk.notes.map(n=>({n,t:takeSec(tk,n)})).sort((a,b)=>a.t-b.t).forEach(x=>{ const e=ev[ev.length-1];
+    if(e&&x.t-e.t<0.04) e.ns.push(x.n); else ev.push({t:x.t,ns:[x.n]}); });
+  const used=new Set();
+  ev.forEach(e=>{ let best=null; ons.forEach((o,i)=>{ const d=e.t-o; if(d>=-0.05&&d<=0.9&&(best==null||d<e.t-ons[best])) best=i; });
+    if(best!=null){ e.on=ons[best]; e.d=e.t-ons[best]; used.add(best); } });
+  const ds=ev.filter(e=>e.on!=null).map(e=>e.d).sort((a,b)=>a-b), q=p=>ds.length?ds[Math.min(ds.length-1,Math.floor(p*ds.length))]:0;
+  return {ons,ev,med:q(0.5),spread:(q(0.84)-q(0.16))/2,matched:ds.length,missed:ons.length-used.size,extra:ev.length-ds.length};
+}
+function cmpVersion(tk,M,ver){   // [m, seg, dur seg, vel] de cada nota na versão escolhida
+  const sec=60/tk.bpm, sh=new Map(); M.ev.forEach(e=>e.ns.forEach(n=>sh.set(n, ver==='shift'?M.med:ver==='anchor'&&e.on!=null?e.d:ver==='anchor'?M.med:0)));
+  return tk.notes.map(n=>[n[0], takeSec(tk,n)-sh.get(n), n[2]*sec, n[4]]);
+}
+function cmpOpen(){
+  const tk=REC.take; if(!tk||!tk.audio) return; setPlaying(false); pianoLoad();
+  CMP.m=cmpMeasure(tk); const M=CMP.m, ms=x=>Math.round(x*1000);
+  $('cmpStats').textContent=`${M.ons.length} toques no áudio · ${M.ev.length} entradas de nota no MIDI · ${M.matched} ligadas a um toque · `+
+    `atraso mediano ${ms(M.med)} ms · variação ±${ms(M.spread)} ms · ${M.missed} toque(s) sem nota · ${M.extra} nota(s) sem toque`;
+  $('cmpVerdict').textContent=!M.matched?'nenhuma nota casou com um toque: o detector não pegou esse trecho (ou o áudio está fraco demais)':
+    M.spread<0.04?`atraso quase constante: dá pra corrigir só deslocando tudo ${ms(M.med)} ms`:
+    M.spread<0.12?'atraso varia de toque pra toque: deslocar ajuda, mas ancorar cada nota no ataque real resolve (compare as versões)':
+    'atraso muito irregular: ancorar no ataque ajuda, mas o detector precisa de ajuste';
+  $('cmp').classList.add('open'); cmpDraw(0);
+}
+function cmpDraw(ph){
+  const tk=REC.take, M=CMP.m; if(!tk||!M) return;
+  const a=tk.audio, vers=cmpVersion(tk,M,$('cmpVer').value), dur=Math.max(a.pcm.length/a.sr, ...vers.map(v=>v[1]+v[2]))+0.3;
+  const cv=$('cmpc'), Wp=Math.max($('cmpScroll').clientWidth, Math.ceil(dur*CMP.pxs)), Hp=230, D=Math.min(2,devicePixelRatio||1);
+  if(cv.width!==Wp*D){ cv.width=Wp*D; cv.height=Hp*D; cv.style.width=Wp+'px'; cv.style.height=Hp+'px'; }
+  const X=cv.getContext('2d'); X.setTransform(D,0,0,D,0,0); X.clearRect(0,0,Wp,Hp);
+  const px=t=>t*CMP.pxs, wy0=10, wh=80, my0=120, mh=Hp-my0-16;
+  X.font='11px ui-monospace,monospace'; X.fillStyle='#4a4a50';
+  for(let s=0;s<dur;s++){ X.fillRect(px(s),0,1,Hp); X.fillText(s+'s',px(s)+3,Hp-3); }
+  // onda (mín/máx por pixel)
+  const spp=a.sr/CMP.pxs; let pk=1e-6; for(let i=0;i<a.pcm.length;i+=7) pk=Math.max(pk,Math.abs(a.pcm[i]));
+  X.fillStyle='#9a9a92';
+  for(let x=0;x<a.pcm.length/spp;x++){ let lo=0,hi=0; for(let j=Math.floor(x*spp);j<Math.min(a.pcm.length,(x+1)*spp);j++){ const v=a.pcm[j]; if(v<lo) lo=v; if(v>hi) hi=v; }
+    X.fillRect(x, wy0+wh/2-hi/pk*wh/2, 1, Math.max(1,(hi-lo)/pk*wh/2)); }
+  X.fillStyle='#f0a030'; M.ons.forEach(o=>X.fillRect(px(o),wy0-4,2,wh+8));
+  // notas MIDI
+  const mm=vers.map(v=>v[0]), lo=Math.min(...mm)-1, hi=Math.max(...mm)+1, rh=Math.max(3,Math.min(10,mh/(hi-lo+1))), ny=m=>my0+(hi-m)/(hi-lo)*(mh-rh);
+  vers.forEach(([m,t,d])=>{ X.fillStyle=col(m,0.9); X.fillRect(px(t),ny(m),Math.max(2,px(d)),rh); });
+  X.fillStyle='#c9c9c2'; vers.forEach(([m,t])=>{ if(rh>=7) X.fillText(nm(m%12)+(Math.floor(m/12)-1),px(t)+3,ny(m)-2); });
+  // ligações ataque → nota (na versão atual)
+  const sh=$('cmpVer').value; X.strokeStyle='rgba(240,160,48,.75)'; X.lineWidth=1.2;
+  M.ev.forEach(e=>{ if(e.on==null) return; const t=e.t-(sh==='shift'?M.med:sh==='anchor'?e.d:0); X.beginPath(); X.moveTo(px(e.on),wy0+wh+4); X.lineTo(px(t),my0-2); X.stroke(); });
+  if(ph>0){ X.fillStyle='#e8451e'; X.fillRect(px(ph),0,2,Hp); }
+}
+function cmpStop(){ CMP.src.forEach(s=>{ try{ s.stop(); }catch(e){} }); CMP.src=[]; if(CMP.play) cancelAnimationFrame(CMP.play); CMP.play=null; cmpDraw(0); }
+function cmpPlay(what){
+  cmpStop(); const tk=REC.take; if(!tk||!tk.audio) return; initAudio(); if(ac.state==='suspended') ac.resume();
+  const a=tk.audio, t0=ac.currentTime+0.15; CMP.t0=t0;
+  const pan=v=>{ const p=ac.createStereoPanner(); p.pan.value=v; return p; };
+  if(what==='orig'||what==='both'){ const b=ac.createBuffer(1,a.pcm.length,a.sr); b.copyToChannel(a.pcm,0);
+    let pk=1e-6; for(let i=0;i<a.pcm.length;i+=7) pk=Math.max(pk,Math.abs(a.pcm[i]));
+    const s=ac.createBufferSource(), g=ac.createGain(); s.buffer=b; g.gain.value=0.5/pk; s.connect(g);
+    const dst=what==='both'?pan(-0.8):null; if(dst) dst.connect(ac.destination); g.connect(dst||ac.destination);
+    s.start(t0); CMP.src.push(s); }
+  if(what==='midi'||what==='both'){ const out=what==='both'?pan(0.8):master; if(what==='both'){ const mg=ac.createGain(); mg.gain.value=0.22; out.connect(mg).connect(ac.destination); }
+    cmpVersion(tk,CMP.m,$('cmpVer').value).forEach(([m,t,d,v])=>{ if(t>=-0.1) CMP.src.push(pianoVoice(m,t0+Math.max(0,t),d,v==null?0.8:v,out).o); }); }
+  const tick=()=>{ const p=ac.currentTime-t0; cmpDraw(p); const sc=$('cmpScroll'), x=p*CMP.pxs; if(x>sc.scrollLeft+sc.clientWidth-60||x<sc.scrollLeft) sc.scrollLeft=x-60;
+    CMP.play=p<a.pcm.length/a.sr+1.5?requestAnimationFrame(tick):null; };
+  CMP.play=requestAnimationFrame(tick);
+}
+function cmpUse(){   // a gravação vira a versão escolhida (ouvir no piano e .mid passam a usá-la)
+  const tk=REC.take, ver=$('cmpVer').value; if(!tk||ver==='raw') return;
+  const v=cmpVersion(tk,CMP.m,ver), abs=v.map(x=>x[1]*tk.bpm/60+tk.audio.beat0), base=Math.min(...abs);
+  tk.notes=tk.notes.map((n,i)=>[n[0],abs[i]-base,n[2],n[3],n[4]]).sort((a,b)=>a[1]-b[1]||a[0]-b[0]); tk.base=base;
+  tk.len=Math.max(...tk.notes.map(n=>n[1]+n[2]));
+  CMP.m=cmpMeasure(tk); $('cmpVer').value='raw'; cmpOpen();
+  $('cmpVerdict').textContent='versão aplicada: ▶ ouvir no piano e ⤓ .mid já usam ela';
+}
+function wavOf(a){
+  const n=a.pcm.length, b=new DataView(new ArrayBuffer(44+n*2)), w=(o,s)=>[...s].forEach((c,i)=>b.setUint8(o+i,c.charCodeAt(0)));
+  w(0,'RIFF'); b.setUint32(4,36+n*2,true); w(8,'WAVE'); w(12,'fmt '); b.setUint32(16,16,true); b.setUint16(20,1,true); b.setUint16(22,1,true);
+  b.setUint32(24,a.sr,true); b.setUint32(28,a.sr*2,true); b.setUint16(32,2,true); b.setUint16(34,16,true); w(36,'data'); b.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++) b.setInt16(44+i*2,Math.max(-1,Math.min(1,a.pcm[i]))*32767,true);
+  return b.buffer;
+}
+$('cmpBtn').onclick=cmpOpen;
+$('cmpX').onclick=()=>{ cmpStop(); $('cmp').classList.remove('open'); };
+document.querySelectorAll('#cmp [data-p]').forEach(b=>b.onclick=()=>b.dataset.p==='stop'?cmpStop():cmpPlay(b.dataset.p));
+$('cmpVer').onchange=()=>{ $('cmpVer').blur(); cmpStop(); };
+$('cmpUse').onclick=cmpUse;
+$('cmpWav').onclick=()=>{ if(REC.take&&REC.take.audio) download('gravacao-violao.wav', wavOf(REC.take.audio), 'audio/wav'); };
+if(typeof window!=='undefined'){ window.__takeToMidi=takeToMidi; window.__audioOnsets=audioOnsets; window.__cmpMeasure=cmpMeasure; }
 
 
 // ================= braço do violão (aba do piano roll) =================
@@ -956,6 +1200,27 @@ function frame(ts){
     ctx.setLineDash(chordDash(s.ci)); ctx.lineCap='round'; ctx.lineJoin='miter'; ctx.strokeStyle=rgba(c,0.55*f); ctx.lineWidth=1.2; ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle=rgba(c,0.06*f); ctx.fill();
   });
+
+  // prisma: a forma do acorde esticada pelo tempo em que ele soa; o giro do túnel torce o sólido
+  if(L.prisma){
+    for(let k=Math.max(0,Math.floor(from/LOOP)-1);k<=Math.floor(NOW/LOOP);k++) TL.forEach(s=>{
+      const T0=Math.max(from,k*LOOP+s.t0), T1=Math.min(NOW,k*LOOP+s.t1); if(T1-T0<0.05) return;
+      const ms=s.ms.slice().sort((x,y)=>(x%12)-(y%12)); if(ms.length<2) return;
+      const c=chordColor(s.ci), n=Math.max(2,Math.min(48,Math.round((T1-T0)*6))), rows=[];
+      for(let j=0;j<=n;j++){ const t=T0+(T1-T0)*j/n; rows.push({t,q:ms.map(m=>pt(m,t))}); }
+      const E=ms.length===2?1:ms.length;                                   // 2 notas: uma fita só
+      for(let j=0;j<n;j++){ const a=rows[j], b=rows[j+1], f=fadeAt((a.t+b.t)/2); if(f<0.02) continue;
+        ctx.fillStyle=rgba(c,(L.corAcorde==='branco'?0.025:0.05)*f);
+        for(let i=0;i<E;i++){ const i2=(i+1)%ms.length, p1=a.q[i], p2=a.q[i2], p3=b.q[i2], p4=b.q[i];
+          if(!isFinite(p1[0]+p2[0]+p3[0]+p4[0])||near(p1)||near(p3)) continue;
+          ctx.beginPath(); ctx.moveTo(p1[0],p1[1]); ctx.lineTo(p2[0],p2[1]); ctx.lineTo(p3[0],p3[1]); ctx.lineTo(p4[0],p4[1]); ctx.closePath(); ctx.fill(); } }
+      // seção a cada tempo: o "esqueleto" do sólido
+      ctx.lineWidth=0.8; ctx.setLineDash(chordDash(s.ci));
+      for(let t=Math.ceil(T0);t<=T1;t++){ const f=fadeAt(t), q=ms.map(m=>pt(m,t)); if(f<0.05||q.some(z=>!isFinite(z[0])||near(z))) continue;
+        ctx.beginPath(); q.forEach((z,i)=>i?ctx.lineTo(z[0],z[1]):ctx.moveTo(z[0],z[1])); ctx.closePath(); ctx.strokeStyle=rgba(c,0.22*f); ctx.stroke(); }
+      ctx.setLineDash([]);
+    });
+  }
 
   // contorno: liga o fim de cada nota da melodia ao começo da próxima
   if(L.contorno && L.melodia){
