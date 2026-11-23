@@ -19,6 +19,7 @@ Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https:
 - **Painéis ⚙ e ⤓ por cima do quadro da teia.**
 
 ### added (túnel)
+- **Prisma do acorde** (camada ⚙ `forma do acorde em 3D`, ligada por padrão): a forma do acorde esticada pelo tempo em que ele soa, pele translúcida na cor do acorde, torcida pelo giro do túnel, com uma seção a cada tempo; tríade vira prisma triangular, tétrade quadrangular.
 - **Microfone ancorado no ataque**: a nota entra no instante do toque, não quando o detector confirma (atraso medido 281 ms → 20 ms); fim da nota 80 ms mais cedo.
 - **Comparar violão × MIDI** (`⇄ comparar`, depois de gravar com o microfone): onda do áudio cru, ataques reais, notas MIDI e ligação ataque→nota na mesma linha do tempo; mede atraso e variação; toca original, MIDI ou os dois; versões deslocada e ancorada no ataque; baixa `.wav`.
 - **Gravar e ouvir em piano** (modo ao vivo): `⏺ gravar trecho` captura o que você toca no violão (microfone), no teclado ou no MIDI; `▶ ouvir no piano` toca a gravação como MIDI no túnel com piano de verdade (amostras Salamander Grand Piano, CC-BY 3.0; sem rede, piano sintetizado); `⤓ .mid` baixa o arquivo. Estalos com menos de 70 ms saem. Novo seletor `timbre: sintético | piano` para todo o app do túnel.

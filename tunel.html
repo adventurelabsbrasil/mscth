@@ -295,11 +295,11 @@ const CONE_SHORT={ouvido:'como o ouvido sente', kepler:'como as órbitas da seç
 // ================= camadas (o que mostrar) =================
 const LAYERS=[
   ['fios',[['baixo','baixo'],['acorde','notas do acorde'],['melodia','melodia'],['contorno','contorno da melodia'],['pedal','pedal (sustenta até o fim do compasso)']]],
-  ['acordes',[['poligono','forma do acorde agora'],['fatias','anel na troca de acorde'],['nomes','cifra no eixo'],['comp','composição (C E G)'],['grau','grau no tom (I7M)']]],
+  ['acordes',[['poligono','forma do acorde agora'],['prisma','forma do acorde em 3D (prisma enquanto soa)'],['fatias','anel na troca de acorde'],['nomes','cifra no eixo'],['comp','composição (C E G)'],['grau','grau no tom (I7M)']]],
   ['quadros 2D',[['quadro','teia (quadro que se acumula)'],['teiaAcorde','teia: acordes (raios)'],['teiaMel','teia: melodia (espiral)'],['teiaBaixo','teia: baixo (fio-guia)'],['roll','piano roll / braço do violão'],['violaoMidi','guitarra MIDI: 1 canal por corda'],['afinador','afinador (com microfone)']]],
   ['cena',[['clarao','clarão branco no ataque'],['cabeca','cabeça (anéis e notas)'],['eixo','eixo do tempo'],['brilho','brilho'],['hud','acorde no canto']]],
 ];
-const DEF={afinador:true,rollPiano:true,rollFret:false,violaoMidi:false,teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental',cone:'ouvido',escala:'piano'};
+const DEF={afinador:true,rollPiano:true,rollFret:false,violaoMidi:false,teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,prisma:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental',cone:'ouvido',escala:'piano'};
 let L=Object.assign({},DEF);
 try{ const saved=JSON.parse(localStorage.getItem('tunel-camadas')||'null'); if(saved) L=Object.assign(L,saved); }catch(e){}
 const saveL=()=>{ try{ localStorage.setItem('tunel-camadas',JSON.stringify(L)); }catch(e){} };
@@ -1200,6 +1200,27 @@ function frame(ts){
     ctx.setLineDash(chordDash(s.ci)); ctx.lineCap='round'; ctx.lineJoin='miter'; ctx.strokeStyle=rgba(c,0.55*f); ctx.lineWidth=1.2; ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle=rgba(c,0.06*f); ctx.fill();
   });
+
+  // prisma: a forma do acorde esticada pelo tempo em que ele soa; o giro do túnel torce o sólido
+  if(L.prisma){
+    for(let k=Math.max(0,Math.floor(from/LOOP)-1);k<=Math.floor(NOW/LOOP);k++) TL.forEach(s=>{
+      const T0=Math.max(from,k*LOOP+s.t0), T1=Math.min(NOW,k*LOOP+s.t1); if(T1-T0<0.05) return;
+      const ms=s.ms.slice().sort((x,y)=>(x%12)-(y%12)); if(ms.length<2) return;
+      const c=chordColor(s.ci), n=Math.max(2,Math.min(48,Math.round((T1-T0)*6))), rows=[];
+      for(let j=0;j<=n;j++){ const t=T0+(T1-T0)*j/n; rows.push({t,q:ms.map(m=>pt(m,t))}); }
+      const E=ms.length===2?1:ms.length;                                   // 2 notas: uma fita só
+      for(let j=0;j<n;j++){ const a=rows[j], b=rows[j+1], f=fadeAt((a.t+b.t)/2); if(f<0.02) continue;
+        ctx.fillStyle=rgba(c,(L.corAcorde==='branco'?0.025:0.05)*f);
+        for(let i=0;i<E;i++){ const i2=(i+1)%ms.length, p1=a.q[i], p2=a.q[i2], p3=b.q[i2], p4=b.q[i];
+          if(!isFinite(p1[0]+p2[0]+p3[0]+p4[0])||near(p1)||near(p3)) continue;
+          ctx.beginPath(); ctx.moveTo(p1[0],p1[1]); ctx.lineTo(p2[0],p2[1]); ctx.lineTo(p3[0],p3[1]); ctx.lineTo(p4[0],p4[1]); ctx.closePath(); ctx.fill(); } }
+      // seção a cada tempo: o "esqueleto" do sólido
+      ctx.lineWidth=0.8; ctx.setLineDash(chordDash(s.ci));
+      for(let t=Math.ceil(T0);t<=T1;t++){ const f=fadeAt(t), q=ms.map(m=>pt(m,t)); if(f<0.05||q.some(z=>!isFinite(z[0])||near(z))) continue;
+        ctx.beginPath(); q.forEach((z,i)=>i?ctx.lineTo(z[0],z[1]):ctx.moveTo(z[0],z[1])); ctx.closePath(); ctx.strokeStyle=rgba(c,0.22*f); ctx.stroke(); }
+      ctx.setLineDash([]);
+    });
+  }
 
   // contorno: liga o fim de cada nota da melodia ao começo da próxima
   if(L.contorno && L.melodia){
