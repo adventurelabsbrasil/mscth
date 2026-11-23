@@ -30,6 +30,16 @@ O piano circular da seção 11 (ângulo = nota, raio = oitava) **anda no tempo**
 
 O que não apareceu junto em nenhum: cor física da nota, cabeça girando e andando no tempo, passado apagando, decaimento como espessura, teia acumulada.
 
+## exportar a escultura
+
+| formato | o que é |
+|---|---|
+| OBJ | tubos por nota (6 lados), eixo x = tempo (10 unidades/tempo), raio do tubo pelo envelope; anéis fechados nas trocas de acorde; cor por vértice (`v x y z r g b`, lida pelo Blender) |
+| PNG / SVG | a teia da música inteira (2048 px / vetor com `mix-blend-mode: screen`) |
+| JSON | notas (midi, início, duração, papel, velocidade, cor), acordes (cifra, composição, grau), tom e mapeamento |
+
+A teia é normalizada pelo tamanho da música: um polígono por troca de acorde e fios mais tênues quando há muitas notas; sem isso, uma peça de 150 tempos vira um borrão branco.
+
 ## ganchos de teste (no endereço)
 
 `#furelise` carrega o exemplo · `#t=12.5` pula para o tempo · `#view=viagem|frente|lado` · `#pedal` · `#panel` abre as camadas · `#midi=arquivo.mid` carrega um MIDI servido ao lado (precisa de servidor, não abre em `file://`).
