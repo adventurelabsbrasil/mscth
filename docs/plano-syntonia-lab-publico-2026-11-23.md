@@ -25,7 +25,7 @@ Ponto de partida: [`revisao-rumo-produto-2026-11-23.md`](revisao-rumo-produto-20
 
 ## 2. Portão de frente (GUARDRAILS, ADR-059)
 
-É a continuação da frente mscth (#17), reclassificada. **Proposta para o Founder confirmar:**
+É a continuação da frente mscth (#17), reclassificada. **Confirmado pelo Founder em 2026-11-23:**
 
 1. **Classe:** `fundação`. Não move dinheiro em 90 dias; reduz o custo de aquisição do Nexo depois.
 2. **Número que muda:** páginas de conceito indexadas e visitas orgânicas por mês em `/comunidade/syntonia/` até 31/03/2027. **A meta fica em aberto**: não há linha de base hoje, então o primeiro passo é medir.
@@ -67,7 +67,7 @@ Com `base = /comunidade/syntonia`, os links do build só funcionam atrás do rew
 - **B1 (recomendada):** um projeto Vercel `syntonia` no time da Adventure, construído a partir do repo público. O `adventure-web` faz rewrite para ele. Ganho extra: um **preview por PR**, inclusive para quem contribui. O Pages vira só um redirect para a URL canônica.
 - **B2:** manter o Pages, com o build publicado sob a mesma base e acessado só pelo rewrite.
 
-Isso refina a decisão 4 ("Pages como espelho"), então precisa do OK do Founder.
+**Decidido (Founder, 2026-11-23): B1.** Isso refina a decisão 4: o Pages deixa de ser espelho e vira redirect.
 
 ## 4. Abertura para contribuição
 
@@ -124,7 +124,7 @@ Isso refina a decisão 4 ("Pages como espelho"), então precisa do OK do Founder
 | Fatia | Entrega | Efeitos externos (OK do Founder, um por vez) |
 |---|---|---|
 | **A. Comunidade** | CONTRIBUTING, CODE_OF_CONDUCT, templates, CODEOWNERS, licença do conteúdo, atribuição Salamander; `HANDOFF.md` (desatualizado, v0.18) apagado; README apresentando o Syntonia | topics/description do repo, labels, Discussions |
-| **B. Esqueleto Astro** | Astro com o legado copiado intacto em `/legado/`, layout com SEO, build na Action e deploy (B1 ou B2) | criar o projeto na Vercel ou mudar o Pages |
+| **B. Esqueleto Astro** | Astro com o legado copiado intacto em `/legado/`, layout com SEO, build e deploy na Vercel (B1) | criar o projeto `syntonia` na Vercel; Pages vira redirect |
 | **C. Motor + testes** | `lib/theory.js` extraído por TDD (os 14 casos de acorde do PR #21 viram teste), depois `midi.js`, `audio.js`, `pitch.js`; o legado passa a importar de `lib/` | nenhum |
 | **D. Nome + site** | rename do repo `mscth` → `syntonia`; no `adventure-labs`, rewrite em `next.config.ts` + "Labs abertos" em `/comunidade`, validado no preview da Vercel | rename do repo, merge e deploy do site institucional |
 | **E. Primeiros conceitos** | 3 páginas, ex.: modo dórico, círculo das quintas, tonnetz; `llms.txt` e sitemap; JSON-LD validado | nenhum além do deploy da fatia B |
@@ -135,7 +135,7 @@ Isso refina a decisão 4 ("Pages como espelho"), então precisa do OK do Founder
 
 - O GitHub redireciona o repo, mas **o Pages não redireciona** `/mscth/`.
 - Em B1, o Pages antigo pode virar uma página-ponte. Isso exige que exista um repo com o nome `mscth`, e criar esse repo desliga o redirect do repo renomeado.
-- Recomendação: aceitar a quebra do `/mscth/`, porque o tráfego hoje é mínimo e a URL canônica muda de qualquer jeito. Só montar a ponte se houver tráfego medido.
+- **Decidido (Founder, 2026-11-23):** aceitar a quebra do `/mscth/`, porque o tráfego hoje é mínimo e a URL canônica muda de qualquer jeito. A ponte só é montada se houver tráfego medido.
 
 **Em aberto:** o que fazer com o `/laboratorio` atual do site (`AudioPhysicsLab.tsx`), que sobrepõe as seções 12 a 14. Pode ser fundido no Syntonia como conceitos (lissajous, órbitas, chladni) ou só linkado. Decidir na fatia D.
 
