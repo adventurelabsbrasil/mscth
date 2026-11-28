@@ -94,9 +94,25 @@ Com o microfone ligado, a gravação guarda também o áudio cru (blocos de 1024
 
 46 teclas brancas pela posição física (`e.code`): `1`=A1, `T`=C4, `.`=C8, `/` passa do piano. Caps Lock ligado ou Shift = preta à direita (E e B ficam mudas). No ABNT2 o `\` fica na fileira do A e o `/` ao lado do ponto, então a sequência pula de fileira nesses dois.
 
+## constelação
+
+Vista sem eixo do tempo, inspirada nos *Visual Models* de Lucio Arese ([Paganini, Caprice nº 5](https://www.youtube.com/watch?v=VXEVECPo8Uw); [Coltrane, Giant Steps](https://www.youtube.com/watch?v=oRM5O7V6J2Q)). No Giant Steps ele mostra o método: o áudio do sax vira cromagrama (CQT), a PCA reduz a 3 eixos, e essas coordenadas são a posição do ponto. Os números ao lado dos pontos no vídeo do Paganini são essas coordenadas.
+
+| tema | decisão | por quê |
+|---|---|---|
+| tempo | não é eixo; a peça se acumula no mesmo espaço | é o que separa a constelação do túnel |
+| posição *teoria* | hélice de altura (ângulo = nota, altura = oitava) | estável: a mesma escala desenha sempre a mesma figura |
+| posição *dados* | cromagrama por nota → PCA 3D sobre a música inteira | a regra do Arese; notas que soam parecido caem perto e cada peça tem seu próprio espaço |
+| cromagrama sem áudio | a nota pesa 3×, harmônicos 3 (quinta, 0,35) e 5 (terça, 0,2), mais tudo que soa no ataque e 0,4 da nota anterior da mesma voz; vetor normalizado | imita o que o CQT do áudio veria; a memória da voz dá continuidade, como quadros de áudio |
+| PCA | covariância 12×12, 3 autovetores por iteração de potência com deflação; coordenadas em desvios-padrão do 1º eixo | sem biblioteca; os números do rótulo ficam na mesma escala do Arese |
+| ao vivo | PCA refeita a cada ~0,7 s, sinal do eixo preso ao anterior, pontos deslizam | sem o deslize a nuvem pularia a cada nota nova |
+| linha | melodia pela voz de cima, baixo pela de baixo; notas do acorde só como ponto | com as notas do acorde ligadas vira um borrão |
+
+Limites: o cromagrama vem das notas do MIDI (ou do que o microfone virou nota), não do áudio cru, então timbre e microtom não entram. Os painéis de timbre do Arese (bateria por amplitude × centroide, baixo por tonalidade × centroide × tempo, coluna de microtons do sax) ficam para depois.
+
 ## ganchos de teste (no endereço)
 
-`#furelise` ou `#demo` trocam o exemplo (sem nada, abre Bach) · `#t=12.5` pula para o tempo · `#view=viagem|frente|lado` · `#pedal` · `#panel` abre as camadas · `#midi=arquivo.mid` carrega um MIDI servido ao lado (precisa de servidor, não abre em `file://`).
+`#furelise` ou `#demo` trocam o exemplo (sem nada, abre Bach) · `#t=12.5` pula para o tempo · `#view=viagem|frente|lado|orbita|constelacao` · `#pos=teoria|pca` (posição na constelação) · `#pedal` · `#panel` abre as camadas · `#midi=arquivo.mid` carrega um MIDI servido ao lado (precisa de servidor, não abre em `file://`).
 
 ## limites conhecidos
 
