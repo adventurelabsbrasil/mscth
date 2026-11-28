@@ -19,6 +19,9 @@ Todas as mudanças notáveis deste projeto. Baseado em [Keep a Changelog](https:
 - **Painéis ⚙ e ⤓ por cima do quadro da teia.**
 
 ### added (túnel)
+- **Vista constelação ✶** (botão de vista, 5ª opção; `#view=constelacao`): sem eixo do tempo, a peça inteira se acumula no mesmo espaço 3D em órbita lenta. Cada nota é um ponto, a linha liga as notas em sequência (melodia pela voz de cima, baixo pela de baixo), os 4 últimos passos ficam grossos na cor da nota, as notas que soam brilham com nome e o que soa junto vira polígono preenchido. O passado apaga sem sumir. Inspirada no *Visual Model* de Lucio Arese (Paganini, Coltrane). Posição escolhida no ⚙ (`#pos=teoria|pca`):
+  - **teoria**: hélice de altura (ângulo = nota, altura = oitava). Posição fixa, então a mesma escala desenha sempre a mesma figura.
+  - **dados**: cromagrama de cada nota (a nota 3×, harmônicos 3 e 5, o que soa junto, um pouco da nota anterior da mesma voz) → PCA em 3 eixos sobre a música inteira. Rótulo com as coordenadas, legenda com a variação explicada por eixo. Ao vivo a PCA se refaz a cada ~0,7 s, sem trocar o sinal dos eixos, e os pontos deslizam até a posição nova. Trocar teoria ↔ dados também desliza.
 - **Piano roll com memória** (tocando música): o que já soou continua descendo abaixo do teclado por 3 tempos, apagando. Ao vivo segue como antes.
 - **Braço do violão com previsão** (tocando música): as próximas notas (até 2 tempos) aparecem como anéis que se fecham sobre a casa onde vão soar.
 - **Acorde incompleto** (ao vivo): com 3+ notas, aceita o acorde com UMA nota faltando, desde que a fundamental soe, e avisa o que falta — `F A B` → `Bm7(♭5)/F`, `B F A · sem 3ª`. Sus e quinta pura não entram na tolerância. Sem acorde nenhum, o canto mostra `?`, as notas e o trítono, se houver.

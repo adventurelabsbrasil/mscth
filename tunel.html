@@ -302,6 +302,9 @@ const CONE_HELP={
   ar:'<b>ar</b> · o raio é proporcional ao comprimento de onda no ar. O Lá mais grave do piano (A0, 27,5 Hz) mede 12,5 m; o Dó mais agudo (C8, 4.186 Hz) mede 8 cm. É a corneta física de verdade, mas as oitavas de cima somem no centro. Ótimo como escultura, ruim pra acompanhar.',
   piano:'<b>piano inteiro</b> · a escala é sempre A0–C8, então uma oitava tem o mesmo tamanho em qualquer música e as esculturas podem ser comparadas.',
   musica:'<b>ajustar à música</b> · usa só a extensão da peça: cada nota ganha mais espaço, mas a escala muda de uma música pra outra.' };
+const CONST_HELP={
+  teoria:'<b>teoria</b> · cada nota fica no seu lugar na hélice de altura: o ângulo é a nota (C no topo, como no túnel) e a altura é a oitava. A mesma nota cai sempre no mesmo ponto, então a constelação é o desenho do caminho: a mesma escala desenha sempre a mesma figura.',
+  pca:'<b>dados</b> · a regra do <i>Visual Model</i> de Lucio Arese. Cada nota vira um cromagrama: 12 números com o quanto de cada nota soa naquele instante (a própria nota, seus harmônicos e o que está soando junto). A PCA encontra os 3 eixos em que esses vetores mais variam na música, e eles viram x, y e z. Notas que soam parecido caem perto; os números ao lado do ponto são as coordenadas. Cada música desenha seu próprio espaço.' };
 const CONE_SHORT={ouvido:'como o ouvido sente', kepler:'como as órbitas da seção 13', ar:'o tamanho real da onda'};
 
 // ================= camadas (o que mostrar) =================
@@ -311,7 +314,7 @@ const LAYERS=[
   ['quadros 2D',[['quadro','teia (quadro que se acumula)'],['teiaAcorde','teia: acordes (raios)'],['teiaMel','teia: melodia (espiral)'],['teiaBaixo','teia: baixo (fio-guia)'],['roll','piano roll / braço do violão'],['violaoMidi','guitarra MIDI: 1 canal por corda'],['afinador','afinador (com microfone)']]],
   ['cena',[['clarao','clarão branco no ataque'],['cabeca','cabeça (anéis e notas)'],['eixo','eixo do tempo'],['brilho','brilho'],['hud','acorde no canto']]],
 ];
-const DEF={afinador:true,rollPiano:true,rollFret:false,violaoMidi:false,teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,prisma:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental',cone:'ouvido',escala:'piano'};
+const DEF={afinador:true,rollPiano:true,rollFret:false,violaoMidi:false,teiaAcorde:true,teiaMel:true,teiaBaixo:true,quadro:true,roll:true,clarao:true,contorno:true,pedal:false,baixo:true,acorde:true,melodia:true,poligono:true,prisma:true,fatias:true,nomes:true,comp:true,grau:true,cabeca:true,eixo:true,brilho:true,hud:true,corAcorde:'fundamental',cone:'ouvido',escala:'piano',constPos:'teoria'};
 let L=Object.assign({},DEF);
 try{ const saved=JSON.parse(localStorage.getItem('tunel-camadas')||'null'); if(saved) L=Object.assign(L,saved); }catch(e){}
 const saveL=()=>{ try{ localStorage.setItem('tunel-camadas',JSON.stringify(L)); }catch(e){} };
@@ -322,6 +325,9 @@ function buildPanel(){
       <select id="coneSel"><option value="ouvido">ouvido · igual a cada semitom</option><option value="kepler">Kepler · r ∝ f^−2/3</option><option value="ar">ar · comprimento de onda</option></select>
       <select id="escSel"><option value="piano">escala: piano inteiro (A0–C8)</option><option value="musica">escala: ajustar à música</option></select>
       <div class="cshort" id="coneShort"></div><div class="help" id="coneHelp" hidden></div>`;
+  h+=`<h2>constelação ✶ <button class="qbtn" id="constQ" title="de onde vem a posição de cada ponto">?</button></h2>
+      <select id="constSel"><option value="teoria">posição: teoria · hélice de altura</option><option value="pca">posição: dados · PCA do cromagrama</option></select>
+      <div class="help" id="constHelp" hidden></div>`;
   h+=`<h2>cor do acorde</h2><select id="corAcorde">
       <option value="fundamental">fundamental (menor puxa pra 3ª)</option><option value="mistura">mistura das notas</option><option value="branco">branco</option></select>`;
   h+=`<h2>tom</h2><select id="keySel"><option value="auto">automático</option>`;
@@ -337,6 +343,10 @@ function buildPanel(){
   cs.onchange=()=>{ L.cone=cs.value; saveL(); coneText(); if(window.artReady) artClear(); };
   es.onchange=()=>{ L.escala=es.value; saveL(); coneText(); if(window.artReady) artClear(); };
   cq.onclick=()=>{ const hp=document.getElementById('coneHelp'); hp.hidden=!hp.hidden; cq.classList.toggle('on',!hp.hidden); };
+  const cst=document.getElementById('constSel'), cqq=document.getElementById('constQ'); cst.value=L.constPos;
+  const constText=()=>{ document.getElementById('constHelp').innerHTML=CONST_HELP[L.constPos]; }; constText();
+  cst.onchange=()=>{ L.constPos=cst.value; saveL(); constText(); if(st.view!=='constelacao') setView('constelacao'); };
+  cqq.onclick=()=>{ const hp=document.getElementById('constHelp'); hp.hidden=!hp.hidden; cqq.classList.toggle('on',!hp.hidden); };
   const ca=document.getElementById('corAcorde'); ca.value=L.corAcorde; ca.onchange=()=>{ L.corAcorde=ca.value; saveL(); };
   const ks=document.getElementById('keySel'); ks.value=keyAuto?'auto':KEY.tonic+':'+KEY.mode;
   ks.onchange=()=>{ if(ks.value==='auto'){ keyAuto=true; KEY=detectKey(); } else { keyAuto=false; const [t,md]=ks.value.split(':'); KEY={tonic:+t,mode:md}; } };
@@ -353,15 +363,18 @@ bind('giro','omega',v=>v===0?'parado':(v===1?'1 volta/comp.':v+' volta/comp.'));
 bind('mem','mem',v=>v+' tempos');
 bind('bpm','bpm',v=>v+' bpm');
 $('cam').onclick=()=>{ st.follow=!st.follow; $('cam').textContent=st.follow?'câmera segue':'câmera fixa'; $('cam').classList.toggle('on',st.follow); };
-const VIEWS={lado:{yaw:-0.42,pitch:0.32,label:'vista: lado'},frente:{yaw:1.5707,pitch:0.12,label:'vista: frente'},viagem:{yaw:-1.5707,pitch:0.0001,label:'vista: viagem ✈'},orbita:{yaw:-0.42,pitch:0.3,label:'vista: órbita ⟳'}};
-function setView(v){ st.view=v; st.yaw=VIEWS[v].yaw; st.pitch=VIEWS[v].pitch; $('front').textContent=VIEWS[v].label; $('front').classList.toggle('on',v!=='lado'); }
-$('front').onclick=()=>{ const order=['lado','frente','viagem','orbita']; setView(order[(order.indexOf(st.view)+1)%order.length]); };
+const VIEWS={lado:{yaw:-0.42,pitch:0.32,label:'vista: lado'},frente:{yaw:1.5707,pitch:0.12,label:'vista: frente'},viagem:{yaw:-1.5707,pitch:0.0001,label:'vista: viagem ✈'},orbita:{yaw:-0.42,pitch:0.3,label:'vista: órbita ⟳'},constelacao:{yaw:-0.5,pitch:0.32,label:'vista: constelação ✶'}};
+const HINT0=document.getElementById('hint').textContent;
+function setView(v){ st.view=v; st.yaw=VIEWS[v].yaw; st.pitch=VIEWS[v].pitch; $('front').textContent=VIEWS[v].label; $('front').classList.toggle('on',v!=='lado');
+  if(v!=='constelacao'){ $('hint').textContent=HINT0; $('hint').dataset.c=''; } }
+$('front').onclick=()=>{ const order=['lado','frente','viagem','orbita','constelacao']; setView(order[(order.indexOf(st.view)+1)%order.length]); };
 { const hv=(location.hash.match(/view=(\w+)/)||[])[1]; if(hv&&VIEWS[hv]) setView(hv); }
 $('snd').onclick=()=>{ st.sound=!st.sound; $('snd').textContent=st.sound?'som ligado':'som desligado'; $('snd').classList.toggle('on',st.sound); };
 $('gear').onclick=()=>{ $('exp').classList.remove('open'); $('expBtn').classList.remove('on'); $('panel').classList.toggle('open'); $('gear').classList.toggle('on'); };
 $('expBtn').onclick=()=>{ $('panel').classList.remove('open'); $('gear').classList.remove('on'); $('exp').classList.toggle('open'); $('expBtn').classList.toggle('on'); };
 if(/pedal/.test(location.hash)){ L.pedal=true; }
 { const hc=(location.hash.match(/cone=(ouvido|kepler|ar)/)||[])[1]; if(hc) L.cone=hc; }
+{ const hp=(location.hash.match(/pos=(teoria|pca)/)||[])[1]; if(hp) L.constPos=hp; }
 if(/panel/.test(location.hash)){ $('panel').classList.add('open'); $('gear').classList.add('on'); }
 
 // ================= áudio =================
@@ -1157,6 +1170,150 @@ function drawTuner(){
     if(b.mf<lo-1||b.mf>hi+1) continue; X.strokeStyle=col(Math.round(b.mf),0.95); X.beginPath(); X.moveTo(xOf(a.t),yOf(a.mf)); X.lineTo(xOf(b.t),yOf(b.mf)); X.stroke(); }
 }
 
+// ================= constelação: cada nota é um ponto no espaço, a linha é o caminho da melodia =================
+// duas regras de posição:
+//  teoria · hélice de altura (Drobisch/Shepard): ângulo = nota, altura = oitava. Fixa: a mesma nota cai sempre no mesmo lugar.
+//  dados  · como no Visual Model de Lucio Arese: cada nota vira um cromagrama (12 números: a nota, os harmônicos e o que
+//           soa junto), e a PCA desses vetores na música inteira dá 3 eixos. Notas que soam parecido ficam perto.
+const CST={key:'',ev:[],pca:null,prev:null,built:0,smooth:new Map()};
+function pca3(X){   // PCA de vetores de 12: covariância 12×12, 3 autovetores por iteração de potência com deflação
+  const n=X.length, D=12, mean=new Array(D).fill(0);
+  X.forEach(x=>{ for(let i=0;i<D;i++) mean[i]+=x[i]/n; });
+  const C=[]; for(let i=0;i<D;i++) C.push(new Array(D).fill(0));
+  X.forEach(x=>{ for(let i=0;i<D;i++){ const a=x[i]-mean[i]; for(let j=i;j<D;j++) C[i][j]+=a*(x[j]-mean[j])/n; } });
+  for(let i=0;i<D;i++) for(let j=0;j<i;j++) C[i][j]=C[j][i];
+  let tot=0; for(let i=0;i<D;i++) tot+=C[i][i];
+  const vecs=[], vals=[];
+  for(let k=0;k<3;k++){
+    let v=[]; for(let i=0;i<D;i++) v.push(1+0.37*((i*7+k*5)%12)/12);
+    let lam=0;
+    for(let it=0;it<200;it++){ const w=new Array(D).fill(0); for(let i=0;i<D;i++) for(let j=0;j<D;j++) w[i]+=C[i][j]*v[j];
+      const l=Math.hypot(...w); if(l<1e-12){ lam=0; break; } lam=l; v=w.map(x=>x/l); }
+    vecs.push(v); vals.push(lam);
+    for(let i=0;i<D;i++) for(let j=0;j<D;j++) C[i][j]-=lam*v[i]*v[j];
+  }
+  return {mean,vecs,vals,tot};
+}
+function constBuild(){
+  // cada nota soando entra no cromagrama do instante do seu ataque; a própria nota pesa 3×; harmônicos 3 (quinta) e 5 (terça)
+  // dão o "CQT" que o áudio teria; um pouco da nota anterior da mesma voz faz o caminho ter continuidade, como quadros de áudio
+  const notes=BASE.filter(n=>n[1]<LOOP).slice().sort((a,b)=>a[1]-b[1]||b[0]-a[0]);
+  const prev={}, ev=[];
+  notes.forEach(n=>{ const [m,s,d,role,v0]=n, v=new Array(12).fill(0);
+    const add=(mm,w)=>{ const pc=((mm%12)+12)%12; v[pc]+=w; v[(pc+7)%12]+=0.35*w; v[(pc+4)%12]+=0.2*w; };
+    notesIn(s,s+0.05).forEach(o=>{ if(o[1]>s+0.05||o[1]+o[2]<=s) return; add(o[0],(o[0]===m&&o[1]===s?3:1)*(o[4]==null?0.8:o[4])); });
+    if(prev[role]) for(let i=0;i<12;i++) v[i]+=0.4*prev[role][i];
+    const l=Math.hypot(...v)||1; for(let i=0;i<12;i++) v[i]/=l;
+    prev[role]=v; ev.push({n,m,s,d,role,v:v0==null?0.8:v0,chroma:v});
+  });
+  let pca=null;
+  if(ev.length>=3){ pca=pca3(ev.map(e=>e.chroma));
+    if(CST.prev) pca.vecs.forEach((w,k)=>{ const p=CST.prev[k]; if(p && w.reduce((a,x,i)=>a+x*p[i],0)<0) pca.vecs[k]=w.map(x=>-x); });   // ao vivo: o eixo não vira de lado
+    CST.prev=pca.vecs; }
+  const sd=pca?Math.sqrt(Math.max(pca.vals[0],1e-9)):1;
+  ev.forEach(e=>{
+    // teoria: hélice; C no topo e sentido horário, como o túnel (vista de cima); a oitava sobe
+    const a=-Math.PI/2+(e.m%12)/12*2*Math.PI, R=150;
+    e.pT=[R*Math.cos(a), (e.m-64.5)*3.8, R*Math.sin(a)];
+    // dados: coordenadas na PCA, em desvios-padrão do 1º eixo (os números que o Arese mostra ao lado dos pontos)
+    e.c=pca?pca.vecs.map(w=>{ let y=0; for(let i=0;i<12;i++) y+=(e.chroma[i]-pca.mean[i])*w[i]; return y/sd; }):[0,0,0];
+    e.pP=[e.c[0]*80, e.c[1]*80, e.c[2]*80];
+  });
+  // linha: melodia pela voz de cima, baixo pela voz de baixo; notas do acorde ficam só como pontos
+  const line=(role,pick)=>{ const out=[]; let lastS=null;
+    ev.filter(e=>e.role===role).forEach(e=>{ if(lastS!=null && Math.abs(e.s-lastS)<1e-6){ if(pick(e,out[out.length-1])) out[out.length-1]=e; return; } lastS=e.s; out.push(e); });
+    return out; };
+  CST.mel=line('melodia',(e,o)=>e.m>o.m); CST.bass=line('baixo',(e,o)=>e.m<o.m);
+  CST.ev=ev; CST.pca=pca; CST.built=performance.now();
+  const ex=pca&&pca.tot>0?pca.vals.map(x=>Math.round(100*x/pca.tot)):null;
+  CST.caption=ex?`PCA do cromagrama · PC1 ${ex[0]}% · PC2 ${ex[1]}% · PC3 ${ex[2]}% da variação`:'PCA: toque mais notas';
+}
+function drawConst(NOW,dt){
+  const live0=LIVE;
+  const key=(live0?'L':'M')+SONG+'|'+BASE.length+'|'+LOOP+'|'+(L.pedal?1:0);
+  if(key!==CST.key && (!live0 || performance.now()-CST.built>700)){ CST.key=key; if(!live0){ CST.prev=null; CST.smooth=new Map(); } constBuild(); }
+  const PCA=L.constPos==='pca';
+  if(!drag){ st.yaw+=dt*2*Math.PI/70; }   // órbita lenta
+  const SC=Math.min(W/1500,H/900)*1.25, FC=1500, CX=W*0.5, CY=H*0.54;
+  const cy=Math.cos(st.yaw), sy=Math.sin(st.yaw), cp=Math.cos(st.pitch), sp=Math.sin(st.pitch);
+  const P=(x,y,z)=>{ const x1=x*cy-z*sy, z1=x*sy+z*cy; const y2=y*cp-z1*sp, z2=y*sp+z1*cp; const den=FC-z2; if(den<60) return [NaN,NaN,z2,0]; const k=FC/den; return [CX+x1*k*SC, CY-y2*k*SC, z2, k]; };
+  // posição exibida desliza até a posição nova (ao vivo a PCA se refaz e os pontos andam em vez de pular)
+  const ease=Math.min(1,dt*4);
+  CST.ev.forEach(e=>{ const tgt=PCA?e.pP:e.pT; let p=CST.smooth.get(e.n);
+    if(!p){ p={x:tgt.slice()}; CST.smooth.set(e.n,p); }
+    for(let i=0;i<3;i++) p.x[i]+=(tgt[i]-p.x[i])*ease; e.q=P(...p.x); });   // trocar teoria ↔ dados também desliza
+  const x=LIVE?NOW:((NOW%LOOP)+LOOP)%LOOP;
+  const on=e=>L[e.role], past=e=>e.s<=x+1e-9;
+  const fade=e=>0.25+0.75*Math.exp(-Math.max(0,x-(e.s+e.d))/(st.mem*1.5));
+  const ok=q=>isFinite(q[0]);
+
+  // guias
+  ctx.globalCompositeOperation='source-over'; ctx.lineWidth=1;
+  if(PCA){ const ax=[[1,0,0],[0,1,0],[0,0,1]], nm3=['PC1','PC2','PC3'];
+    ctx.font=`${Math.round(11*SC/0.75)}px Menlo`; ctx.textAlign='left';
+    ax.forEach((a,i)=>{ const A=P(-a[0]*260,-a[1]*260,-a[2]*260), B=P(a[0]*260,a[1]*260,a[2]*260); if(!ok(A)||!ok(B)) return;
+      ctx.strokeStyle='rgba(255,255,255,0.09)'; ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,0.28)'; ctx.fillText(nm3[i],B[0]+4,B[1]-4); });
+  } else {
+    for(let m=24;m<=108;m+=12){ ctx.beginPath(); for(let i=0;i<=72;i++){ const a=i/72*2*Math.PI, q=P(150*Math.cos(a),(m-64.5)*3.8,150*Math.sin(a)); i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]); }
+      ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.stroke(); }
+    ctx.font=`${Math.round(10*SC/0.75)}px Menlo`; ctx.textAlign='center';
+    for(let pc=0;pc<12;pc++){ const a=-Math.PI/2+pc/12*2*Math.PI, q=P(172*Math.cos(a),(108-64.5)*3.8+10,172*Math.sin(a)); if(!ok(q)) continue;
+      ctx.fillStyle=col(pc,0.55); ctx.fillText(nm(pc),q[0],q[1]); }
+  }
+
+  ctx.globalCompositeOperation='lighter'; ctx.lineCap='round'; ctx.lineJoin='round';
+  // linhas: o caminho de cada voz, nota a nota (o passado fica, apagando devagar)
+  const path=(arr,role,base)=>{ if(!L[role]) return; let last=null; const seen=[];
+    arr.forEach(e=>{ if(!past(e)) return; if(last && ok(last.q) && ok(e.q)){ const f=fade(e);
+        ctx.strokeStyle=rgba(mix(COL[last.m%12],[220,220,214],0.6),base*f); ctx.lineWidth=0.8*SC/0.75;
+        ctx.beginPath(); ctx.moveTo(last.q[0],last.q[1]); ctx.lineTo(e.q[0],e.q[1]); ctx.stroke(); }
+      seen.push(e); last=e; });
+    // rastro recente: os últimos 4 passos grossos, na cor da nota (o "agora" do caminho)
+    for(let j=0;j<4 && seen.length-1-j>0;j++){ const b=seen[seen.length-1-j], a=seen[seen.length-2-j]; if(!ok(a.q)||!ok(b.q)) continue;
+      const al=(role==='melodia'?0.85:0.6)*(1-j/4)*Math.exp(-Math.max(0,x-b.s)/6);
+      if(al<0.03) continue;
+      const g=ctx.createLinearGradient(a.q[0],a.q[1],b.q[0],b.q[1]); g.addColorStop(0,col(a.m,al)); g.addColorStop(1,col(b.m,al));
+      ctx.strokeStyle=g; ctx.lineWidth=(4-j)*1.4*SC/0.75; ctx.beginPath(); ctx.moveTo(a.q[0],a.q[1]); ctx.lineTo(b.q[0],b.q[1]); ctx.stroke(); }
+  };
+  path(CST.bass||[],'baixo',0.22); path(CST.mel||[],'melodia',0.3);
+  // pontos
+  const sounding=[];
+  CST.ev.forEach(e=>{ if(!on(e)||!past(e)||!ok(e.q)) return; const f=fade(e), k=e.q[3];
+    const r=(1.1+1.6*e.v*Math.min(1,Math.sqrt(e.d)))*SC/0.75*k;
+    if(e.s+e.d>x) sounding.push(e);
+    ctx.fillStyle=col(e.m,0.75*f); ctx.beginPath(); ctx.arc(e.q[0],e.q[1],r,0,7); ctx.fill(); });
+  // agora: forma das notas que soam juntas (polígono em volta do centro, na tela), pontos grandes, clarão e rótulo
+  const cur=chordAt(NOW), curC=chordColor(cur&&cur.ci);
+  if(L.poligono && sounding.length>2){
+    const cx=sounding.reduce((a,e)=>a+e.q[0],0)/sounding.length, cyy=sounding.reduce((a,e)=>a+e.q[1],0)/sounding.length;
+    const pts=sounding.map(e=>e.q).sort((a,b)=>Math.atan2(a[1]-cyy,a[0]-cx)-Math.atan2(b[1]-cyy,b[0]-cx));
+    ctx.beginPath(); pts.forEach((q,i)=>i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])); ctx.closePath();
+    ctx.fillStyle=rgba(curC,L.corAcorde==='branco'?0.1:0.32); ctx.fill();
+    ctx.setLineDash(chordDash(cur&&cur.ci)); ctx.strokeStyle=rgba(curC,0.8); ctx.lineWidth=1.4; ctx.stroke(); ctx.setLineDash([]);
+  }
+  const FL=0.25*st.bpm/60;
+  ctx.font=`${Math.round(11*SC/0.75)}px Menlo`; ctx.textAlign='left';
+  const labs=[];   // rótulos já postos: o seguinte desce uma linha em vez de cair por cima
+  sounding.forEach(e=>{ const env=0.25+0.75*Math.exp(-DECAY[e.role]*(x-e.s)), R=(4+6*env)*SC/0.75*e.q[3];
+    if(L.brilho){ ctx.fillStyle=col(e.m,0.22); ctx.beginPath(); ctx.arc(e.q[0],e.q[1],R*2.4,0,7); ctx.fill(); }
+    ctx.fillStyle=rgba(mix(COL[e.m%12],[255,255,255],0.55),1); ctx.beginPath(); ctx.arc(e.q[0],e.q[1],R,0,7); ctx.fill();
+    const age=x-e.s;
+    if(L.clarao && age>=0 && age<FL){ const a=Math.pow(1-age/FL,1.6), RR=(18+26*e.v)*SC/0.7;
+      const g=ctx.createRadialGradient(e.q[0],e.q[1],0,e.q[0],e.q[1],RR); g.addColorStop(0,`rgba(255,255,255,${0.9*a})`); g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(e.q[0],e.q[1],RR,0,7); ctx.fill(); }
+    if(L.nomes){ const lab=nm(e.m%12)+(Math.floor(e.m/12)-1)+(PCA?'  '+e.c.map(v=>v.toFixed(1).replace('-','−')).join(' '):'');
+      let lx=e.q[0]+R+5, ly=e.q[1]-R-2; const lh=14*SC/0.75;
+      while(labs.some(([X,Y])=>Math.abs(X-lx)<90 && Math.abs(Y-ly)<lh)) ly+=lh;
+      labs.push([lx,ly]); ctx.fillStyle='rgba(240,240,232,0.85)'; ctx.fillText(lab,lx,ly); }
+  });
+  ctx.globalCompositeOperation='source-over';
+  const cap=PCA?CST.caption:'teoria · hélice de altura: ângulo = nota, altura = oitava';
+  if($('hint').dataset.c!==cap){ $('hint').dataset.c=cap; $('hint').textContent='constelação ✶ · '+cap+' · arraste pra girar · ponto = nota · linha = caminho da melodia'; }
+  const live=sounding.map(e=>e.n);
+  return {live,cur,curC};
+}
+
 // ================= câmera =================
 let drag=null;
 const cv=$('cv'), ctx=cv.getContext('2d');
@@ -1169,6 +1326,21 @@ addEventListener('resize',resize); resize();
 
 // ================= desenho =================
 let hudLast='';
+// canto: cifra, composição, grau e tom
+function hudUpdate(live,cur,curC){
+  const ci=cur&&cur.ci, lpc=[...new Set(live.map(n=>n[0]).concat(LIVE?Object.keys(HELD).map(Number):[]).map(m=>((m%12)+12)%12))].sort((a,b)=>a-b);
+  const key=(L.hud?1:0)+'|'+chordName(ci)+'|'+(ci?'':lpc.join())+'|'+L.comp+L.grau+L.corAcorde+KEY.tonic+KEY.mode;
+  if(key!==hudLast){ hudLast=key;
+    $('hud').style.display=L.hud?'':'none';
+    $('hN').textContent=chordName(ci); $('hN').style.color=L.corAcorde==='branco'?'#f1f1ea':rgba(mix(curC,[255,255,255],0.3),1);
+    $('hC').textContent=L.comp?chordNotes(ci):''; $('hG').textContent=L.grau?chordDegree(ci):'';
+    if(!ci && lpc.length>=2){   // notas soando sem acorde reconhecido: diz quais são e se há trítono (tensão de dominante)
+      const tri=lpc.find(a=>lpc.includes((a+6)%12));
+      $('hN').textContent='?'; $('hN').style.color='#9a9a92'; $('hC').textContent=lpc.map(nm).join(' ')+' · sem acorde reconhecido';
+      $('hG').textContent=tri!=null?'trítono '+nm(tri)+'–'+nm((tri+6)%12)+': tensão de dominante':''; }
+    $('hK').textContent='tom: '+nm(KEY.tonic)+' '+KEY.mode+(keyAuto?' (automático)':'');
+  }
+}
 function frame(ts){
   if(frame.last==null) frame.last=ts;
   const dt=Math.min(0.1,(ts-frame.last)/1000); frame.last=ts;
@@ -1197,6 +1369,7 @@ function frame(ts){
 
   ctx.globalCompositeOperation='source-over'; ctx.setLineDash([]);
   ctx.fillStyle='#0b0b0d'; ctx.fillRect(0,0,W,H);
+  if(st.view==='constelacao'){ const r=drawConst(NOW,dt); hudUpdate(r.live,r.cur,r.curC); drawArt(NOW,r.live,r.curC); drawRoll(NOW); drawTuner(); requestAnimationFrame(frame); return; }
 
   if(L.eixo){ const a=P((from-NOW)*SX+headX,0,0), b=P(3*SX+headX,0,0);
     ctx.strokeStyle='rgba(255,255,255,0.16)'; ctx.lineWidth=1; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke(); }
@@ -1337,19 +1510,7 @@ function frame(ts){
   }
   ctx.globalCompositeOperation='source-over';
 
-  // canto: cifra, composição, grau e tom
-  const ci=cur&&cur.ci, lpc=[...new Set(live.map(n=>n[0]).concat(LIVE?Object.keys(HELD).map(Number):[]).map(m=>((m%12)+12)%12))].sort((a,b)=>a-b);
-  const key=(L.hud?1:0)+'|'+chordName(ci)+'|'+(ci?'':lpc.join())+'|'+L.comp+L.grau+L.corAcorde+KEY.tonic+KEY.mode;
-  if(key!==hudLast){ hudLast=key;
-    $('hud').style.display=L.hud?'':'none';
-    $('hN').textContent=chordName(ci); $('hN').style.color=L.corAcorde==='branco'?'#f1f1ea':rgba(mix(curC,[255,255,255],0.3),1);
-    $('hC').textContent=L.comp?chordNotes(ci):''; $('hG').textContent=L.grau?chordDegree(ci):'';
-    if(!ci && lpc.length>=2){   // notas soando sem acorde reconhecido: diz quais são e se há trítono (tensão de dominante)
-      const tri=lpc.find(a=>lpc.includes((a+6)%12));
-      $('hN').textContent='?'; $('hN').style.color='#9a9a92'; $('hC').textContent=lpc.map(nm).join(' ')+' · sem acorde reconhecido';
-      $('hG').textContent=tri!=null?'trítono '+nm(tri)+'–'+nm((tri+6)%12)+': tensão de dominante':''; }
-    $('hK').textContent='tom: '+nm(KEY.tonic)+' '+KEY.mode+(keyAuto?' (automático)':'');
-  }
+  hudUpdate(live,cur,curC);
   drawArt(NOW, live, curC); drawRoll(NOW); drawTuner();
   requestAnimationFrame(frame);
 }
